@@ -46,6 +46,11 @@ export function FollowButton({ userId }: { userId: string }) {
           {s.i_follow ? tr("Following ✓") : tr("Follow")}
         </button>
       )}
+      {user && user.id !== userId && (
+        <Link href={`/messages/${userId}`} className="block rounded-full border border-line px-5 py-2.5 text-center text-sm font-semibold">
+          {tr("Send a message")}
+        </Link>
+      )}
       {!user && (
         <Link href="/login" className="block rounded-full border border-line px-5 py-2.5 text-center text-sm font-semibold">
           {tr("Sign in to follow")}

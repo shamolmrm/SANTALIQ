@@ -38,7 +38,23 @@
   - when there is no connection, the fallback is `/offline`.
 - The converter, keyboard and Learn work offline once they have been opened.
 
-## Not built, and why
-- **Media** needs paid storage and bandwidth for video.
-- **Studio** needs a paid AI key and Santali TTS.
-- **Market** needs payments, legal registration and tax handling.
+## Groups (`/groups`)
+- Public groups. Anyone signed in can create one (3 per day). Members post (30 per hour).
+- The group owner, a reviewer or an admin can remove posts. The owner or an admin can delete the group.
+
+## Messages (`/messages`, envelope icon in the header)
+- One-to-one private messages: 60 per hour, no messages to yourself.
+- Either side can block the other, and a block stops messages in both directions. Opening a conversation marks it as read.
+- Deleting an account deletes all of its messages and blocks.
+
+## Market, Media, Digital library (`/market`, `/media`, `/library`, `/listings/{id}`, `/listings/new`)
+- These share the `listings` table (migration 0013), with `section` set to market, media or library. Every listing is reviewed first (admin Review → "Market · Media · Library") and its poster is notified of the decision.
+- **Market:** no payments on SANTALIQ. The seller's contact details are required and shown, along with a safety notice.
+- **Media:** photos are uploaded here (JPEG, PNG or WebP, at most 3 MB, type checked from the file's magic bytes). Videos, podcasts and music are links; YouTube links become `youtube-nocookie` embeds.
+- **Library:** a link or author/publisher is required. We link only to legal copies and never host copyrighted files.
+- Images are stored in `data/media` (bind mount `/data/media`), mirrored by the nightly backup, and deleted together with the listing or the account.
+
+## Still not built
+- **Studio** (AI stories, scripts and voice-over) needs a paid AI key and Santali TTS. It will be built on the existing AI module once the key is set.
+- **Android app in Play Store**: the PWA already installs on Android. A Play Store listing needs a USD 25 developer account (Trusted Web Activity).
+- **Santali TTS / ASR** need enough verified voice recordings first.

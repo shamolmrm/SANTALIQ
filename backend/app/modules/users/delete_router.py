@@ -21,6 +21,9 @@ from app.modules.ai.models import AIUsage
 from app.modules.contact.models import ContactMessage
 from app.modules.heritage.models import HeritageItem
 from app.modules.language.models import Lexeme
+from app.modules.listings import router as listings
+from app.modules.listings.models import Listing
+from app.modules.messages.models import Block, Message
 from app.modules.users.models import AuditEvent, AuthSession, Role, User, UserToken
 from app.modules.users.security import audit, current_user, verify_password
 from app.modules.voice import router as voice
@@ -61,6 +64,12 @@ def delete_account(
         (voice.audio_root() / c.file_name).unlink(missing_ok=True)
     db.execute(delete(VoiceClip).where(VoiceClip.user_id == uid))
     db.execute(delete(VoiceSpeaker).where(VoiceSpeaker.user_id == uid))
+    for x in db.scalars(select(Listing).where(Listing.submitted_by == uid)).all():
+        if x.image:
+            (listings.media_root() / x.image).unlink(missing_ok=True)
+    db.execute(delete(Listing).where(Listing.submitted_by == uid))
+    db.execute(delete(Message).where((Message.sender_id == uid) | (Message.recipient_id == uid)))
+    db.execute(delete(Block).where((Block.blocker_id == uid) | (Block.blocked_id == uid)))
     post_ids = select(Post.id).where(Post.author_id == uid)
     db.execute(delete(PostReport).where(PostReport.post_id.in_(post_ids)))
     db.execute(delete(Post).where(Post.author_id == uid))

@@ -34,6 +34,12 @@ if [ -d "$VOICE_SRC" ]; then
   echo "$(date -Is) voice mirror ok ($(find "$DEST/voice" -type f | wc -l) files)"
 fi
 
+# ── listing images (market / media): local mirror ──
+MEDIA_SRC=/home/ubuntu/docker/websites/santaliq/data/media
+if [ -d "$MEDIA_SRC" ] && command -v rsync >/dev/null; then
+  mkdir -p "$DEST/media" && rsync -a --delete "$MEDIA_SRC/" "$DEST/media/"
+fi
+
 # ── report to the admin dashboard (System page) ──
 voice_files="$(find "$DEST/voice" -type f 2>/dev/null | wc -l)"
 docker exec santaliq-postgres psql -U santaliq -d santaliq -q -c \

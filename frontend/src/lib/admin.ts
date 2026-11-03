@@ -5,6 +5,7 @@ export type Overview = {
   heritage: ReviewCounts;
   voice: ReviewCounts;
   careers: ReviewCounts;
+  listings: ReviewCounts;
   voice_minutes: number;
   posts_published: number;
   posts_removed: number;

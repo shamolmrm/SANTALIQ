@@ -55,6 +55,8 @@ class Settings(BaseSettings):
     voice_dir: str = "./data/voice"
     voice_max_bytes: int = 2 * 1024 * 1024  # ~30 s of Opus is ~150 KB; generous for WAV/MP4
     voice_clips_per_hour: int = 60
+    # Listing images (market / media), same bind mount as voice in production
+    media_dir: str = "./data/media"
 
     # Contact form: optional address notified of new messages (needs email enabled)
     contact_notify_email: str = ""

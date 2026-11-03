@@ -21,6 +21,10 @@ export function SiteFooter() {
         { href: "/news", label: t.news },
         { href: "/careers", label: t.careers },
         { href: "/developers", label: t.developers },
+        { href: "/groups", label: t.groups },
+        { href: "/market", label: t.market },
+        { href: "/media", label: t.media },
+        { href: "/library", label: t.library },
       ],
     },
     {

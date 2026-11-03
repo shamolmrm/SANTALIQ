@@ -47,9 +47,9 @@ ssh "$SERVER" "
   [ -d $REMOTE_DIR/app ] && mv $REMOTE_DIR/app $REMOTE_DIR/app.prev
   mv $REMOTE_DIR/app.new $REMOTE_DIR/app
   # persistent voice recordings, owned by the API container user (uid 1001)
-  mkdir -p $REMOTE_DIR/data/voice
-  chown 1001:1001 $REMOTE_DIR/data/voice
-  chmod 750 $REMOTE_DIR/data/voice
+  mkdir -p $REMOTE_DIR/data/voice $REMOTE_DIR/data/media
+  chown 1001:1001 $REMOTE_DIR/data $REMOTE_DIR/data/voice $REMOTE_DIR/data/media
+  chmod 750 $REMOTE_DIR/data/voice $REMOTE_DIR/data/media
   $COMPOSE build
   $COMPOSE up -d --remove-orphans
   docker image prune -f >/dev/null

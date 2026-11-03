@@ -38,6 +38,11 @@ export function describe(n: Notice): { text: string; href: string } {
         text: ok ? tr("Your listing “{title}” is now public.", { title }) : tr("Your listing “{title}” was not accepted.", { title }),
         href: d.id ? `/careers/${d.id}` : "/careers",
       };
+    case "listing_reviewed":
+      return {
+        text: ok ? tr("Your listing “{title}” is now public.", { title }) : tr("Your listing “{title}” was not accepted.", { title }),
+        href: d.id ? `/listings/${d.id}` : "/",
+      };
     case "post_removed":
       return { text: tr("Your piece “{title}” was removed by moderators.", { title }), href: d.slug ? `/write/${d.slug}` : "/write/mine" };
     default:

@@ -88,7 +88,8 @@ Later (only once there are real users): marketplace, careers, video hosting, liv
 | Task | Status |
 | --- | --- |
 | Connect: notifications · Social: follow, comments, feed · News (reviewers publish) · Career board (reviewed) · Developer docs + OpenAPI · PWA (installable, offline tools) | **live** ([module doc](modules/COMMUNITY.md)) |
-| Groups, messages, Android app, Media, Studio, Market | todo — Media/Studio/Market need budget or legal setup |
+| Groups, private messages, Market (contact seller), Media (photos + embeds), Research digital library | **live** ([module doc](modules/COMMUNITY.md)) |
+| Studio (needs AI key), Play Store app (USD 25 account), Santali TTS/ASR (needs voice data) | todo |
 | Error monitoring + security review | **live** ([monitoring](modules/MONITORING.md), [security](SECURITY.md)) |
 
 ## Phase 5 progress

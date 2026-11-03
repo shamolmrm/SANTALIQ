@@ -7,10 +7,14 @@ from app.modules.ai.router import router as ai_router
 from app.modules.careers.router import admin_router as careers_admin_router
 from app.modules.careers.router import router as careers_router
 from app.modules.contact.router import router as contact_router
+from app.modules.groups.router import router as groups_router
 from app.modules.heritage.router import admin_router as heritage_admin_router
 from app.modules.heritage.router import router as heritage_router
 from app.modules.language.dataset import router as dataset_router
 from app.modules.language.router import router as dictionary_router
+from app.modules.listings.router import admin_router as listings_admin_router
+from app.modules.listings.router import router as listings_router
+from app.modules.messages.router import router as messages_router
 from app.modules.monitoring.router import router as monitoring_router
 from app.modules.notify.router import router as notify_router
 from app.modules.social.router import router as social_router
@@ -44,6 +48,10 @@ api_router.include_router(voice_admin_router)
 api_router.include_router(contact_router)
 api_router.include_router(monitoring_router)
 api_router.include_router(notify_router)
+api_router.include_router(listings_router)
+api_router.include_router(listings_admin_router)
+api_router.include_router(groups_router)
+api_router.include_router(messages_router)
 api_router.include_router(social_router)
 api_router.include_router(careers_router)
 api_router.include_router(careers_admin_router)

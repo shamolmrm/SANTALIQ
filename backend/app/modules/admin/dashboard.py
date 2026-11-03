@@ -20,6 +20,7 @@ from app.modules.careers.models import JobPost
 from app.modules.contact.models import ContactMessage, ContactStatus
 from app.modules.heritage.models import HeritageItem
 from app.modules.language.models import Lexeme, VerificationStatus
+from app.modules.listings.models import Listing
 from app.modules.monitoring.models import ErrorEvent
 from app.modules.users.models import AuditEvent, Role, User
 from app.modules.users.security import require_role
@@ -43,6 +44,7 @@ class OverviewOut(BaseModel):
     heritage: ReviewCounts
     voice: ReviewCounts
     careers: ReviewCounts = ReviewCounts()
+    listings: ReviewCounts = ReviewCounts()
     voice_minutes: float
     posts_published: int
     posts_removed: int
@@ -109,6 +111,7 @@ def overview(_: User = Depends(reviewer_required), db: Session = Depends(get_db)
     heritage = _counts(db, HeritageItem.status)
     voice = _counts(db, VoiceClip.status)
     careers = _counts(db, JobPost.status)
+    listings = _counts(db, Listing.status)
     voice_ms = db.scalar(
         select(func.coalesce(func.sum(VoiceClip.duration_ms), 0)).where(
             VoiceClip.status == VerificationStatus.verified
@@ -132,6 +135,7 @@ def overview(_: User = Depends(reviewer_required), db: Session = Depends(get_db)
         heritage=heritage,
         voice=voice,
         careers=careers,
+        listings=listings,
         voice_minutes=round((voice_ms or 0) / 60000, 1),
         posts_published=posts.get(PostStatus.published, 0),
         posts_removed=posts.get(PostStatus.removed, 0),
@@ -146,6 +150,7 @@ def overview(_: User = Depends(reviewer_required), db: Session = Depends(get_db)
         + heritage.pending
         + voice.pending
         + careers.pending
+        + listings.pending
         + (reports or 0),
         new_messages=db.scalar(
             select(func.count(ContactMessage.id)).where(ContactMessage.status == ContactStatus.new)
