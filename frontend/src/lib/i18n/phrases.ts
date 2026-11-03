@@ -595,4 +595,9 @@ export const BN: Record<string, string> = {
   "Link copied ✓": "লিংক কপি হয়েছে ✓",
   "Share": "শেয়ার করুন",
   "Sold by": "বিক্রেতা:",
+  "Open model on SANTALIQ's own server — your text stays private.": "SANTALIQ-এর নিজের সার্ভারে চলা উন্মুক্ত মডেল — আপনার লেখা গোপন থাকে।",
+  "Google Cloud Translation — text is sent to Google.": "Google Cloud Translation — লেখা Google-এ পাঠানো হয়।",
+  "Free monthly limit reached — back next month": "এ মাসের বিনামূল্যের সীমা শেষ — পরের মাসে আবার চালু হবে",
+  "(limit reached)": "(সীমা শেষ)",
+  "Google Translate reached this month's free limit. Please use Meta NLLB.": "Google Translate এ মাসের বিনামূল্যের সীমায় পৌঁছেছে। Meta NLLB ব্যবহার করুন।",
 };

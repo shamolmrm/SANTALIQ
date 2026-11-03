@@ -114,3 +114,20 @@ def test_google_engine_maps_codes_and_caches_separately(
     assert (sent["source"], sent["target"], sent["format"]) == ("en", "sat", "text")
     again = client.post("/api/v1/translate", json=body).json()
     assert again["cached"] is True and len(fake_google) == 1  # second call served from cache
+
+
+def test_google_monthly_free_limit(
+    client: TestClient, fake_google: list[dict], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from app.core.config import get_settings
+
+    monkeypatch.setattr(get_settings(), "google_monthly_char_limit", 11)
+    body = {"source": "eng_Latn", "target": "ben_Beng", "engine": "google"}
+    assert client.post("/api/v1/translate", json={**body, "text": "hello"}).status_code == 200
+    assert client.post("/api/v1/translate", json={**body, "text": "world!"}).status_code == 200
+    r = client.post("/api/v1/translate", json={**body, "text": "too much"})
+    assert r.status_code == 503 and "free limit" in r.json()["detail"]
+    engines = {e["id"]: e for e in client.get("/api/v1/translate/engines").json()}
+    assert engines["google"]["enabled"] is False and engines["google"]["limit_reached"] is True
+    # cached repeats never count against the limit
+    assert client.post("/api/v1/translate", json={**body, "text": "hello"}).json()["cached"]

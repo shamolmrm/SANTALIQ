@@ -31,6 +31,8 @@ class Settings(BaseSettings):
     # Google Cloud Translation (optional second engine). Off until the key is set.
     google_translate_api_key: str = ""
     google_santali_code: str = "sat"
+    # Hard monthly cap so usage stays inside Google's free tier (500,000 chars/month)
+    google_monthly_char_limit: int = 450_000
 
     # Sessions
     session_cookie_name: str = "santaliq_session"

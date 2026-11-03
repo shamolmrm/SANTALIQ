@@ -6,10 +6,14 @@ from typing import Literal
 import httpx
 from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel, Field, field_validator
+from sqlalchemy.orm import Session
 
 from app.core.cache import KeyValueStore, get_redis, hit_rate_limit
 from app.core.config import get_settings
+from app.core.db import get_db, utcnow
+from app.modules.admin.models import SystemStatus
 from app.modules.translate.languages import CODES, ISO, LANGUAGES, SANTALI
+from app.modules.users.security import client_ip
 
 log = logging.getLogger(__name__)
 router = APIRouter(prefix="/translate", tags=["translate"])
@@ -32,6 +36,7 @@ class EngineOut(BaseModel):
     id: Engine
     name: str
     enabled: bool
+    limit_reached: bool = False
     note: str
 
 
@@ -62,6 +67,25 @@ def google_enabled() -> bool:
     return bool(get_settings().google_translate_api_key)
 
 
+def _usage_key() -> str:
+    return f"google_chars:{utcnow():%Y-%m}"
+
+
+def google_chars_used(db: Session) -> int:
+    """Characters sent to Google this calendar month (kept under the free tier)."""
+    row = db.get(SystemStatus, _usage_key())
+    return int((row.value or {}).get("chars", 0)) if row else 0
+
+
+def _add_google_chars(db: Session, n: int) -> None:
+    row = db.get(SystemStatus, _usage_key())
+    if row is None:
+        db.add(SystemStatus(key=_usage_key(), value={"chars": n}))
+    else:
+        row.value = {"chars": int((row.value or {}).get("chars", 0)) + n}
+    db.commit()
+
+
 def _google_code(code: str) -> str:
     return get_settings().google_santali_code if code == SANTALI else ISO[code]
 
@@ -72,7 +96,8 @@ def languages() -> list[Language]:
 
 
 @router.get("/engines", response_model=list[EngineOut])
-def engines() -> list[EngineOut]:
+def engines(db: Session = Depends(get_db)) -> list[EngineOut]:
+    full = google_enabled() and google_chars_used(db) >= get_settings().google_monthly_char_limit
     return [
         EngineOut(
             id="nllb",
@@ -83,7 +108,8 @@ def engines() -> list[EngineOut]:
         EngineOut(
             id="google",
             name="Google Translate",
-            enabled=google_enabled(),
+            enabled=google_enabled() and not full,
+            limit_reached=full,
             note="Google Cloud Translation — text is sent to Google.",
         ),
     ]
@@ -136,12 +162,14 @@ async def _google(body: TranslateIn) -> str:
 
 @router.post("", response_model=TranslateOut)
 async def translate(
-    body: TranslateIn, request: Request, store: KeyValueStore = Depends(get_redis)
+    body: TranslateIn,
+    request: Request,
+    store: KeyValueStore = Depends(get_redis),
+    db: Session = Depends(get_db),
 ) -> TranslateOut:
     settings = get_settings()
-    client_ip = request.client.host if request.client else "unknown"
     if await hit_rate_limit(
-        store, f"rl:translate:{client_ip}", settings.translate_rate_limit_per_minute
+        store, f"rl:translate:{client_ip(request)}", settings.translate_rate_limit_per_minute
     ):
         raise HTTPException(status_code=429, detail="Too many requests. Please wait a minute.")
 
@@ -154,7 +182,13 @@ async def translate(
         log.warning("translation cache read failed: %s", exc)
 
     if body.engine == "google":
+        if google_chars_used(db) + len(body.text) > settings.google_monthly_char_limit:
+            raise HTTPException(
+                status_code=503,
+                detail="Google Translate reached this month's free limit. Please use Meta NLLB.",
+            )
         text, model = await _google(body), "google-cloud-translation-v2"
+        _add_google_chars(db, len(body.text))
     else:
         text, model = await _nllb(body), NLLB_MODEL
 

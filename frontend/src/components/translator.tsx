@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { convert, detectScript, SCRIPT_LABELS, SCRIPTS, type Script } from "@/lib/script/engine";
-import { fill, useT } from "@/lib/i18n";
+import { fill, tr, useT } from "@/lib/i18n";
 import { createRecognizer, recognitionSupported, speak, stopSpeaking, useVoices, voiceFor } from "@/lib/speech";
 
 const API = process.env.NEXT_PUBLIC_API_BASE ?? "";
@@ -10,7 +10,7 @@ const SANTALI = "sat_Beng";
 const MAX = 2000;
 
 type Language = { code: string; name: string; native: string; iso: string };
-type Engine = { id: "nllb" | "google"; name: string; enabled: boolean; note: string };
+type Engine = { id: "nllb" | "google"; name: string; enabled: boolean; note: string; limit_reached?: boolean };
 
 /** Render Santali text in all five scripts, whatever script it arrived in. */
 function allScripts(text: string): Array<{ script: Script; text: string }> {
@@ -245,16 +245,16 @@ export function Translator() {
                 setEngine(e.id);
                 setOutput("");
               }}
-              title={e.enabled ? e.note : `${e.name} — ${t.comingSoon}`}
+              title={e.enabled ? tr(e.note) : e.limit_reached ? tr("Free monthly limit reached — back next month") : `${e.name} — ${t.comingSoon}`}
               className={`rounded-full border px-4 py-1.5 text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-45 ${
                 engine === e.id ? "border-fg bg-fg text-bg" : "border-line text-muted hover:text-fg"
               }`}
             >
               {e.name}
-              {!e.enabled && <span className="ml-1 text-xs">{t.soon}</span>}
+              {!e.enabled && <span className="ml-1 text-xs">{e.limit_reached ? tr("(limit reached)") : t.soon}</span>}
             </button>
           ))}
-          {activeEngine && <span className="text-xs text-muted">{activeEngine.note}</span>}
+          {activeEngine && <span className="text-xs text-muted">{tr(activeEngine.note)}</span>}
         </div>
       )}
 
@@ -313,7 +313,7 @@ export function Translator() {
         {/* Output */}
         <div className="flex flex-col rounded-[var(--radius-card)] border border-line bg-bg-sunken" aria-live="polite">
           <div className="flex-1 p-5">
-            {err && <p className="rounded-xl bg-red-500/10 p-4 text-sm text-red-700 dark:text-red-300">{err}</p>}
+            {err && <p className="rounded-xl bg-red-500/10 p-4 text-sm text-red-700 dark:text-red-300">{tr(err)}</p>}
             {!err && !output && <p className="text-xl text-muted">{loading ? t.translating : t.translation}</p>}
             {!err && output && target !== SANTALI && <p className="text-xl leading-relaxed whitespace-pre-wrap">{output}</p>}
             {!err && output && target === SANTALI && (
