@@ -3,6 +3,7 @@ export const mainNav = [
   { href: "/tools/dictionary", label: "Dictionary" },
   { href: "/write", label: "Write" },
   { href: "/learn", label: "Learn" },
+  { href: "/heritage", label: "Heritage" },
   { href: "/ai", label: "AI" },
   { href: "/tools", label: "Tools" },
 ] as const;

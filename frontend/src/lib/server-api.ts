@@ -1,4 +1,5 @@
 import { cacheLife } from "next/cache";
+import type { HeritageItem } from "@/lib/heritage";
 import type { Post, PostCard } from "@/lib/write";
 
 /**
@@ -55,4 +56,17 @@ export async function getSitemapPosts(): Promise<SitemapItem[]> {
   "use cache";
   cacheLife({ stale: 3600, revalidate: 3600, expire: 86400 });
   return (await getJson<SitemapItem[]>("/write/sitemap")) ?? [];
+}
+
+export async function getHeritageItem(slug: string): Promise<HeritageItem | null> {
+  "use cache";
+  cacheLife({ stale: 60, revalidate: 60, expire: 600 });
+  const item = await getJson<HeritageItem>(`/heritage/items/${encodeURIComponent(slug)}`);
+  return item?.status === "verified" ? item : null;
+}
+
+export async function getHeritageSitemap(): Promise<Array<{ slug: string; updated_at: string | null }>> {
+  "use cache";
+  cacheLife({ stale: 3600, revalidate: 3600, expire: 86400 });
+  return (await getJson<Array<{ slug: string; updated_at: string | null }>>("/heritage/sitemap")) ?? [];
 }

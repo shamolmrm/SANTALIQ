@@ -78,7 +78,8 @@ Later (only once there are real users): marketplace, careers, video hosting, liv
 | Task | Status |
 | --- | --- |
 | Learn Ol Chiki v1 — alphabet explorer, digits, marks, quizzes | **live** ([module doc](modules/LEARN.md)) |
-| Vocabulary lessons, progress tracking, heritage archive | todo (needs verified content) |
+| Heritage archive v1: consented, sourced community submissions, reviewer verification, withdraw anytime | **beta live** ([module doc](modules/HERITAGE.md)); empty until the community shares |
+| Vocabulary lessons, progress tracking | todo (needs verified content) |
 
 ## Paused (no budget yet)
 - SANTALIQ AI chat (`ANTHROPIC_API_KEY`), Google Translate engine (`GOOGLE_TRANSLATE_API_KEY`) — code ready, switched off.

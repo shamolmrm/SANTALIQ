@@ -5,5 +5,6 @@ Disallow: /admin
 Disallow: /write/edit/
 Disallow: /write/mine
 Disallow: /write/new
+Disallow: /heritage/submit
 
 Sitemap: https://santaliq.supersoftltd.com/sitemap.xml

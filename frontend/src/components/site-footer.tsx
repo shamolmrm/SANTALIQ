@@ -9,6 +9,7 @@ const groups = [
       { href: "/tools/script-converter", label: "Script Converter" },
       { href: "/tools", label: "All tools" },
       { href: "/learn", label: "Learn Ol Chiki" },
+      { href: "/heritage", label: "Heritage archive" },
       { href: "/dataset", label: "Open dataset" },
     ],
   },

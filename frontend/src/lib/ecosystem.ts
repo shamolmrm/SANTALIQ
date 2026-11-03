@@ -12,7 +12,7 @@ export const divisions: Array<{
   { name: "Write", summary: "Articles, poetry, stories and journals in Santali", status: "live", href: "/write" },
   { name: "Learn", summary: "Ol Chiki alphabet and quizzes; courses next", status: "live", href: "/learn" },
   { name: "Voice", summary: "Text-to-speech, speech recognition, pronunciation", status: "planned" },
-  { name: "Heritage", summary: "Folk stories, songs, festivals and history archive", status: "planned" },
+  { name: "Heritage", summary: "Folk stories, songs, festivals and history archive", status: "live", href: "/heritage" },
   { name: "Social", summary: "Profiles, feed, groups and polls", status: "planned" },
   { name: "Connect", summary: "Messages, discussions and notifications", status: "planned" },
   { name: "Media", summary: "Photos, video, audio and podcasts", status: "planned" },

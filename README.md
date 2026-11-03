@@ -7,11 +7,15 @@ SANTALIQ is a digital home for the Santali language, people and culture — scri
 🌐 **Live:** https://santaliq.supersoftltd.com
 🩺 **API health:** https://santaliq.supersoftltd.com/api/v1/health
 
-> **Status:** Phase 1 — live beta tools:
-> - [Script Converter](https://santaliq.supersoftltd.com/tools/script-converter) — Ol Chiki ↔ Roman ↔ Bengali ↔ Odia ↔ Devanagari
-> - [Translator](https://santaliq.supersoftltd.com/tools/translator) — Santali ↔ 50+ languages (self-hosted NLLB-200)
->
-> Keyboard and dictionary are next.
+> **Status:** public beta. Live now:
+> - [Translator](https://santaliq.supersoftltd.com/tools/translator): Santali ↔ 50+ languages (self-hosted NLLB-200), with listen and speak
+> - [Script Converter](https://santaliq.supersoftltd.com/tools/script-converter) and [Keyboard](https://santaliq.supersoftltd.com/tools/keyboard): Ol Chiki ↔ Roman ↔ Bengali ↔ Odia ↔ Devanagari
+> - [Dictionary](https://santaliq.supersoftltd.com/tools/dictionary): community contributions with reviewer verification
+> - [Write](https://santaliq.supersoftltd.com/write): articles, poetry and stories in any script, with author profiles and SEO
+> - [Heritage](https://santaliq.supersoftltd.com/heritage): consented, sourced and reviewed archive of stories, songs, festivals and history
+> - [Learn](https://santaliq.supersoftltd.com/learn): Ol Chiki alphabet and quizzes
+> - [Open Dataset](https://santaliq.supersoftltd.com/dataset): verified lexicon as JSON/CSV
+> - [AI](https://santaliq.supersoftltd.com/ai): grounded search (chat is built, and stays off until an API key is set)
 
 ---
 

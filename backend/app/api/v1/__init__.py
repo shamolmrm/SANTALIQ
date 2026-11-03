@@ -3,6 +3,8 @@ from fastapi import APIRouter
 from app.api.v1 import health
 from app.modules.admin.router import router as admin_router
 from app.modules.ai.router import router as ai_router
+from app.modules.heritage.router import admin_router as heritage_admin_router
+from app.modules.heritage.router import router as heritage_router
 from app.modules.language.dataset import router as dataset_router
 from app.modules.language.router import router as dictionary_router
 from app.modules.translate.router import router as translate_router
@@ -24,3 +26,5 @@ api_router.include_router(write_router)
 api_router.include_router(ai_router)
 api_router.include_router(admin_router)
 api_router.include_router(write_moderation_router)
+api_router.include_router(heritage_router)
+api_router.include_router(heritage_admin_router)
