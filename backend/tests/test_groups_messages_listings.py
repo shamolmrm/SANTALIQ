@@ -68,10 +68,14 @@ def test_listings_review_and_rules(
     assert client.post("/api/v1/listings", data=base).status_code == 422  # no contact
     r = client.post(
         "/api/v1/listings",
-        data={**base, "contact": "test contact", "price": "100"},
-        files={"image": ("p.png", PNG, "image/png")},
+        data={**base, "whatsapp": "+91 98765 43210", "price_amount": "250", "currency": "INR"},
+        files=[("images", ("a.png", PNG, "image/png")), ("images", ("b.png", PNG, "image/png"))],
     )
-    assert r.status_code == 201 and r.json()["image_url"]
+    assert r.status_code == 201, r.text
+    assert r.json()["price_amount"] == 250 and r.json()["whatsapp"] == "+919876543210"
+    assert len(r.json()["image_urls"]) == 2 and r.json()["image_url"]
+    no_price = {**base, "contact": "x"}
+    assert client.post("/api/v1/listings", data=no_price).status_code == 422
     item = r.json()
     bad = client.post(
         "/api/v1/listings",
@@ -97,3 +101,6 @@ def test_listings_review_and_rules(
     client.cookies.clear()
     assert len(client.get("/api/v1/listings", params={"section": "market"}).json()) == 1
     assert client.get(item["image_url"]).content == PNG
+    assert client.get(item["image_urls"][1]).content == PNG
+    cheap = client.get("/api/v1/listings", params={"section": "market", "sort": "price_asc"})
+    assert cheap.json()[0]["currency"] == "INR"

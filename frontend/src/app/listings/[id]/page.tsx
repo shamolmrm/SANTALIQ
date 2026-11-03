@@ -3,6 +3,7 @@
 import { useParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { ListingDetail } from "@/components/listings";
+import { ProductView } from "@/components/product-view";
 import { Alert } from "@/components/ui";
 import { api } from "@/lib/api";
 import { tr } from "@/lib/i18n";
@@ -24,7 +25,7 @@ function Inner() {
       </section>
     );
   if (!x) return <section className="mx-auto max-w-3xl px-4 py-16 text-muted">{tr("Loading…")}</section>;
-  return <ListingDetail x={x} />;
+  return x.section === "market" ? <ProductView x={x} /> : <ListingDetail x={x} />;
 }
 
 export default function ListingPage() {

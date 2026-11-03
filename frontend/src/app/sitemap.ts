@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { getHeritageSitemap, getSitemapPosts, SITE_URL } from "@/lib/server-api";
+import { getHeritageSitemap, getMarketSitemap, getSitemapPosts, SITE_URL } from "@/lib/server-api";
 
 const STATIC = [
   "",
@@ -28,7 +28,7 @@ const STATIC = [
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [posts, heritage] = await Promise.all([getSitemapPosts(), getHeritageSitemap()]);
+  const [posts, heritage, products] = await Promise.all([getSitemapPosts(), getHeritageSitemap(), getMarketSitemap()]);
   const authors = [...new Set(posts.map((p) => p.author_id))];
   return [
     ...STATIC.map((path) => ({ url: `${SITE_URL}${path}`, changeFrequency: "weekly" as const })),
@@ -42,6 +42,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: h.updated_at ?? undefined,
       changeFrequency: "monthly" as const,
     })),
+    ...products.map((p) => ({ url: `${SITE_URL}/market/${p.id}`, changeFrequency: "weekly" as const })),
     ...authors.map((id) => ({ url: `${SITE_URL}/people/${id}`, changeFrequency: "weekly" as const })),
   ];
 }

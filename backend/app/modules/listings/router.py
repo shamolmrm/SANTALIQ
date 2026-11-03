@@ -1,5 +1,7 @@
+import re
 import uuid
 from datetime import datetime
+from decimal import Decimal
 from pathlib import Path
 from typing import Annotated, Literal
 
@@ -23,6 +25,9 @@ admin_router = APIRouter(prefix="/admin/listings", tags=["admin"])
 reviewer_required = require_role(Role.reviewer)
 PER_HOUR = 10
 MAX_IMAGE = 3 * 1024 * 1024
+MAX_IMAGES = 4
+CURRENCIES = ("INR", "BDT", "NPR", "USD")
+Sort = Literal["new", "price_asc", "price_desc"]
 
 
 def media_root() -> Path:
@@ -48,6 +53,11 @@ class ListingOut(BaseModel):
     url: str | None
     contact: str | None
     price: str | None
+    price_amount: float | None
+    currency: str | None
+    stock: int | None
+    whatsapp: str | None
+    image_urls: list[str]
     location: str | None
     credit: str | None
     image_url: str | None
@@ -73,6 +83,11 @@ def out(x: Listing, *, include_note: bool = False) -> ListingOut:
         url=x.url,
         contact=x.contact,
         price=x.price,
+        price_amount=float(x.price_amount) if x.price_amount is not None else None,
+        currency=x.currency,
+        stock=x.stock,
+        whatsapp=x.whatsapp,
+        image_urls=[f"/api/v1/listings/{x.id}/image?n={i}" for i in range(len(_files(x)))],
         location=x.location,
         credit=x.credit,
         image_url=f"/api/v1/listings/{x.id}/image" if x.image else None,
@@ -82,6 +97,10 @@ def out(x: Listing, *, include_note: bool = False) -> ListingOut:
         posted_by_id=x.submitted_by,
         review_note=x.review_note if include_note else None,
     )
+
+
+def _files(x: Listing) -> list[str]:
+    return ([x.image] if x.image else []) + list(x.images or [])
 
 
 def _staff(user: User | None) -> bool:
@@ -102,6 +121,8 @@ def list_listings(
     section: Section,
     category: str | None = Query(None, max_length=20),
     q: str | None = Query(None, max_length=100),
+    seller: uuid.UUID | None = None,
+    sort: Sort = "new",
     db: Session = Depends(get_db),
 ) -> list[ListingOut]:
     stmt = select(Listing).where(
@@ -114,7 +135,14 @@ def list_listings(
         stmt = stmt.where(
             or_(func.lower(Listing.title).like(like), func.lower(Listing.description).like(like))
         )
-    rows = db.scalars(stmt.order_by(Listing.reviewed_at.desc()).limit(120)).all()
+    if seller:
+        stmt = stmt.where(Listing.submitted_by == seller)
+    order = {
+        "new": [Listing.reviewed_at.desc()],
+        "price_asc": [Listing.price_amount.asc().nulls_last(), Listing.reviewed_at.desc()],
+        "price_desc": [Listing.price_amount.desc().nulls_last(), Listing.reviewed_at.desc()],
+    }[sort]
+    rows = db.scalars(stmt.order_by(*order).limit(120)).all()
     return [out(x) for x in rows]
 
 
@@ -141,14 +169,16 @@ def get_listing(
 @router.get("/{listing_id}/image")
 def listing_image(
     listing_id: uuid.UUID,
+    n: int = Query(0, ge=0, lt=MAX_IMAGES),
     user: User | None = Depends(current_user_optional),
     db: Session = Depends(get_db),
 ) -> FileResponse:
     x = _visible(db.get(Listing, listing_id), user)
-    path = media_root() / (x.image or "")
-    if not x.image or not path.is_file():
+    files = _files(x)
+    if n >= len(files) or not (media_root() / files[n]).is_file():
         raise HTTPException(status_code=404, detail="Not found.")
-    mime = {"jpg": "image/jpeg", "png": "image/png", "webp": "image/webp"}[x.image.split(".")[-1]]
+    path = media_root() / files[n]
+    mime = {"jpg": "image/jpeg", "png": "image/png", "webp": "image/webp"}[files[n].split(".")[-1]]
     return FileResponse(path, media_type=mime, headers={"Cache-Control": "public, max-age=86400"})
 
 
@@ -164,7 +194,12 @@ async def create_listing(
     price: Annotated[str | None, Form(max_length=60)] = None,
     location: Annotated[str | None, Form(max_length=120)] = None,
     credit: Annotated[str | None, Form(max_length=300)] = None,
+    price_amount: Annotated[float | None, Form(ge=0, le=10_000_000)] = None,
+    currency: Annotated[str | None, Form(max_length=3)] = None,
+    stock: Annotated[int | None, Form(ge=0, le=100_000)] = None,
+    whatsapp: Annotated[str | None, Form(max_length=20)] = None,
     image: Annotated[UploadFile | None, File()] = None,
+    images: Annotated[list[UploadFile] | None, File()] = None,
     user: User = Depends(current_user),
     db: Session = Depends(get_db),
     store: KeyValueStore = Depends(get_redis),
@@ -173,18 +208,29 @@ async def create_listing(
         raise HTTPException(status_code=422, detail="Unknown category.")
     if await hit_rate_limit(store, f"rl:listing:{user.id}", PER_HOUR, window_seconds=3600):
         raise HTTPException(status_code=429, detail="Too many listings. Please try later.")
-    data = b""
-    if image is not None and image.filename:
-        data = await image.read(MAX_IMAGE + 1)
-        if len(data) > MAX_IMAGE:
+    uploads = [u for u in [image, *(images or [])] if u is not None and u.filename]
+    if len(uploads) > MAX_IMAGES:
+        raise HTTPException(status_code=422, detail="Up to 4 photos.")
+    pictures: list[tuple[bytes, str]] = []
+    for u in uploads:
+        blob = await u.read(MAX_IMAGE + 1)
+        if len(blob) > MAX_IMAGE:
             raise HTTPException(status_code=413, detail="Image is too large (max 3 MB).")
-    kind = sniff_image(data) if data else None
-    if data and kind is None:
-        raise HTTPException(status_code=422, detail="Image must be JPEG, PNG or WebP.")
+        kind = sniff_image(blob)
+        if kind is None:
+            raise HTTPException(status_code=422, detail="Image must be JPEG, PNG or WebP.")
+        pictures.append((blob, kind[1]))
+    data = bool(pictures)
+    whatsapp = (whatsapp or "").replace(" ", "").replace("-", "") or None
+    if whatsapp and not re.fullmatch(r"\+?[0-9]{8,15}", whatsapp):
+        raise HTTPException(status_code=422, detail="WhatsApp number: digits with country code.")
     contact = (contact or "").strip() or None
     credit = (credit or "").strip() or None
-    if section == Section.market and not contact:
-        raise HTTPException(status_code=422, detail="Add how buyers can contact you.")
+    if section == Section.market:
+        if not (contact or whatsapp):
+            raise HTTPException(status_code=422, detail="Add how buyers can contact you.")
+        if price_amount is None or currency not in CURRENCIES:
+            raise HTTPException(status_code=422, detail="Add the price and currency.")
     if section == Section.media and category == "photo" and not data:
         raise HTTPException(status_code=422, detail="Add the photo.")
     if section == Section.media and category != "photo" and not url:
@@ -192,6 +238,8 @@ async def create_listing(
     if section == Section.library and not (url or credit):
         raise HTTPException(status_code=422, detail="Add a link or the author / publisher.")
 
+    market = section == Section.market
+    amount = Decimal(str(round(price_amount, 2))) if market and price_amount is not None else None
     x = Listing(
         id=uuid.uuid4(),
         section=section,
@@ -201,17 +249,23 @@ async def create_listing(
         url=url,
         contact=contact,
         price=(price or "").strip() or None,
+        price_amount=amount,
+        currency=currency if section == Section.market else None,
+        stock=stock if section == Section.market else None,
+        whatsapp=whatsapp if section == Section.market else None,
         location=(location or "").strip() or None,
         credit=credit,
         status=VerificationStatus.pending,
         submitted_by=user.id,
         submitter=user,
     )
-    if data and kind:
-        x.image = f"{x.id}.{kind[1]}"
+    if pictures:
         root = media_root()
         root.mkdir(parents=True, exist_ok=True)
-        (root / x.image).write_bytes(data)
+        names = [f"{x.id}-{i}.{ext}" for i, (_, ext) in enumerate(pictures)]
+        for name, (blob, _) in zip(names, pictures, strict=True):
+            (root / name).write_bytes(blob)
+        x.image, x.images = names[0], names[1:] or None
     db.add(x)
     audit(db, "listing.submit", actor=user, target_type="listing", target_id=x.id, request=request)
     db.commit()
@@ -230,8 +284,8 @@ def delete_listing(
         raise HTTPException(status_code=404, detail="Not found.")
     if x.submitted_by != user.id and user.role != Role.admin:
         raise HTTPException(status_code=403, detail="Only the poster can remove this.")
-    if x.image:
-        (media_root() / x.image).unlink(missing_ok=True)
+    for name in _files(x):
+        (media_root() / name).unlink(missing_ok=True)
     audit(db, "listing.delete", actor=user, target_type="listing", target_id=x.id, request=request)
     db.delete(x)
     db.commit()

@@ -6,26 +6,28 @@ import { RequireSession } from "@/components/require-session";
 import { Alert, Button, Card, EntryStatus, Field, Input, PageHeader, Select, Textarea } from "@/components/ui";
 import { api } from "@/lib/api";
 import { tr } from "@/lib/i18n";
-import { categoryLabel, type Listing, type Section, SECTIONS, youtubeEmbed } from "@/lib/listings";
+import { categoryLabel, CURRENCIES, formatPrice, type Listing, listingHref, type Section, SECTIONS, youtubeEmbed } from "@/lib/listings";
 
 /** Public grid of verified listings for one section, with category filter and search. */
 export function ListingsBrowser({ section }: { section: Section }) {
   const cfg = SECTIONS[section];
   const [category, setCategory] = useState("");
   const [q, setQ] = useState("");
+  const [sort, setSort] = useState("new");
   const [items, setItems] = useState<Listing[] | null>(null);
 
   useEffect(() => {
     const p = new URLSearchParams({ section });
     if (category) p.set("category", category);
     if (q.trim()) p.set("q", q.trim());
+    if (sort !== "new") p.set("sort", sort);
     const t = setTimeout(() => {
       api<Listing[]>(`/listings?${p}`)
         .then(setItems)
         .catch(() => setItems([]));
     }, 250);
     return () => clearTimeout(t);
-  }, [section, category, q]);
+  }, [section, category, q, sort]);
 
   return (
     <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
@@ -47,7 +49,16 @@ export function ListingsBrowser({ section }: { section: Section }) {
             </button>
           ))}
         </div>
-        <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder={tr("Search")} aria-label={tr("Search")} className="md:max-w-xs" />
+        <div className="flex gap-2">
+          {section === "market" && (
+            <Select value={sort} onChange={(e) => setSort(e.target.value)} aria-label={tr("Sort")} className="py-2">
+              <option value="new">{tr("Newest")}</option>
+              <option value="price_asc">{tr("Price: low to high")}</option>
+              <option value="price_desc">{tr("Price: high to low")}</option>
+            </Select>
+          )}
+          <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder={tr("Search")} aria-label={tr("Search")} className="md:max-w-xs" />
+        </div>
       </div>
       <div className="mt-8">
         {!items && <p className="text-muted">{tr("Loading…")}</p>}
@@ -56,7 +67,7 @@ export function ListingsBrowser({ section }: { section: Section }) {
           {items?.map((x) => (
             <Link
               key={x.id}
-              href={`/listings/${x.id}`}
+              href={listingHref(x)}
               className="overflow-hidden rounded-[var(--radius-card)] border border-line bg-bg-elevated shadow-card transition-all hover:-translate-y-0.5 hover:border-accent/40"
             >
               {x.image_url && (
@@ -67,8 +78,10 @@ export function ListingsBrowser({ section }: { section: Section }) {
                 <p className="text-xs font-medium tracking-wide text-accent uppercase">{tr(categoryLabel(section, x.category))}</p>
                 <h2 className="mt-1 text-lg font-bold">{x.title}</h2>
                 <p className="mt-2 line-clamp-2 text-sm text-muted">{x.description}</p>
-                {(x.price || x.credit || x.location) && (
-                  <p className="mt-3 text-sm font-medium">{[x.price, x.credit, x.location].filter(Boolean).join(" · ")}</p>
+                {section === "market" && formatPrice(x) && <p className="mt-3 text-xl font-extrabold text-accent tabular-nums">{formatPrice(x)}</p>}
+                {section === "market" && x.stock === 0 && <p className="mt-1 text-xs font-medium text-red-600">{tr("Out of stock")}</p>}
+                {(x.credit || x.location) && (
+                  <p className="mt-2 text-sm text-muted">{[x.credit, x.location].filter(Boolean).join(" · ")}</p>
                 )}
               </div>
             </Link>
@@ -114,10 +127,10 @@ export function ListingDetail({ x }: { x: Listing }) {
         </div>
       )}
       <dl className="mt-8 grid gap-3 text-sm sm:grid-cols-2">
-        {x.price && (
+        {formatPrice(x) && (
           <div>
             <dt className="text-muted">{tr("Price")}</dt>
-            <dd className="text-lg font-semibold">{x.price}</dd>
+            <dd className="text-lg font-semibold">{formatPrice(x)}</dd>
           </div>
         )}
         {x.credit && (
@@ -190,7 +203,7 @@ function MyListings({ refresh }: { refresh: number }) {
       {items.map((x) => (
         <li key={x.id} className="rounded-xl border border-line bg-bg-elevated p-4 text-sm">
           <div className="flex items-center justify-between gap-2">
-            <Link href={`/listings/${x.id}`} className="font-semibold hover:text-accent">
+            <Link href={listingHref(x)} className="font-semibold hover:text-accent">
               {x.title}
             </Link>
             <EntryStatus status={x.status} />
@@ -283,14 +296,33 @@ export function ListingForm({ initialSection }: { initialSection: Section }) {
             <Textarea name="description" required minLength={10} maxLength={10000} rows={6} />
           </Field>
           {section === "market" && (
-            <div className="grid gap-5 sm:grid-cols-2">
-              <Field label={tr("Price")} hint={tr("e.g. ₹250, or “ask”")}>
-                <Input name="price" maxLength={60} />
-              </Field>
-              <Field label={tr("How buyers contact you")} hint={tr("Phone, WhatsApp or email — shown publicly.")}>
-                <Input name="contact" required maxLength={200} />
-              </Field>
-            </div>
+            <>
+              <div className="grid gap-5 sm:grid-cols-3">
+                <Field label={tr("Price")}>
+                  <Input name="price_amount" type="number" min={0} max={10000000} step="0.01" required inputMode="decimal" />
+                </Field>
+                <Field label={tr("Currency")}>
+                  <Select name="currency" defaultValue="INR">
+                    {CURRENCIES.map(([v, label]) => (
+                      <option key={v} value={v}>
+                        {label}
+                      </option>
+                    ))}
+                  </Select>
+                </Field>
+                <Field label={tr("In stock (optional)")}>
+                  <Input name="stock" type="number" min={0} max={100000} inputMode="numeric" />
+                </Field>
+              </div>
+              <div className="grid gap-5 sm:grid-cols-2">
+                <Field label={tr("WhatsApp number")} hint={tr("With country code, e.g. +91 98765 43210. Shown as a Buy button.")}>
+                  <Input name="whatsapp" type="tel" maxLength={20} />
+                </Field>
+                <Field label={tr("Other contact (optional)")} hint={tr("Phone or email — shown publicly.")}>
+                  <Input name="contact" maxLength={200} />
+                </Field>
+              </div>
+            </>
           )}
           <div className="grid gap-5 sm:grid-cols-2">
             <Field label={section === "library" ? tr("Author / publisher") : tr("Creator / credit (optional)")}>
@@ -308,9 +340,26 @@ export function ListingForm({ initialSection }: { initialSection: Section }) {
               <Input name="url" type="url" pattern="https://.*" maxLength={500} required={section === "media"} />
             </Field>
           )}
-          {(section === "market" || needsImage) && (
-            <Field label={needsImage ? tr("Photo") : tr("Photo (optional)")} hint={tr("JPEG, PNG or WebP, up to 3 MB.")}>
-              <input name="image" type="file" accept="image/jpeg,image/png,image/webp" required={needsImage} className="text-sm" />
+          {section === "market" && (
+            <Field label={tr("Product photos (up to 4)")} hint={tr("JPEG, PNG or WebP, up to 3 MB each. The first photo is the main one.")}>
+              <input
+                name="images"
+                type="file"
+                multiple
+                accept="image/jpeg,image/png,image/webp"
+                className="text-sm"
+                onChange={(e) => {
+                  if ((e.target.files?.length ?? 0) > 4) {
+                    e.target.value = "";
+                    setMsg({ tone: "error", text: tr("Up to 4 photos.") });
+                  }
+                }}
+              />
+            </Field>
+          )}
+          {needsImage && (
+            <Field label={tr("Photo")} hint={tr("JPEG, PNG or WebP, up to 3 MB.")}>
+              <input name="image" type="file" accept="image/jpeg,image/png,image/webp" required className="text-sm" />
             </Field>
           )}
           <p className="text-xs text-muted">{tr("Share only what you own or have permission to share. A reviewer checks every listing.")}</p>

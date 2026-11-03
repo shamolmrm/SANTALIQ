@@ -8,8 +8,9 @@
 import enum
 import uuid
 from datetime import datetime
+from decimal import Decimal
 
-from sqlalchemy import DateTime, Enum, ForeignKey, String, Text, Uuid
+from sqlalchemy import JSON, DateTime, Enum, ForeignKey, Integer, Numeric, String, Text, Uuid
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.db import Base, TimestampMixin
@@ -46,6 +47,12 @@ class Listing(TimestampMixin, Base):
     location: Mapped[str | None] = mapped_column(String(120))
     credit: Mapped[str | None] = mapped_column(String(300), comment="author / creator / source")
     image: Mapped[str | None] = mapped_column(String(80), comment="file name in MEDIA_DIR")
+    images: Mapped[list | None] = mapped_column(JSON, comment="extra image file names (max 3)")
+    # market products
+    price_amount: Mapped[Decimal | None] = mapped_column(Numeric(12, 2), index=True)
+    currency: Mapped[str | None] = mapped_column(String(3))
+    stock: Mapped[int | None] = mapped_column(Integer, comment="None = not tracked")
+    whatsapp: Mapped[str | None] = mapped_column(String(20))
     status: Mapped[VerificationStatus] = mapped_column(
         Enum(VerificationStatus, name="verification_status", native_enum=False, length=16),
         default=VerificationStatus.pending,

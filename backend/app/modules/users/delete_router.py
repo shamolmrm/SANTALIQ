@@ -65,8 +65,8 @@ def delete_account(
     db.execute(delete(VoiceClip).where(VoiceClip.user_id == uid))
     db.execute(delete(VoiceSpeaker).where(VoiceSpeaker.user_id == uid))
     for x in db.scalars(select(Listing).where(Listing.submitted_by == uid)).all():
-        if x.image:
-            (listings.media_root() / x.image).unlink(missing_ok=True)
+        for name in listings._files(x):
+            (listings.media_root() / name).unlink(missing_ok=True)
     db.execute(delete(Listing).where(Listing.submitted_by == uid))
     db.execute(delete(Message).where((Message.sender_id == uid) | (Message.recipient_id == uid)))
     db.execute(delete(Block).where((Block.blocker_id == uid) | (Block.blocked_id == uid)))

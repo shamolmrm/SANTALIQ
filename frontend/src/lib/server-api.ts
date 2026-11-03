@@ -1,5 +1,6 @@
 import { cacheLife } from "next/cache";
 import type { HeritageItem } from "@/lib/heritage";
+import type { Listing } from "@/lib/listings";
 import type { Post, PostCard } from "@/lib/write";
 
 /**
@@ -69,4 +70,18 @@ export async function getHeritageSitemap(): Promise<Array<{ slug: string; update
   "use cache";
   cacheLife({ stale: 3600, revalidate: 3600, expire: 86400 });
   return (await getJson<Array<{ slug: string; updated_at: string | null }>>("/heritage/sitemap")) ?? [];
+}
+
+export async function getListing(id: string): Promise<Listing | null> {
+  "use cache";
+  cacheLife({ stale: 60, revalidate: 60, expire: 600 });
+  if (!/^[0-9a-f-]{36}$/i.test(id)) return null;
+  const x = await getJson<Listing>(`/listings/${id}`);
+  return x?.status === "verified" ? x : null;
+}
+
+export async function getMarketSitemap(): Promise<Array<{ id: string }>> {
+  "use cache";
+  cacheLife({ stale: 3600, revalidate: 3600, expire: 86400 });
+  return (await getJson<Array<{ id: string }>>("/listings?section=market")) ?? [];
 }
