@@ -44,14 +44,17 @@ export function Translator() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: payload, source, target }),
       });
-      if (!r.ok) throw new Error(r.status === 503 ? "busy" : "failed");
+      if (!r.ok) throw new Error(r.status === 503 ? "busy" : r.status === 429 ? "limit" : "failed");
       const data: { translation: string } = await r.json();
       setOutput(data.translation);
     } catch (e) {
+      const reason = e instanceof Error ? e.message : "failed";
       setError(
-        e instanceof Error && e.message === "busy"
+        reason === "busy"
           ? "The translator is starting up or busy. Please try again in a moment."
-          : "Translation failed. Please try again.",
+          : reason === "limit"
+            ? "You have sent many translations in a short time. Please wait a minute and try again."
+            : "Translation failed. Please try again.",
       );
     } finally {
       setLoading(false);

@@ -25,10 +25,21 @@ Nginx Proxy Manager (shared VPS, ports 80/443, Let's Encrypt)
 | `infrastructure/production` | compose stack, nginx site, domain/SSL script |
 | `scripts/` | `deploy.sh`, `push-all.ps1` |
 
-## Data (planned)
-PostgreSQL 16 + pgvector, SQLAlchemy 2 + Alembic. First domains: users/auth, language data
-(words, sentences, per-script renderings, dialect, source, contributor, consent, verification status).
-Redis for rate limiting and caching. Not yet deployed to production.
+## Data
+- **PostgreSQL 16 + pgvector** (`santaliq-postgres`), SQLAlchemy 2, Alembic (`backend/migrations`, applied on API start).
+- Language domain (`backend/app/modules/language`): `lexemes` (Ol Chiki headword, POS, dialect, status
+  draft/pending/verified/rejected, source, contributor, consent) → `spellings` (per script, search key) and
+  `senses` (gloss per language). Only `verified` entries are served. No data is seeded.
+- **Redis** (`santaliq-redis`): per-IP rate limit (translator 20/min) and 7-day translation cache. Fails open.
+
+## Endpoints
+| Method | Path | Notes |
+| --- | --- | --- |
+| GET | `/api/v1/health` | liveness |
+| GET | `/api/v1/health/ready` | database, Redis, model service; 503 if degraded |
+| GET | `/api/v1/translate/languages` | 50+ languages |
+| POST | `/api/v1/translate` | rate-limited, cached |
+| GET | `/api/v1/dictionary/search?q=` | verified entries, prefix match in any script |
 
 ## API conventions
 - Prefix `/api/v1`; JSON; Pydantic validation (422 on invalid input).
