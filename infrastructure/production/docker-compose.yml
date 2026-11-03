@@ -1,0 +1,43 @@
+# SANTALIQ production stack (Contabo VPS, behind Nginx Proxy Manager).
+# Deployed by scripts/deploy.sh — do not run by hand unless you know why.
+# Server layout: /home/ubuntu/docker/websites/santaliq/app  (this repo, from git archive)
+name: santaliq
+
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  web:
+    build:
+      context: ../../frontend
+    image: santaliq-web:latest
+    container_name: santaliq-web
+    restart: unless-stopped
+    logging: *default-logging
+    depends_on:
+      - api
+    networks:
+      - proxy
+
+  api:
+    build:
+      context: ../../backend
+    image: santaliq-api:latest
+    container_name: santaliq-api
+    restart: unless-stopped
+    logging: *default-logging
+    environment:
+      ENVIRONMENT: production
+      CORS_ORIGINS: '["https://santaliq.supersoftltd.com"]'
+    networks:
+      - proxy
+      - internal
+
+networks:
+  proxy:
+    external: true
+  internal:
+    name: santaliq_internal
