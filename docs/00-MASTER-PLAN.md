@@ -51,6 +51,7 @@ Later (only once there are real users): marketplace, careers, video hosting, liv
 | Task | Status |
 | --- | --- |
 | Script Converter — 5 scripts (Ol Chiki, Roman, Bengali, Odia, Devanagari), browser-side engine, tests | **beta live** — rules await native-speaker review ([module doc](modules/SCRIPT-CONVERTER.md)) |
+| Translator — Santali ↔ 50+ languages, self-hosted NLLB-200 (CC-BY-NC) | **beta live** ([module doc](modules/TRANSLATOR.md)) |
 | Ol Chiki / multi-script keyboard | todo |
 | Dictionary v1 (multi-script search) | todo |
 

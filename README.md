@@ -7,7 +7,11 @@ SANTALIQ is a digital home for the Santali language, people and culture — scri
 🌐 **Live:** https://santaliq.supersoftltd.com
 🩺 **API health:** https://santaliq.supersoftltd.com/api/v1/health
 
-> **Status:** Phase 1 — foundation is live; script converter, keyboard and dictionary are in progress.
+> **Status:** Phase 1 — live beta tools:
+> - [Script Converter](https://santaliq.supersoftltd.com/tools/script-converter) — Ol Chiki ↔ Roman ↔ Bengali ↔ Odia ↔ Devanagari
+> - [Translator](https://santaliq.supersoftltd.com/tools/translator) — Santali ↔ 50+ languages (self-hosted NLLB-200)
+>
+> Keyboard and dictionary are next.
 
 ---
 
@@ -19,6 +23,7 @@ SANTALIQ is a digital home for the Santali language, people and culture — scri
 | Styling | [Tailwind CSS v4](https://tailwindcss.com) · Noto Sans Ol Chiki / Bengali / Devanagari / Oriya · Inter · Fraunces |
 | API | [Python 3.12](https://www.python.org) · [FastAPI](https://fastapi.tiangolo.com) · [Pydantic Settings](https://docs.pydantic.dev/latest/concepts/pydantic_settings/) |
 | Data | [PostgreSQL 16](https://www.postgresql.org) + [pgvector](https://github.com/pgvector/pgvector) · [SQLAlchemy 2](https://www.sqlalchemy.org) · [Alembic](https://alembic.sqlalchemy.org) · [Redis](https://redis.io) |
+| Translation | [NLLB-200](https://huggingface.co/facebook/nllb-200-distilled-600M) (CC-BY-NC 4.0) on [CTranslate2](https://github.com/OpenNMT/CTranslate2) |
 | Tooling | [pnpm](https://pnpm.io) · ESLint · [Ruff](https://docs.astral.sh/ruff/) · [pytest](https://pytest.org) |
 | Infrastructure | [Docker](https://www.docker.com) · Nginx (via Nginx Proxy Manager) · Let's Encrypt · Ubuntu 24.04 VPS |
 
