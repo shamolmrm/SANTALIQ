@@ -16,6 +16,7 @@ FROM python:3.12-slim
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PIP_NO_CACHE_DIR=1 PIP_DISABLE_PIP_VERSION_CHECK=1 \
     MODEL_DIR=/model
 WORKDIR /app
+RUN pip install --upgrade "pip>=26.2"
 COPY requirements.txt ./
 RUN pip install -r requirements.txt && useradd --system --uid 1001 santaliq
 COPY --from=convert /model /model

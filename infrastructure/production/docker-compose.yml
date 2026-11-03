@@ -49,6 +49,9 @@ services:
       SMTP_USER: ${SMTP_USER:-}
       SMTP_PASSWORD: ${SMTP_PASSWORD:-}
       MAIL_FROM: ${MAIL_FROM:-}
+      # Optional — who gets contact-form messages and error alerts by email
+      CONTACT_NOTIFY_EMAIL: ${CONTACT_NOTIFY_EMAIL:-}
+      ALERT_EMAIL: ${ALERT_EMAIL:-}
       # Optional — SANTALIQ AI chat stays off until the key is set in .env
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
       AI_MODEL: ${AI_MODEL:-claude-opus-5-5}

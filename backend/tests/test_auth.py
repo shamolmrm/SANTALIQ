@@ -81,3 +81,17 @@ def test_foreign_origin_blocked(client: TestClient) -> None:
         headers={"Origin": "https://evil.example"},
     )
     assert r.status_code == 403
+
+
+def test_rate_limit_ignores_spoofed_forwarded_for(client: TestClient) -> None:
+    """X-Forwarded-For is client-controlled; limits key on X-Real-IP set by nginx."""
+    body = {"email": "nobody@example.com", "password": "wrong password"}
+    codes = [
+        client.post(
+            "/api/v1/auth/login",
+            json=body,
+            headers={"X-Forwarded-For": f"10.0.0.{i}", "X-Real-IP": "203.0.113.7"},
+        ).status_code
+        for i in range(15)
+    ]
+    assert 429 in codes
