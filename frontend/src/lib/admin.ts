@@ -16,6 +16,7 @@ export type Overview = {
   ai_tokens_7d: number;
   to_review: number;
   new_messages: number;
+  open_errors: number;
 };
 
 export type Activity = {
@@ -65,3 +66,15 @@ export function timeAgo(iso: string): string {
   if (s < 86400) return `${Math.floor(s / 3600)} h ago`;
   return `${Math.floor(s / 86400)} d ago`;
 }
+
+export type ErrorItem = {
+  id: string;
+  source: "api" | "web" | "csp";
+  kind: string;
+  message: string;
+  detail: { path?: string; url?: string; trace?: string; stack?: string; user_agent?: string } | null;
+  count: number;
+  first_seen: string;
+  last_seen: string;
+  resolved: boolean;
+};

@@ -9,6 +9,7 @@ import {
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { themeInitScript } from "@/components/theme-toggle";
+import { ErrorReporter } from "@/components/error-reporter";
 import { I18nRoot } from "@/lib/i18n";
 import { localeInitScript } from "@/lib/i18n/init";
 import "./globals.css";
@@ -58,6 +59,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         >
           Skip to content
         </a>
+        <ErrorReporter />
         <SiteHeader />
         <main id="main" className="flex-1">
           <I18nRoot>{children}</I18nRoot>

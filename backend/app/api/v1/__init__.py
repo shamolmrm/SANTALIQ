@@ -9,6 +9,7 @@ from app.modules.heritage.router import admin_router as heritage_admin_router
 from app.modules.heritage.router import router as heritage_router
 from app.modules.language.dataset import router as dataset_router
 from app.modules.language.router import router as dictionary_router
+from app.modules.monitoring.router import router as monitoring_router
 from app.modules.translate.router import router as translate_router
 from app.modules.users.account_router import router as account_router
 from app.modules.users.delete_router import router as account_delete_router
@@ -37,4 +38,5 @@ api_router.include_router(heritage_admin_router)
 api_router.include_router(voice_router)
 api_router.include_router(voice_admin_router)
 api_router.include_router(contact_router)
+api_router.include_router(monitoring_router)
 api_router.include_router(account_delete_router)

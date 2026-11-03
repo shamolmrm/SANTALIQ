@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { AdminOnly, AdminTitle } from "@/components/admin/shell";
+import { useCallback, useEffect, useState } from "react";
+import { AdminOnly, AdminTitle, useAdmin } from "@/components/admin/shell";
 import { Alert, Button, Card } from "@/components/ui";
 import { api } from "@/lib/api";
-import { hoursSince, type SystemInfo, timeAgo } from "@/lib/admin";
+import { type ErrorItem, hoursSince, type SystemInfo, timeAgo } from "@/lib/admin";
 
 const SERVICE_LABEL: Record<string, string> = {
   database: "PostgreSQL database",
@@ -153,11 +153,86 @@ function System() {
   );
 }
 
+const SOURCE_LABEL: Record<string, string> = { api: "Server", web: "Browser", csp: "Security policy" };
+
+function Errors() {
+  const { refresh } = useAdmin();
+  const [resolved, setResolved] = useState(false);
+  const [items, setItems] = useState<ErrorItem[] | null>(null);
+  const [open, setOpen] = useState<string | null>(null);
+
+  const load = useCallback(() => {
+    api<ErrorItem[]>(`/admin/errors?resolved=${resolved}`)
+      .then(setItems)
+      .catch(() => setItems([]));
+  }, [resolved]);
+  useEffect(load, [load]);
+
+  async function resolve(id: string) {
+    await api(`/admin/errors/${id}/resolve`, { method: "POST" });
+    load();
+    refresh();
+  }
+
+  return (
+    <Card>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 className="font-bold">Errors</h2>
+        <div className="flex gap-2 text-sm">
+          {[false, true].map((r) => (
+            <button
+              key={String(r)}
+              onClick={() => setResolved(r)}
+              className={`rounded-full px-3 py-1 ${resolved === r ? "bg-fg text-bg" : "border border-line text-muted"}`}
+            >
+              {r ? "Resolved" : "Open"}
+            </button>
+          ))}
+        </div>
+      </div>
+      <p className="mt-1 text-xs text-muted">
+        Unexpected errors from the server and visitors&apos; browsers, grouped. New ones are emailed to ALERT_EMAIL (or CONTACT_NOTIFY_EMAIL)
+        when set, at most hourly.
+      </p>
+      {!items && <p className="mt-4 text-sm text-muted">Loading…</p>}
+      {items?.length === 0 && <p className="mt-4 text-sm text-accent">{resolved ? "Nothing resolved yet." : "● No open errors."}</p>}
+      <ul className="mt-4 divide-y divide-line">
+        {items?.map((e) => (
+          <li key={e.id} className="py-3 text-sm">
+            <div className="flex flex-wrap items-start gap-3">
+              <span className="rounded-full bg-bg-sunken px-2 py-0.5 text-xs">{SOURCE_LABEL[e.source] ?? e.source}</span>
+              <button onClick={() => setOpen(open === e.id ? null : e.id)} className="min-w-0 flex-1 text-left">
+                <span className="font-semibold">{e.kind}</span> <span className="text-muted break-words">{e.message}</span>
+                <span className="block text-xs text-muted">
+                  {e.detail?.path ?? e.detail?.url ?? ""} · ×{e.count} · last {timeAgo(e.last_seen)}
+                </span>
+              </button>
+              {!e.resolved && (
+                <Button variant="secondary" onClick={() => resolve(e.id)}>
+                  Resolve
+                </Button>
+              )}
+            </div>
+            {open === e.id && (e.detail?.trace || e.detail?.stack) && (
+              <pre className="mt-2 max-h-72 overflow-auto rounded-xl bg-bg-sunken p-3 text-xs whitespace-pre-wrap">
+                {e.detail?.trace ?? e.detail?.stack}
+              </pre>
+            )}
+          </li>
+        ))}
+      </ul>
+    </Card>
+  );
+}
+
 export default function SystemPage() {
   return (
     <AdminOnly>
       <AdminTitle title="System" lead="Health, features, backups and storage." />
-      <System />
+      <div className="space-y-6">
+        <Errors />
+        <System />
+      </div>
     </AdminOnly>
   );
 }

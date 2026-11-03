@@ -422,4 +422,7 @@ export const BN: Record<string, string> = {
   "Not accepted by reviewers.": "পর্যালোচকেরা গ্রহণ করেননি।",
   "Removed by moderators.": "মডারেটররা সরিয়ে দিয়েছেন।",
   "Note:": "মন্তব্য:",
+  "Something went wrong on this page.": "এই পাতায় কিছু একটা ভুল হয়েছে।",
+  "We have been notified and will look into it. Please try again.": "আমরা খবর পেয়েছি এবং দেখছি। অনুগ্রহ করে আবার চেষ্টা করুন।",
+  "Home": "হোম",
 };

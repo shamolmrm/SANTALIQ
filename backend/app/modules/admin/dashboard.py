@@ -19,6 +19,7 @@ from app.modules.ai.models import AIUsage
 from app.modules.contact.models import ContactMessage, ContactStatus
 from app.modules.heritage.models import HeritageItem
 from app.modules.language.models import Lexeme, VerificationStatus
+from app.modules.monitoring.models import ErrorEvent
 from app.modules.users.models import AuditEvent, Role, User
 from app.modules.users.security import require_role
 from app.modules.voice.models import VoiceClip
@@ -52,6 +53,7 @@ class OverviewOut(BaseModel):
     ai_tokens_7d: int
     to_review: int
     new_messages: int = 0
+    open_errors: int = 0
 
 
 class ActivityOut(BaseModel):
@@ -139,6 +141,10 @@ def overview(_: User = Depends(reviewer_required), db: Session = Depends(get_db)
         to_review=dictionary.pending + heritage.pending + voice.pending + (reports or 0),
         new_messages=db.scalar(
             select(func.count(ContactMessage.id)).where(ContactMessage.status == ContactStatus.new)
+        )
+        or 0,
+        open_errors=db.scalar(
+            select(func.count(ErrorEvent.id)).where(ErrorEvent.resolved.is_(False))
         )
         or 0,
     )

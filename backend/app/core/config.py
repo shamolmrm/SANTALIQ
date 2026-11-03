@@ -58,6 +58,8 @@ class Settings(BaseSettings):
 
     # Contact form: optional address notified of new messages (needs email enabled)
     contact_notify_email: str = ""
+    # Error alerts (falls back to contact_notify_email); needs email enabled
+    alert_email: str = ""
 
     @property
     def email_enabled(self) -> bool:

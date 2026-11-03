@@ -27,7 +27,7 @@ const NAV: Array<{ href: string; label: string; icon: string; admin?: boolean; b
   { href: "/admin/messages", label: "Messages", icon: "✉", admin: true, badge: (o) => o.new_messages },
   { href: "/admin/users", label: "Users", icon: "◉", admin: true },
   { href: "/admin/activity", label: "Activity log", icon: "≡", admin: true },
-  { href: "/admin/system", label: "System", icon: "⚙", admin: true },
+  { href: "/admin/system", label: "System", icon: "⚙", admin: true, badge: (o) => o.open_errors },
 ];
 
 export function AdminShell({ me, children }: { me: User; children: ReactNode }) {

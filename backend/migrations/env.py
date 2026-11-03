@@ -5,7 +5,8 @@ import app.modules.admin.models  # noqa: F401
 import app.modules.ai.models  # noqa: F401
 import app.modules.contact.models  # noqa: F401
 import app.modules.heritage.models  # noqa: F401
-import app.modules.language.models  # noqa: F401  (register models)
+import app.modules.language.models  # noqa: F401
+import app.modules.monitoring.models  # noqa: F401  (register models)
 import app.modules.users.models  # noqa: F401
 import app.modules.voice.models  # noqa: F401
 import app.modules.write.models  # noqa: F401
