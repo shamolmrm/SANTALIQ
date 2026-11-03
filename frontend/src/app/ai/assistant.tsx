@@ -6,6 +6,7 @@ import { Alert, Button } from "@/components/ui";
 import { api, useSession } from "@/lib/api";
 import { convert, detectScript } from "@/lib/script/engine";
 
+import { tr } from "@/lib/i18n";
 type Source = { n: number; kind: "dictionary" | "writing"; title: string; url: string; text: string };
 type Turn = { role: "user" | "assistant"; content: string; sources?: Source[] };
 type Status = { chat_enabled: boolean; model: string | null; daily_limit: number };
@@ -47,7 +48,7 @@ function SourceList({ sources }: { sources: Source[] }) {
             <Link href={s.url} className="font-semibold hover:text-accent">
               {s.title}
             </Link>
-            <span className="text-xs text-muted">{s.kind === "dictionary" ? "Verified dictionary" : "SANTALIQ Write"}</span>
+            <span className="text-xs text-muted">{s.kind === "dictionary" ? tr("Verified dictionary") : tr("SANTALIQ Write")}</span>
           </div>
           <p className="mt-1.5 line-clamp-3 text-muted">{s.text}</p>
         </li>
@@ -107,7 +108,7 @@ export function Assistant() {
     } catch (e) {
       setTurns(turns);
       setInput(question);
-      setError(e instanceof Error ? e.message : "Something went wrong.");
+      setError(e instanceof Error ? e.message : tr("Something went wrong."));
     } finally {
       setBusy(false);
     }
@@ -116,28 +117,25 @@ export function Assistant() {
   return (
     <div className="flex min-h-[60vh] flex-col rounded-[var(--radius-card)] border border-line bg-bg-elevated shadow-card">
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line px-5 py-3 text-sm">
-        <span className="font-semibold">{chatMode ? "SANTALIQ AI · chat" : "SANTALIQ AI · grounded search"}</span>
+        <span className="font-semibold">{chatMode ? tr("SANTALIQ AI · chat") : tr("SANTALIQ AI · grounded search")}</span>
         <span className="text-muted">
           {chatMode
             ? `Answers only from verified SANTALIQ sources · ${status?.daily_limit} questions/day`
             : status?.chat_enabled && !loading && !user
-              ? "Sign in to chat — search works for everyone"
-              : "Shows verified sources; AI chat is coming soon"}
+              ? tr("Sign in to chat — search works for everyone")
+              : tr("Shows verified sources; AI chat is coming soon")}
         </span>
       </div>
 
       <div className="flex-1 space-y-6 overflow-y-auto p-5 sm:p-6" aria-live="polite">
         {turns.length === 0 && (
           <div className="mx-auto max-w-lg py-10 text-center">
-            <p className="font-display text-2xl font-bold">Ask about Santali language and culture</p>
+            <p className="font-display text-2xl font-bold">{tr("Ask about Santali language and culture")}</p>
             <p className="mt-3 text-muted">
-              Every answer is grounded in SANTALIQ&apos;s verified dictionary and community writing, with sources you can open.
-              When SANTALIQ doesn&apos;t know, it says so.
-            </p>
+              {tr("Every answer is grounded in SANTALIQ's verified dictionary and community writing, with sources you can open. When SANTALIQ doesn't know, it says so.")}</p>
             {!user && status?.chat_enabled && (
               <Link href="/login?next=/ai" className="mt-6 inline-flex rounded-full bg-fg px-5 py-2.5 text-sm font-semibold text-bg">
-                Sign in to chat
-              </Link>
+                {tr("Sign in to chat")}</Link>
             )}
           </div>
         )}
@@ -154,13 +152,12 @@ export function Assistant() {
               {t.sources && <SourceList sources={t.sources} />}
               {t.sources?.length === 0 && (
                 <Link href="/contribute" className="mt-3 inline-block text-sm font-semibold text-accent">
-                  Contribute to the dictionary →
-                </Link>
+                  {tr("Contribute to the dictionary →")}</Link>
               )}
             </div>
           ),
         )}
-        {busy && <p className="text-muted">Thinking…</p>}
+        {busy && <p className="text-muted">{tr("Thinking…")}</p>}
         <div ref={end} />
       </div>
 
@@ -184,17 +181,16 @@ export function Assistant() {
             }}
             rows={1}
             maxLength={2000}
-            placeholder="Ask in Santali, Bengali, English, Hindi or Odia…"
-            aria-label="Your question"
+            placeholder={tr("Ask in Santali, Bengali, English, Hindi or Odia…")}
+            aria-label={tr("Your question")}
             className="max-h-40 min-h-11 flex-1 resize-y rounded-xl border border-line bg-bg px-4 py-2.5 outline-none focus:border-accent"
           />
           <Button type="submit" disabled={!input.trim() || busy}>
-            {chatMode ? "Ask" : "Search"}
+            {chatMode ? tr("Ask") : tr("Search")}
           </Button>
         </form>
         <p className="mt-2 text-xs text-muted">
-          AI answers can be wrong — check the linked sources. SANTALIQ never invents Santali words or facts.
-        </p>
+          {tr("AI answers can be wrong — check the linked sources. SANTALIQ never invents Santali words or facts.")}</p>
       </div>
     </div>
   );

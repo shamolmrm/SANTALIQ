@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { makeQuiz, type Question, type QuizKind } from "@/lib/learn/olchiki";
 
+import { tr } from "@/lib/i18n";
 const KINDS: Array<{ id: QuizKind; title: string; hint: string }> = [
   { id: "letter-to-sound", title: "Letter → sound", hint: "See an Ol Chiki letter, pick its sound." },
   { id: "sound-to-letter", title: "Sound → letter", hint: "See a sound, pick the Ol Chiki letter." },
@@ -70,9 +71,9 @@ export function Quiz() {
             onClick={() => start(k.id)}
             className="rounded-[var(--radius-card)] border border-line bg-bg-elevated p-6 text-left shadow-card transition-all hover:-translate-y-0.5 hover:border-accent/40"
           >
-            <p className="text-lg font-bold">{k.title}</p>
-            <p className="mt-1 text-sm text-muted">{k.hint}</p>
-            <p className="mt-4 text-xs text-muted">{best[k.id] !== undefined ? `Best: ${best[k.id]}/10` : "Not tried yet"}</p>
+            <p className="text-lg font-bold">{tr(k.title)}</p>
+            <p className="mt-1 text-sm text-muted">{tr(k.hint)}</p>
+            <p className="mt-4 text-xs text-muted">{best[k.id] !== undefined ? `Best: ${best[k.id]}/10` : tr("Not tried yet")}</p>
           </button>
         ))}
       </div>
@@ -83,14 +84,12 @@ export function Quiz() {
       <div className="rounded-[var(--radius-card)] border border-line bg-bg-elevated p-8 text-center shadow-card">
         <p className="text-sm text-muted">{KINDS.find((k) => k.id === kind)?.title}</p>
         <p className="mt-2 font-display text-5xl font-bold">{score}/10</p>
-        <p className="mt-2 text-muted">{score === 10 ? "Perfect score!" : score >= 7 ? "Great work — keep practising." : "Good start — try again."}</p>
+        <p className="mt-2 text-muted">{score === 10 ? tr("Perfect score!") : score >= 7 ? tr("Great work — keep practising.") : tr("Good start — try again.")}</p>
         <div className="mt-6 flex justify-center gap-3">
           <button onClick={() => start(kind)} className="rounded-full bg-fg px-5 py-2.5 text-sm font-semibold text-bg">
-            Try again
-          </button>
+            {tr("Try again")}</button>
           <button onClick={() => setKind(null)} className="rounded-full border border-line px-5 py-2.5 text-sm font-semibold">
-            Other quizzes
-          </button>
+            {tr("Other quizzes")}</button>
         </div>
       </div>
     );
@@ -100,10 +99,9 @@ export function Quiz() {
     <div className="rounded-[var(--radius-card)] border border-line bg-bg-elevated p-6 shadow-card sm:p-8">
       <div className="flex items-center justify-between text-sm text-muted">
         <button onClick={() => setKind(null)} className="hover:text-fg">
-          ← Quizzes
-        </button>
+          {tr("← Quizzes")}</button>
         <span>
-          Question {index + 1}/{questions.length} · Score {score}
+          {tr("Question")}{" "}{index + 1}/{questions.length} {tr("· Score")}{" "}{score}
         </span>
       </div>
       <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-bg-sunken">
@@ -137,10 +135,10 @@ export function Quiz() {
       {picked && (
         <div className="mt-6 text-center">
           <p className={picked === q.answer ? "font-semibold text-accent" : "font-semibold text-red-600"}>
-            {picked === q.answer ? "Correct!" : `Answer: ${q.answer}`}
+            {picked === q.answer ? tr("Correct!") : `Answer: ${q.answer}`}
           </p>
           <button onClick={next} className="mt-4 rounded-full bg-fg px-6 py-2.5 text-sm font-semibold text-bg">
-            {index + 1 < questions.length ? "Next" : "See result"}
+            {index + 1 < questions.length ? tr("Next") : tr("See result")}
           </button>
         </div>
       )}

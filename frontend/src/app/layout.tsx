@@ -9,6 +9,7 @@ import {
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { themeInitScript } from "@/components/theme-toggle";
+import { I18nRoot } from "@/lib/i18n";
 import { localeInitScript } from "@/lib/i18n/init";
 import "./globals.css";
 
@@ -59,7 +60,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         </a>
         <SiteHeader />
         <main id="main" className="flex-1">
-          {children}
+          <I18nRoot>{children}</I18nRoot>
         </main>
         <SiteFooter />
       </body>

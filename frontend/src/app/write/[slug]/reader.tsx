@@ -10,6 +10,7 @@ import { Markdown } from "@/lib/markdown";
 import { convert, type Script } from "@/lib/script/engine";
 import { formatDate, KIND_LABEL, type Post } from "@/lib/write";
 
+import { tr } from "@/lib/i18n";
 function ReportBox({ postId }: { postId: string }) {
   const [open, setOpen] = useState(false);
   const [reason, setReason] = useState("");
@@ -22,26 +23,23 @@ function ReportBox({ postId }: { postId: string }) {
       });
       setMsg({ tone: "success", text: r.status });
     } catch (e) {
-      setMsg({ tone: "error", text: e instanceof Error ? e.message : "Could not send report." });
+      setMsg({ tone: "error", text: e instanceof Error ? e.message : tr("Could not send report.") });
     }
   }
   if (msg) return <Alert tone={msg.tone}>{msg.text}</Alert>;
   if (!open)
     return (
       <button onClick={() => setOpen(true)} className="text-sm text-muted hover:text-fg">
-        Report this piece
-      </button>
+        {tr("Report this piece")}</button>
     );
   return (
     <div className="space-y-3">
-      <Textarea value={reason} onChange={(e) => setReason(e.target.value)} rows={3} maxLength={500} placeholder="What is wrong with this piece?" />
+      <Textarea value={reason} onChange={(e) => setReason(e.target.value)} rows={3} maxLength={500} placeholder={tr("What is wrong with this piece?")} />
       <div className="flex gap-2">
         <Button onClick={send} disabled={reason.trim().length < 3}>
-          Send report
-        </Button>
+          {tr("Send report")}</Button>
         <Button variant="secondary" onClick={() => setOpen(false)}>
-          Cancel
-        </Button>
+          {tr("Cancel")}</Button>
       </div>
     </div>
   );
@@ -59,7 +57,7 @@ export function ReadPost({ slug, initial }: { slug: string; initial: Post | null
   useEffect(() => {
     api<Post>(`/write/posts/${encodeURIComponent(slug)}`)
       .then(setPost)
-      .catch((e) => setError(e.status === 404 ? "This piece does not exist or is not published." : e.message));
+      .catch((e) => setError(e.status === 404 ? tr("This piece does not exist or is not published.") : e.message));
   }, [slug]);
 
   const shown = script ?? post?.script ?? "olck";
@@ -74,17 +72,16 @@ export function ReadPost({ slug, initial }: { slug: string; initial: Post | null
       <section className="mx-auto max-w-3xl px-4 py-16">
         <Alert>{error}</Alert>
         <Link href="/write" className="mt-6 inline-block font-semibold text-accent">
-          ← Back to SANTALIQ Write
-        </Link>
+          {tr("← Back to SANTALIQ Write")}</Link>
       </section>
     );
-  if (!post || !view) return <section className="mx-auto max-w-3xl px-4 py-16 text-muted">Loading…</section>;
+  if (!post || !view) return <section className="mx-auto max-w-3xl px-4 py-16 text-muted">{tr("Loading…")}</section>;
 
   const isAuthor = user?.id === post.author.id;
   const converted = shown !== post.script;
 
   async function moderate(action: "remove" | "restore") {
-    const note = action === "remove" ? window.prompt("Reason shown to the author (optional)") ?? undefined : undefined;
+    const note = action === "remove" ? window.prompt(tr("Reason shown to the author (optional)")) ?? undefined : undefined;
     await api(`/admin/posts/${post!.id}/moderate`, { method: "POST", body: JSON.stringify({ action, note }) });
     router.refresh();
     setPost({ ...post!, status: action === "remove" ? "removed" : "published" });
@@ -93,18 +90,17 @@ export function ReadPost({ slug, initial }: { slug: string; initial: Post | null
   return (
     <article className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
       <Link href="/write" className="text-sm text-muted hover:text-fg">
-        ← SANTALIQ Write
-      </Link>
+        {tr("← SANTALIQ Write")}</Link>
 
       {post.status !== "published" && (
         <div className="mt-6">
           <Alert tone={post.status === "removed" ? "error" : "info"}>
-            {post.status === "draft" ? "Draft — only you can see this." : `Removed by moderators.${post.moderation_note ? ` Note: ${post.moderation_note}` : ""}`}
+            {post.status === "draft" ? tr("Draft — only you can see this.") : `${tr("Removed by moderators.")}${post.moderation_note ? ` ${tr("Note:")} ${post.moderation_note}` : ""}`}
           </Alert>
         </div>
       )}
 
-      <p className="mt-8 text-xs font-semibold tracking-wide text-accent uppercase">{KIND_LABEL[post.kind]}</p>
+      <p className="mt-8 text-xs font-semibold tracking-wide text-accent uppercase">{tr(KIND_LABEL[post.kind])}</p>
       <h1 className="mt-3 font-display text-4xl leading-tight font-bold tracking-tight sm:text-5xl">{view.title}</h1>
       <p className="mt-4 text-muted">
         <Link href={`/people/${post.author.id}`} className="font-medium text-fg hover:text-accent">
@@ -124,7 +120,7 @@ export function ReadPost({ slug, initial }: { slug: string; initial: Post | null
       <div className="mt-8 border-y border-line py-4">
         <ScriptSwitch value={shown} original={post.script} onChange={setScript} />
         {converted && (
-          <p className="mt-2 text-xs text-muted">Converted automatically with draft rules — the ● script is the author&apos;s original.</p>
+          <p className="mt-2 text-xs text-muted">{tr("Converted automatically with draft rules — the ● script is the author's original.")}</p>
         )}
       </div>
 
@@ -135,8 +131,7 @@ export function ReadPost({ slug, initial }: { slug: string; initial: Post | null
       <footer className="mt-16 flex flex-wrap items-center justify-between gap-4 border-t border-line pt-6">
         {isAuthor ? (
           <Link href={`/write/edit/${post.id}`} className="rounded-full border border-line px-5 py-2.5 text-sm font-semibold">
-            Edit
-          </Link>
+            {tr("Edit")}</Link>
         ) : user && post.status === "published" ? (
           <ReportBox postId={post.id} />
         ) : (
@@ -144,7 +139,7 @@ export function ReadPost({ slug, initial }: { slug: string; initial: Post | null
         )}
         {hasRole(user, "reviewer") && !isAuthor && (
           <Button variant={post.status === "removed" ? "secondary" : "danger"} onClick={() => moderate(post.status === "removed" ? "restore" : "remove")}>
-            {post.status === "removed" ? "Restore" : "Remove (moderator)"}
+            {post.status === "removed" ? tr("Restore") : tr("Remove (moderator)")}
           </Button>
         )}
       </footer>

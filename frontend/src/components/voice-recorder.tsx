@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Alert, Button } from "@/components/ui";
 import { extensionFor, MAX_SECONDS, pickMimeType } from "@/lib/voice";
 
+import { tr } from "@/lib/i18n";
 export type Recording = { blob: Blob; url: string; durationMs: number; fileName: string };
 
 /** Microphone recorder with a hard 30-second cap, preview and re-record. */
@@ -30,14 +31,14 @@ export function VoiceRecorder({ onReady, disabled }: { onReady: (r: Recording | 
     setError(null);
     const mimeType = pickMimeType();
     if (!navigator.mediaDevices?.getUserMedia || mimeType === undefined) {
-      setError("This browser cannot record audio. Please try a recent Chrome, Edge, Firefox or Safari.");
+      setError(tr("This browser cannot record audio. Please try a recent Chrome, Edge, Firefox or Safari."));
       return;
     }
     let stream: MediaStream;
     try {
       stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
     } catch {
-      setError("Microphone permission was denied. Allow the microphone for this site and try again.");
+      setError(tr("Microphone permission was denied. Allow the microphone for this site and try again."));
       return;
     }
     const chunks: Blob[] = [];
@@ -52,7 +53,7 @@ export function VoiceRecorder({ onReady, disabled }: { onReady: (r: Recording | 
       const blob = new Blob(chunks, { type });
       if (durationMs < 400 || blob.size < 100) {
         setState("idle");
-        setError("That was too short. Press record, speak, then stop.");
+        setError(tr("That was too short. Press record, speak, then stop."));
         onReady(null);
         return;
       }
@@ -84,7 +85,7 @@ export function VoiceRecorder({ onReady, disabled }: { onReady: (r: Recording | 
           <button
             onClick={stop}
             className="flex size-16 items-center justify-center rounded-full bg-red-600 text-white shadow-card"
-            aria-label="Stop recording"
+            aria-label={tr("Stop recording")}
           >
             <span className="size-5 rounded-sm bg-white" />
           </button>
@@ -93,7 +94,7 @@ export function VoiceRecorder({ onReady, disabled }: { onReady: (r: Recording | 
             onClick={start}
             disabled={disabled}
             className="flex size-16 items-center justify-center rounded-full bg-accent text-white shadow-card disabled:opacity-40"
-            aria-label={state === "done" ? "Record again" : "Start recording"}
+            aria-label={state === "done" ? tr("Record again") : tr("Start recording")}
           >
             <span className="size-5 rounded-full bg-white" />
           </button>
@@ -101,11 +102,11 @@ export function VoiceRecorder({ onReady, disabled }: { onReady: (r: Recording | 
         <div aria-live="polite" className="text-sm">
           {state === "recording" && (
             <p className="font-semibold text-red-600 tabular-nums">
-              ● Recording {(elapsed / 1000).toFixed(1)} / {MAX_SECONDS} s
+              {tr("● Recording")}{" "}{(elapsed / 1000).toFixed(1)} / {MAX_SECONDS} s
             </p>
           )}
-          {state === "idle" && <p className="text-muted">Press to record (up to {MAX_SECONDS} seconds).</p>}
-          {state === "done" && <p className="text-muted">Listen back. Press the button again to re-record.</p>}
+          {state === "idle" && <p className="text-muted">{tr("Press to record (up to")}{" "}{MAX_SECONDS} {tr("seconds).")}</p>}
+          {state === "done" && <p className="text-muted">{tr("Listen back. Press the button again to re-record.")}</p>}
         </div>
       </div>
       {state === "recording" && (
@@ -116,8 +117,7 @@ export function VoiceRecorder({ onReady, disabled }: { onReady: (r: Recording | 
       {rec && state === "done" && <audio controls src={rec.url} className="w-full" />}
       {state === "done" && (
         <Button variant="secondary" onClick={() => { setRec(null); setState("idle"); onReady(null); }}>
-          Discard
-        </Button>
+          {tr("Discard")}</Button>
       )}
     </div>
   );

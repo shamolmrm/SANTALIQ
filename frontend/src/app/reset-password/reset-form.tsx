@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Alert, Button, Field, Input } from "@/components/ui";
 import { api, notifyAuthChanged } from "@/lib/api";
 
+import { tr } from "@/lib/i18n";
 export function ResetForm() {
   const token = useSearchParams().get("token") ?? "";
   const router = useRouter();
@@ -15,7 +16,7 @@ export function ResetForm() {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
     if (form.get("password") !== form.get("confirm")) {
-      setError("The two passwords do not match.");
+      setError(tr("The two passwords do not match."));
       return;
     }
     setBusy(true);
@@ -25,24 +26,24 @@ export function ResetForm() {
       notifyAuthChanged();
       router.push("/account");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong.");
+      setError(err instanceof Error ? err.message : tr("Something went wrong."));
       setBusy(false);
     }
   }
 
-  if (!token) return <Alert>This reset link is incomplete. Please use the link from your email.</Alert>;
+  if (!token) return <Alert>{tr("This reset link is incomplete. Please use the link from your email.")}</Alert>;
 
   return (
     <form onSubmit={submit} className="space-y-5">
       {error && <Alert>{error}</Alert>}
-      <Field label="New password" hint="At least 10 characters.">
+      <Field label={tr("New password")} hint={tr("At least 10 characters.")}>
         <Input name="password" type="password" required minLength={10} maxLength={200} autoComplete="new-password" />
       </Field>
-      <Field label="Repeat new password">
+      <Field label={tr("Repeat new password")}>
         <Input name="confirm" type="password" required minLength={10} maxLength={200} autoComplete="new-password" />
       </Field>
       <Button type="submit" disabled={busy} className="w-full py-3">
-        {busy ? "Saving…" : "Set new password"}
+        {busy ? tr("Saving…") : tr("Set new password")}
       </Button>
     </form>
   );

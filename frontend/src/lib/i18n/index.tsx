@@ -1,7 +1,8 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
-import { MESSAGES, type Messages } from "./messages";
+import { Fragment, type ReactNode, useSyncExternalStore } from "react";
+import { fill, MESSAGES, type Messages } from "./messages";
+import { BN } from "./phrases";
 
 export { fill } from "./messages";
 
@@ -54,6 +55,34 @@ export function useLocale(): Locale {
 
 export function useT(): Messages {
   return MESSAGES[useLocale()];
+}
+
+// ── tr("English text"): phrase-keyed translation for the long tail of page text ──
+// The language used by tr(). It stays "en" during hydration (matching the server HTML),
+// then <I18nRoot> switches it and remounts the page so every tr() call re-renders.
+let active: Locale = "en";
+
+function activate(l: Locale) {
+  active = l;
+}
+
+/** Translate an English phrase into the active interface language (falls back to English). */
+export function tr(english: string, values?: Record<string, string>): string {
+  const s = active === "bn" ? (BN[english] ?? english) : english;
+  return values ? fill(s, values) : s;
+}
+
+/** Phrase translation inside server components: <Tr s="English text" />. */
+export function Tr({ s }: { s: string }) {
+  const l = useLocale();
+  return <>{l === "bn" ? (BN[s] ?? s) : s}</>;
+}
+
+/** Wraps the page: applies the chosen language and remounts content when it changes. */
+export function I18nRoot({ children }: { children: ReactNode }) {
+  const locale = useLocale();
+  activate(locale);
+  return <Fragment key={locale}>{children}</Fragment>;
 }
 
 type Leaves<T> = {

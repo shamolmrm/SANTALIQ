@@ -4,6 +4,7 @@ import { useState } from "react";
 import { DIGITS, LETTERS, MARKS, type Letter } from "@/lib/learn/olchiki";
 import { convert, SCRIPT_LABELS, type Script } from "@/lib/script/engine";
 
+import { tr } from "@/lib/i18n";
 const OTHER: Script[] = ["latn", "beng", "orya", "deva"];
 
 function LetterDetail({ letter }: { letter: Letter }) {
@@ -16,19 +17,19 @@ function LetterDetail({ letter }: { letter: Letter }) {
           {letter.char}
         </span>
         <div>
-          <p className="text-xs font-medium tracking-wide text-muted uppercase">{letter.vowel ? "Vowel" : "Consonant"}</p>
+          <p className="text-xs font-medium tracking-wide text-muted uppercase">{letter.vowel ? tr("Vowel") : tr("Consonant")}</p>
           <p className="mt-1 text-2xl font-bold">{letter.name}</p>
           <p className="mt-1 text-muted">
-            Sound: <span className="font-semibold text-fg">{letter.roman}</span>
+            {tr("Sound:")}{" "}<span className="font-semibold text-fg">{letter.roman}</span>
           </p>
           <p className="mt-1 text-xs text-muted">
-            U+{letter.char.codePointAt(0)!.toString(16).toUpperCase()} · row {letter.row + 1}
+            U+{letter.char.codePointAt(0)!.toString(16).toUpperCase()} {tr("· row")}{" "}{letter.row + 1}
           </p>
         </div>
       </div>
       <div className="mt-6 border-t border-line pt-4">
         <p className="text-xs font-medium tracking-wide text-muted uppercase">
-          {sample === letter.char ? "In other scripts" : `“${sample}” in other scripts`}
+          {sample === letter.char ? tr("In other scripts") : `“${sample}” in other scripts`}
         </p>
         <dl className="mt-3 grid grid-cols-2 gap-3">
           {OTHER.map((s) => (
@@ -51,7 +52,7 @@ export function Alphabet() {
     <div className="space-y-12">
       <div className="grid gap-8 lg:grid-cols-[1fr_380px]">
         <div>
-          <p className="mb-4 text-sm text-muted">30 letters in six rows — each row begins with a vowel. Tap a letter.</p>
+          <p className="mb-4 text-sm text-muted">{tr("30 letters in six rows — each row begins with a vowel. Tap a letter.")}</p>
           <div className="space-y-2">
             {rows.map((row, r) => (
               <div key={r} className="grid grid-cols-5 gap-2">
@@ -78,16 +79,14 @@ export function Alphabet() {
             ))}
           </div>
           <p className="mt-3 text-xs text-muted">
-            <span className="mr-1 inline-block size-2.5 rounded-sm bg-gold-soft align-middle ring-1 ring-accent-2/40" /> vowels ·
-            sounds use SANTALIQ&apos;s draft romanization, under native-speaker review.
-          </p>
+            <span className="mr-1 inline-block size-2.5 rounded-sm bg-gold-soft align-middle ring-1 ring-accent-2/40" /> {tr("vowels · sounds use SANTALIQ's draft romanization, under native-speaker review.")}</p>
         </div>
         <LetterDetail letter={selected} />
       </div>
 
       <div className="grid gap-8 md:grid-cols-2">
         <div>
-          <h3 className="text-xl font-bold">Digits</h3>
+          <h3 className="text-xl font-bold">{tr("Digits")}</h3>
           <div className="mt-4 grid grid-cols-5 gap-2">
             {DIGITS.map((d) => (
               <div key={d.char} className="flex flex-col items-center rounded-xl border border-line bg-bg-elevated py-3">
@@ -98,7 +97,7 @@ export function Alphabet() {
           </div>
         </div>
         <div>
-          <h3 className="text-xl font-bold">Marks & punctuation</h3>
+          <h3 className="text-xl font-bold">{tr("Marks & punctuation")}</h3>
           <ul className="mt-4 grid grid-cols-2 gap-2">
             {MARKS.map((m) => (
               <li key={m.char} className="flex items-center gap-3 rounded-xl border border-line bg-bg-elevated px-3 py-2">

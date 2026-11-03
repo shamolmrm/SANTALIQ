@@ -3,6 +3,7 @@ import { EntryStatus } from "@/components/ui";
 import type { Entry } from "@/lib/api";
 import { SCRIPT_LABELS, type Script } from "@/lib/script/engine";
 
+import { Tr } from "@/lib/i18n";
 export function EntryCard({ entry, showStatus = false, actions }: { entry: Entry; showStatus?: boolean; actions?: ReactNode }) {
   const others = entry.spellings.filter((s) => !(s.script === "olck" && s.text === entry.headword));
   return (
@@ -41,10 +42,10 @@ export function EntryCard({ entry, showStatus = false, actions }: { entry: Entry
       </ol>
 
       <p className="mt-4 text-xs text-muted">
-        Source: {entry.source ?? "—"}
-        {entry.contributor && <> · Contributed by {entry.contributor}</>}
+        <Tr s={"Source:"} />{" "}{entry.source ?? "—"}
+        {entry.contributor && <> <Tr s={"· Contributed by"} />{" "}{entry.contributor}</>}
       </p>
-      {entry.review_note && <p className="mt-2 text-sm text-muted">Reviewer note: {entry.review_note}</p>}
+      {entry.review_note && <p className="mt-2 text-sm text-muted"><Tr s={"Reviewer note:"} />{" "}{entry.review_note}</p>}
       {actions && <div className="mt-5 border-t border-line pt-5">{actions}</div>}
     </article>
   );

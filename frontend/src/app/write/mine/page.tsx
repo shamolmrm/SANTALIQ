@@ -7,6 +7,7 @@ import { Alert, EntryStatus, PageHeader } from "@/components/ui";
 import { api } from "@/lib/api";
 import { formatDate, KIND_LABEL, type PostCard } from "@/lib/write";
 
+import { tr } from "@/lib/i18n";
 function MyWriting() {
   const [posts, setPosts] = useState<PostCard[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -14,14 +15,13 @@ function MyWriting() {
     api<PostCard[]>("/write/me/posts").then(setPosts).catch((e) => setError(e.message));
   }, []);
   if (error) return <Alert>{error}</Alert>;
-  if (!posts) return <p className="text-muted">Loading…</p>;
+  if (!posts) return <p className="text-muted">{tr("Loading…")}</p>;
   if (posts.length === 0)
     return (
       <Alert tone="info">
-        You have not written anything yet.{" "}
+        {tr("You have not written anything yet.")}{" "}
         <Link href="/write/new" className="font-semibold text-accent">
-          Start writing →
-        </Link>
+          {tr("Start writing →")}</Link>
       </Alert>
     );
   return (
@@ -33,14 +33,13 @@ function MyWriting() {
               {p.title}
             </Link>
             <p className="text-sm text-muted">
-              {KIND_LABEL[p.kind]} · updated {formatDate(p.updated_at)}
+              {tr(KIND_LABEL[p.kind])} {tr("· updated")}{" "}{formatDate(p.updated_at)}
             </p>
           </div>
           <EntryStatus status={p.status} />
           {p.status !== "removed" && (
             <Link href={`/write/edit/${p.id}`} className="rounded-full border border-line px-4 py-1.5 text-sm">
-              Edit
-            </Link>
+              {tr("Edit")}</Link>
           )}
         </li>
       ))}
@@ -52,10 +51,9 @@ export default function MyWritingPage() {
   return (
     <section className="mx-auto max-w-4xl px-4 py-16 sm:px-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
-        <PageHeader eyebrow="SANTALIQ Write" title="My writing" />
+        <PageHeader eyebrow={tr("SANTALIQ Write")} title={tr("My writing")} />
         <Link href="/write/new" className="rounded-full bg-fg px-5 py-2.5 text-sm font-semibold text-bg">
-          New piece
-        </Link>
+          {tr("New piece")}</Link>
       </div>
       <div className="mt-10">
         <RequireSession>{() => <MyWriting />}</RequireSession>

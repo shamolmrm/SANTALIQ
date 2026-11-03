@@ -6,6 +6,7 @@ import { Alert, Button, Input } from "@/components/ui";
 import { api } from "@/lib/api";
 import { formatDate, KIND_LABEL, type PostCard } from "@/lib/write";
 
+import { tr } from "@/lib/i18n";
 type Reported = { post: PostCard; open_reports: number; reasons: string[]; last_reported_at: string | null };
 
 export function ReportsQueue() {
@@ -24,17 +25,17 @@ export function ReportsQueue() {
       await api(`/admin/posts/${id}/moderate`, { method: "POST", body: JSON.stringify({ action, note: notes[id]?.trim() || null }) });
       load();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Failed");
+      setError(e instanceof Error ? e.message : tr("Failed"));
     }
   }
 
   return (
     <div>
-      <h2 className="text-2xl font-bold">Reported writing</h2>
+      <h2 className="text-2xl font-bold">{tr("Reported writing")}</h2>
       {error && <div className="mt-4"><Alert>{error}</Alert></div>}
       <div className="mt-6 grid gap-4">
-        {!items && <p className="text-muted">Loading…</p>}
-        {items?.length === 0 && <Alert tone="info">No open reports.</Alert>}
+        {!items && <p className="text-muted">{tr("Loading…")}</p>}
+        {items?.length === 0 && <Alert tone="info">{tr("No open reports.")}</Alert>}
         {items?.map(({ post, open_reports, reasons, last_reported_at }) => (
           <div key={post.id} className="rounded-[var(--radius-card)] border border-line bg-bg-elevated p-6">
             <div className="flex flex-wrap items-start justify-between gap-3">
@@ -43,7 +44,7 @@ export function ReportsQueue() {
                   {post.title}
                 </Link>
                 <p className="text-sm text-muted">
-                  {KIND_LABEL[post.kind]} by {post.author.display_name} · last report {formatDate(last_reported_at)}
+                  {tr(KIND_LABEL[post.kind])} · {post.author.display_name} {tr("· last report")}{" "}{formatDate(last_reported_at)}
                 </p>
               </div>
               <span className="rounded-full bg-red-500/10 px-2.5 py-0.5 text-xs font-medium text-red-600 dark:text-red-400">
@@ -57,18 +58,16 @@ export function ReportsQueue() {
             </ul>
             <div className="mt-5 flex flex-col gap-3 border-t border-line pt-5 sm:flex-row sm:items-center">
               <Input
-                placeholder="Note to the author (optional)"
+                placeholder={tr("Note to the author (optional)")}
                 value={notes[post.id] ?? ""}
                 onChange={(e) => setNotes((n) => ({ ...n, [post.id]: e.target.value }))}
                 maxLength={1000}
               />
               <div className="flex shrink-0 gap-2">
                 <Button variant="danger" onClick={() => act(post.id, "remove")}>
-                  Remove
-                </Button>
+                  {tr("Remove")}</Button>
                 <Button variant="secondary" onClick={() => act(post.id, "dismiss")}>
-                  Dismiss reports
-                </Button>
+                  {tr("Dismiss reports")}</Button>
               </div>
             </div>
           </div>

@@ -8,6 +8,7 @@ import { api } from "@/lib/api";
 import { HERITAGE_KINDS, HERITAGE_LABEL, type HeritageItem, type HeritageKind } from "@/lib/heritage";
 import { detectScript, SCRIPT_LABELS, SCRIPTS, type Script } from "@/lib/script/engine";
 
+import { tr } from "@/lib/i18n";
 const GUIDELINES = [
   "Share only what you have the right to share: your own knowledge, or something an elder or community member agreed to share publicly.",
   "Do not share sacred, secret or ritual knowledge that the community keeps private.",
@@ -25,13 +26,13 @@ function MySubmissions({ refresh }: { refresh: number }) {
   useEffect(load, [load, refresh]);
 
   async function withdraw(id: string) {
-    if (!window.confirm("Withdraw this item? It will be deleted from SANTALIQ.")) return;
+    if (!window.confirm(tr("Withdraw this item? It will be deleted from SANTALIQ."))) return;
     await api(`/heritage/items/${id}`, { method: "DELETE" });
     load();
   }
 
-  if (!items) return <p className="text-muted">Loading…</p>;
-  if (items.length === 0) return <p className="text-muted">You have not shared anything yet.</p>;
+  if (!items) return <p className="text-muted">{tr("Loading…")}</p>;
+  if (items.length === 0) return <p className="text-muted">{tr("You have not shared anything yet.")}</p>;
   return (
     <ul className="grid gap-3">
       {items.map((i) => (
@@ -42,11 +43,10 @@ function MySubmissions({ refresh }: { refresh: number }) {
             </Link>
             <EntryStatus status={i.status} />
           </div>
-          <p className="mt-1 text-xs text-muted">{HERITAGE_LABEL[i.kind]}</p>
-          {i.review_note && <p className="mt-2 text-sm text-muted">Reviewer note: {i.review_note}</p>}
+          <p className="mt-1 text-xs text-muted">{tr(HERITAGE_LABEL[i.kind])}</p>
+          {i.review_note && <p className="mt-2 text-sm text-muted">{tr("Reviewer note:")}{" "}{i.review_note}</p>}
           <button onClick={() => withdraw(i.id)} className="mt-2 text-xs text-muted hover:text-fg">
-            Withdraw
-          </button>
+            {tr("Withdraw")}</button>
         </li>
       ))}
     </ul>
@@ -80,10 +80,10 @@ function SubmitForm({ onDone }: { onDone: () => void }) {
       setRegion("");
       setSource("");
       setConsent(false);
-      setMsg({ tone: "success", text: "Thank you! A reviewer will check it before it appears in the archive." });
+      setMsg({ tone: "success", text: tr("Thank you! A reviewer will check it before it appears in the archive.") });
       onDone();
     } catch (err) {
-      setMsg({ tone: "error", text: err instanceof Error ? err.message : "Could not submit." });
+      setMsg({ tone: "error", text: err instanceof Error ? err.message : tr("Could not submit.") });
     } finally {
       setBusy(false);
     }
@@ -93,18 +93,18 @@ function SubmitForm({ onDone }: { onDone: () => void }) {
     <form onSubmit={submit} className="space-y-5">
       {msg && <Alert tone={msg.tone}>{msg.text}</Alert>}
       <div className="grid gap-5 sm:grid-cols-2">
-        <Field label="Kind" hint={HERITAGE_KINDS.find((k) => k.value === kind)?.hint}>
+        <Field label={tr("Kind")} hint={tr(HERITAGE_KINDS.find((k) => k.value === kind)?.hint ?? "")}>
           <Select value={kind} onChange={(e) => setKind(e.target.value as HeritageKind)}>
             {HERITAGE_KINDS.map((k) => (
               <option key={k.value} value={k.value}>
-                {k.label}
+                {tr(k.label)}
               </option>
             ))}
           </Select>
         </Field>
-        <Field label="Script" hint={script === "auto" ? `Detected: ${SCRIPT_LABELS[effective].name}` : undefined}>
+        <Field label={tr("Script")} hint={script === "auto" ? `Detected: ${SCRIPT_LABELS[effective].name}` : undefined}>
           <Select value={script} onChange={(e) => setScript(e.target.value as Script | "auto")}>
-            <option value="auto">Detect automatically</option>
+            <option value="auto">{tr("Detect automatically")}</option>
             {SCRIPTS.map((s) => (
               <option key={s} value={s}>
                 {SCRIPT_LABELS[s].name}
@@ -113,29 +113,27 @@ function SubmitForm({ onDone }: { onDone: () => void }) {
           </Select>
         </Field>
       </div>
-      <Field label="Title">
+      <Field label={tr("Title")}>
         <Input value={title} onChange={(e) => setTitle(e.target.value)} required maxLength={200} />
       </Field>
-      <Field label="Text" hint="Write it as it was told. Line breaks are kept; **bold** and *italic* work.">
+      <Field label={tr("Text")} hint={tr("Write it as it was told. Line breaks are kept; **bold** and *italic* work.")}>
         <Textarea value={body} onChange={(e) => setBody(e.target.value)} required minLength={20} maxLength={100000} rows={14} />
       </Field>
       <div className="grid gap-5 sm:grid-cols-2">
-        <Field label="Region (optional)" hint="Village, district or area it comes from.">
+        <Field label={tr("Region (optional)")} hint={tr("Village, district or area it comes from.")}>
           <Input value={region} onChange={(e) => setRegion(e.target.value)} maxLength={120} />
         </Field>
-        <Field label="Source" hint="Who told it, where it was recorded, or the book it comes from.">
+        <Field label={tr("Source")} hint={tr("Who told it, where it was recorded, or the book it comes from.")}>
           <Input value={source} onChange={(e) => setSource(e.target.value)} required minLength={3} maxLength={500} />
         </Field>
       </div>
       <label className="flex items-start gap-3 rounded-xl border border-line p-4 text-sm">
         <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} className="mt-1 size-4 accent-[var(--accent)]" />
         <span>
-          I have permission to share this publicly, it is not secret or sacred knowledge kept private by the community, and I
-          agree that SANTALIQ may publish it with credit to me and the source. I can withdraw it at any time.
-        </span>
+          {tr("I have permission to share this publicly, it is not secret or sacred knowledge kept private by the community, and I agree that SANTALIQ may publish it with credit to me and the source. I can withdraw it at any time.")}</span>
       </label>
       <Button type="submit" disabled={busy || !consent}>
-        {busy ? "Sending…" : "Send for review"}
+        {busy ? tr("Sending…") : tr("Send for review")}
       </Button>
     </form>
   );
@@ -146,9 +144,9 @@ export default function HeritageSubmitPage() {
   return (
     <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
       <PageHeader
-        eyebrow="SANTALIQ Heritage"
-        title="Share a story, song or memory"
-        lead="Help preserve Santali culture for the next generations. Everything is checked by a reviewer before it is published."
+        eyebrow={tr("SANTALIQ Heritage")}
+        title={tr("Share a story, song or memory")}
+        lead={tr("Help preserve Santali culture for the next generations. Everything is checked by a reviewer before it is published.")}
       />
       <div className="mt-10">
         <RequireSession>
@@ -159,15 +157,15 @@ export default function HeritageSubmitPage() {
               </Card>
               <div className="space-y-8">
                 <Card className="space-y-3">
-                  <h2 className="font-bold">Before you share</h2>
+                  <h2 className="font-bold">{tr("Before you share")}</h2>
                   <ul className="list-disc space-y-2 pl-5 text-sm leading-relaxed text-muted">
                     {GUIDELINES.map((g) => (
-                      <li key={g}>{g}</li>
+                      <li key={g}>{tr(g)}</li>
                     ))}
                   </ul>
                 </Card>
                 <div>
-                  <h2 className="text-lg font-bold">My submissions</h2>
+                  <h2 className="text-lg font-bold">{tr("My submissions")}</h2>
                   <div className="mt-4">
                     <MySubmissions refresh={refresh} />
                   </div>

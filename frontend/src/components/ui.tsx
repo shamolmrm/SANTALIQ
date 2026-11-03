@@ -1,4 +1,5 @@
 import type { ComponentProps, ReactNode } from "react";
+import { Tr } from "@/lib/i18n";
 
 /** Small shared form/UI primitives for the design system. */
 
@@ -97,7 +98,7 @@ const STATUS_STYLE: Record<string, string> = {
 export function EntryStatus({ status }: { status: string }) {
   return (
     <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${STATUS_STYLE[status] ?? ""}`}>
-      {status}
+      <Tr s={status} />
     </span>
   );
 }

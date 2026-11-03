@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { Alert, Card, PageHeader } from "@/components/ui";
 import { api } from "@/lib/api";
 
+import { tr } from "@/lib/i18n";
 type Meta = { count: number; license: string; citation: string; generated_at: string };
 type Contributor = { id: string; display_name: string; verified_entries: number };
 
@@ -20,57 +21,52 @@ export default function DatasetPage() {
   return (
     <section className="mx-auto max-w-5xl px-4 py-16 sm:px-6">
       <PageHeader
-        eyebrow="SANTALIQ Research · Open Dataset v1"
-        title="Santali Lexicon dataset"
-        lead="Every verified dictionary entry on SANTALIQ — spellings in five scripts, meanings, sources and contributor credit — as downloadable data for researchers and developers."
+        eyebrow={tr("SANTALIQ Research · Open Dataset v1")}
+        title={tr("Santali Lexicon dataset")}
+        lead={tr("Every verified dictionary entry on SANTALIQ — spellings in five scripts, meanings, sources and contributor credit — as downloadable data for researchers and developers.")}
       />
 
       <div className="mt-10 grid gap-5 md:grid-cols-[1fr_320px]">
         <Card className="space-y-5">
           <div className="flex items-baseline gap-3">
             <span className="font-display text-5xl font-bold tabular-nums">{meta ? meta.count : "—"}</span>
-            <span className="text-muted">verified entries</span>
+            <span className="text-muted">{tr("verified entries")}</span>
           </div>
           <div className="flex flex-wrap gap-3">
             <a href="/api/v1/dataset/lexicon.json" download className="rounded-full bg-fg px-5 py-2.5 text-sm font-semibold text-bg">
-              Download JSON
-            </a>
+              {tr("Download JSON")}</a>
             <a href="/api/v1/dataset/lexicon.csv" download className="rounded-full border border-line px-5 py-2.5 text-sm font-semibold">
-              Download CSV
-            </a>
+              {tr("Download CSV")}</a>
           </div>
           <dl className="space-y-3 text-sm">
             <div>
-              <dt className="font-semibold">Licence</dt>
+              <dt className="font-semibold">{tr("Licence")}</dt>
               <dd className="text-muted">{meta?.license ?? "—"}</dd>
             </div>
             <div>
-              <dt className="font-semibold">Cite as</dt>
+              <dt className="font-semibold">{tr("Cite as")}</dt>
               <dd className="text-muted">{meta?.citation ?? "—"}</dd>
             </div>
             <div>
-              <dt className="font-semibold">What is included</dt>
+              <dt className="font-semibold">{tr("What is included")}</dt>
               <dd className="text-muted">
-                Only entries a reviewer has verified. Each has its source and contributor. Pending or rejected entries, user accounts and
-                emails are never included.
-              </dd>
+                {tr("Only entries a reviewer has verified. Each has its source and contributor. Pending or rejected entries, user accounts and emails are never included.")}</dd>
             </div>
           </dl>
           {meta?.count === 0 && (
             <Alert tone="info">
-              The dataset grows as the community adds words.{" "}
+              {tr("The dataset grows as the community adds words.")}{" "}
               <Link href="/contribute" className="font-semibold text-accent">
-                Contribute an entry →
-              </Link>
+                {tr("Contribute an entry →")}</Link>
             </Alert>
           )}
         </Card>
 
         <Card>
-          <h2 className="font-bold">Community credits</h2>
-          <p className="mt-1 text-sm text-muted">Contributors with verified entries.</p>
-          {!people && <p className="mt-4 text-sm text-muted">Loading…</p>}
-          {people?.length === 0 && <p className="mt-4 text-sm text-muted">Be the first verified contributor.</p>}
+          <h2 className="font-bold">{tr("Community credits")}</h2>
+          <p className="mt-1 text-sm text-muted">{tr("Contributors with verified entries.")}</p>
+          {!people && <p className="mt-4 text-sm text-muted">{tr("Loading…")}</p>}
+          {people?.length === 0 && <p className="mt-4 text-sm text-muted">{tr("Be the first verified contributor.")}</p>}
           <ol className="mt-4 space-y-2">
             {people?.map((p, i) => (
               <li key={p.id} className="flex items-center gap-3 text-sm">

@@ -8,6 +8,7 @@ import { api, useSession } from "@/lib/api";
 import { detectScript, SCRIPT_LABELS, SCRIPTS, type Script } from "@/lib/script/engine";
 import { AGE_RANGES, seconds, type VoiceClip, type VoiceConsent, type VoicePrompt, type VoiceStats } from "@/lib/voice";
 
+import { tr } from "@/lib/i18n";
 const PROMISES = [
   "You decide: public listening and research use are separate choices.",
   "Your voice is never used to clone you or imitate you.",
@@ -44,7 +45,7 @@ function ConsentForm({ initial, onSaved, onCancel }: { initial: VoiceConsent | n
       });
       onSaved(c);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Could not save.");
+      setError(err instanceof Error ? err.message : tr("Could not save."));
     } finally {
       setBusy(false);
     }
@@ -52,39 +53,32 @@ function ConsentForm({ initial, onSaved, onCancel }: { initial: VoiceConsent | n
 
   return (
     <Card>
-      <h2 className="text-xl font-bold">Voice consent</h2>
+      <h2 className="text-xl font-bold">{tr("Voice consent")}</h2>
       <p className="mt-2 text-sm leading-relaxed text-muted">
-        SANTALIQ is building a community collection of Santali speech, so that one day Santali can have its own text-to-speech and
-        speech recognition, owned by and useful to the community. Please read and choose:
-      </p>
+        {tr("SANTALIQ is building a community collection of Santali speech, so that one day Santali can have its own text-to-speech and speech recognition, owned by and useful to the community. Please read and choose:")}</p>
       <form onSubmit={submit} className="mt-6 space-y-5">
         {error && <Alert>{error}</Alert>}
         <label className="flex items-start gap-3 rounded-xl border border-line p-4 text-sm">
           <input type="checkbox" checked={pub} onChange={(e) => setPub(e.target.checked)} className="mt-1 size-4" />
           <span>
-            <strong>Public listening.</strong> After review, other visitors may listen to my recordings on SANTALIQ, shown with my
-            display name and dialect.
-          </span>
+            <strong>{tr("Public listening.")}</strong> {tr("After review, other visitors may listen to my recordings on SANTALIQ, shown with my display name and dialect.")}</span>
         </label>
         <label className="flex items-start gap-3 rounded-xl border border-line p-4 text-sm">
           <input type="checkbox" checked={research} onChange={(e) => setResearch(e.target.checked)} className="mt-1 size-4" />
           <span>
-            <strong>Research and Santali speech technology.</strong> My verified recordings may be used to research and train
-            Santali speech models (such as text-to-speech and speech recognition), and may be shared with researchers for that
-            purpose. They must not be used to clone or imitate my individual voice.
-          </span>
+            <strong>{tr("Research and Santali speech technology.")}</strong> {tr("My verified recordings may be used to research and train Santali speech models (such as text-to-speech and speech recognition), and may be shared with researchers for that purpose. They must not be used to clone or imitate my individual voice.")}</span>
         </label>
 
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Dialect (optional)" hint="As you would describe it yourself.">
+          <Field label={tr("Dialect (optional)")} hint={tr("As you would describe it yourself.")}>
             <Input name="dialect" defaultValue={initial?.dialect ?? ""} maxLength={80} />
           </Field>
-          <Field label="Region (optional)">
+          <Field label={tr("Region (optional)")}>
             <Input name="region" defaultValue={initial?.region ?? ""} maxLength={120} />
           </Field>
-          <Field label="Age range (optional)">
+          <Field label={tr("Age range (optional)")}>
             <Select name="age_range" defaultValue={initial?.age_range ?? ""}>
-              <option value="">Prefer not to say</option>
+              <option value="">{tr("Prefer not to say")}</option>
               {AGE_RANGES.map((a) => (
                 <option key={a} value={a}>
                   {a}
@@ -92,7 +86,7 @@ function ConsentForm({ initial, onSaved, onCancel }: { initial: VoiceConsent | n
               ))}
             </Select>
           </Field>
-          <Field label="Gender (optional)" hint="Helps build voices that represent everyone.">
+          <Field label={tr("Gender (optional)")} hint={tr("Helps build voices that represent everyone.")}>
             <Input name="gender" defaultValue={initial?.gender ?? ""} maxLength={24} />
           </Field>
         </div>
@@ -100,18 +94,15 @@ function ConsentForm({ initial, onSaved, onCancel }: { initial: VoiceConsent | n
         <label className="flex items-start gap-3 rounded-xl bg-accent-soft p-4 text-sm">
           <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} className="mt-1 size-4" required />
           <span>
-            I am the person speaking in my recordings, I am recording voluntarily, and I understand I can change these choices or
-            delete all my voice data at any time. If I am under 18, a parent or guardian agrees too.
-          </span>
+            {tr("I am the person speaking in my recordings, I am recording voluntarily, and I understand I can change these choices or delete all my voice data at any time. If I am under 18, a parent or guardian agrees too.")}</span>
         </label>
         <div className="flex gap-2">
           <Button type="submit" disabled={!agree || busy}>
-            {busy ? "Saving…" : "Save and continue"}
+            {busy ? tr("Saving…") : tr("Save and continue")}
           </Button>
           {onCancel && (
             <Button variant="secondary" onClick={onCancel}>
-              Cancel
-            </Button>
+              {tr("Cancel")}</Button>
           )}
         </div>
       </form>
@@ -161,13 +152,13 @@ function RecordPanel({ onUploaded }: { onUploaded: () => void }) {
         const body = await r.json().catch(() => ({}));
         throw new Error(typeof body.detail === "string" ? body.detail : "Upload failed. Please try again.");
       }
-      setMsg({ tone: "success", text: "Thank you! Saved for review." });
+      setMsg({ tone: "success", text: tr("Thank you! Saved for review.") });
       setRec(null);
       if (mode === "own") setOwn("");
       setRound((n) => n + 1); // fresh recorder + a new random set of words
       onUploaded();
     } catch (e) {
-      setMsg({ tone: "error", text: e instanceof Error ? e.message : "Upload failed." });
+      setMsg({ tone: "error", text: e instanceof Error ? e.message : tr("Upload failed.") });
     } finally {
       setBusy(false);
     }
@@ -176,7 +167,7 @@ function RecordPanel({ onUploaded }: { onUploaded: () => void }) {
   return (
     <Card className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-xl font-bold">Record</h2>
+        <h2 className="text-xl font-bold">{tr("Record")}</h2>
         <div role="tablist" className="flex gap-1">
           {(
             [
@@ -199,7 +190,7 @@ function RecordPanel({ onUploaded }: { onUploaded: () => void }) {
 
       {mode === "word" ? (
         <div className="space-y-4">
-          <Field label="Script">
+          <Field label={tr("Script")}>
             <Select value={script} onChange={(e) => setScript(e.target.value as Script)}>
               {SCRIPTS.map((s) => (
                 <option key={s} value={s}>
@@ -208,29 +199,26 @@ function RecordPanel({ onUploaded }: { onUploaded: () => void }) {
               ))}
             </Select>
           </Field>
-          {!prompts && <p className="text-muted">Loading words…</p>}
+          {!prompts && <p className="text-muted">{tr("Loading words…")}</p>}
           {prompts?.length === 0 && (
             <Alert tone="info">
-              There are no verified dictionary words in this script yet, so there is nothing to read. Record your own sentence
-              instead, or{" "}
+              {tr("There are no verified dictionary words in this script yet, so there is nothing to read. Record your own sentence instead, or")}{" "}
               <Link href="/contribute" className="font-semibold text-accent">
-                add words to the dictionary
-              </Link>
+                {tr("add words to the dictionary")}</Link>
               .
             </Alert>
           )}
           {prompt && (
             <div className="rounded-2xl border border-line bg-bg-sunken p-8 text-center">
-              <p className="text-xs tracking-wide text-muted uppercase">Read aloud</p>
+              <p className="text-xs tracking-wide text-muted uppercase">{tr("Read aloud")}</p>
               <p className="mt-3 text-5xl font-bold">{prompt.text}</p>
               <button onClick={() => setIdx((idx + 1) % prompts!.length)} className="mt-4 text-sm text-muted hover:text-fg">
-                Skip →
-              </button>
+                {tr("Skip →")}</button>
             </div>
           )}
         </div>
       ) : (
-        <Field label="Type exactly what you will say" hint={own.trim() ? `Script: ${SCRIPT_LABELS[textScript].name}` : "Any script. One short sentence works best."}>
+        <Field label={tr("Type exactly what you will say")} hint={own.trim() ? `Script: ${SCRIPT_LABELS[textScript].name}` : tr("Any script. One short sentence works best.")}>
           <Textarea value={own} onChange={(e) => setOwn(e.target.value)} rows={3} maxLength={500} />
         </Field>
       )}
@@ -239,7 +227,7 @@ function RecordPanel({ onUploaded }: { onUploaded: () => void }) {
 
       {msg && <Alert tone={msg.tone}>{msg.text}</Alert>}
       <Button onClick={submit} disabled={!rec || !text || busy}>
-        {busy ? "Uploading…" : "Submit recording"}
+        {busy ? tr("Uploading…") : tr("Submit recording")}
       </Button>
     </Card>
   );
@@ -255,13 +243,13 @@ function MyClips({ refresh }: { refresh: number }) {
   useEffect(load, [load, refresh]);
 
   async function remove(id: string) {
-    if (!window.confirm("Delete this recording permanently?")) return;
+    if (!window.confirm(tr("Delete this recording permanently?"))) return;
     await api(`/voice/clips/${id}`, { method: "DELETE" });
     load();
   }
 
-  if (!clips) return <p className="text-muted">Loading…</p>;
-  if (clips.length === 0) return <p className="text-muted">No recordings yet.</p>;
+  if (!clips) return <p className="text-muted">{tr("Loading…")}</p>;
+  if (clips.length === 0) return <p className="text-muted">{tr("No recordings yet.")}</p>;
   return (
     <ul className="grid gap-3">
       {clips.map((c) => (
@@ -271,9 +259,9 @@ function MyClips({ refresh }: { refresh: number }) {
             <EntryStatus status={c.status} />
           </div>
           <audio controls preload="none" src={c.audio_url} className="h-9 w-full" />
-          {c.review_note && <p className="text-xs text-muted">Reviewer note: {c.review_note}</p>}
+          {c.review_note && <p className="text-xs text-muted">{tr("Reviewer note:")}{" "}{c.review_note}</p>}
           <button onClick={() => remove(c.id)} className="text-xs text-muted hover:text-fg">
-            Delete · {seconds(c.duration_ms)}
+            {tr("Delete ·")}{" "}{seconds(c.duration_ms)}
           </button>
         </li>
       ))}
@@ -293,13 +281,13 @@ function Studio() {
   }, []);
 
   async function withdrawAll() {
-    if (!window.confirm("Delete ALL your recordings and your voice consent? This cannot be undone.")) return;
+    if (!window.confirm(tr("Delete ALL your recordings and your voice consent? This cannot be undone."))) return;
     await api("/voice/me", { method: "DELETE" });
     setConsent(null);
     setRefresh((n) => n + 1);
   }
 
-  if (consent === undefined) return <p className="text-muted">Loading…</p>;
+  if (consent === undefined) return <p className="text-muted">{tr("Loading…")}</p>;
   if (!consent || editing || consent.consent_version !== consent.current_version)
     return (
       <ConsentForm
@@ -317,22 +305,20 @@ function Studio() {
       <RecordPanel onUploaded={() => setRefresh((n) => n + 1)} />
       <div className="space-y-6">
         <Card className="space-y-2 text-sm">
-          <h2 className="font-bold">Your choices</h2>
+          <h2 className="font-bold">{tr("Your choices")}</h2>
           <p className="text-muted">
-            Public listening: <strong className="text-fg">{consent.consent_public ? "yes" : "no"}</strong> · Research use:{" "}
+            {tr("Public listening:")}{" "}<strong className="text-fg">{consent.consent_public ? "yes" : "no"}</strong> {tr("· Research use:")}{" "}
             <strong className="text-fg">{consent.consent_research ? "yes" : "no"}</strong>
           </p>
           <div className="flex flex-wrap gap-3 pt-1">
             <button onClick={() => setEditing(true)} className="font-semibold text-accent">
-              Change
-            </button>
+              {tr("Change")}</button>
             <button onClick={withdrawAll} className="text-muted hover:text-fg">
-              Delete all my voice data
-            </button>
+              {tr("Delete all my voice data")}</button>
           </div>
         </Card>
         <div>
-          <h2 className="text-lg font-bold">My recordings</h2>
+          <h2 className="text-lg font-bold">{tr("My recordings")}</h2>
           <div className="mt-3">
             <MyClips refresh={refresh} />
           </div>
@@ -351,8 +337,8 @@ function Library() {
       .then(setClips)
       .catch(() => setClips([]));
   }, []);
-  if (!clips) return <p className="text-muted">Loading…</p>;
-  if (clips.length === 0) return <p className="text-muted">No verified public recordings yet. Yours could be the first.</p>;
+  if (!clips) return <p className="text-muted">{tr("Loading…")}</p>;
+  if (clips.length === 0) return <p className="text-muted">{tr("No verified public recordings yet. Yours could be the first.")}</p>;
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       {clips.map((c) => (
@@ -381,9 +367,9 @@ export default function VoicePage() {
   return (
     <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
       <PageHeader
-        eyebrow="SANTALIQ Voice · Collection beta"
-        title="Lend your voice to Santali."
-        lead="Record words and sentences in your own voice. With enough verified recordings from many speakers and dialects, Santali can get its own speech technology, built with consent and owned by the community."
+        eyebrow={tr("SANTALIQ Voice · Collection beta")}
+        title={tr("Lend your voice to Santali.")}
+        lead={tr("Record words and sentences in your own voice. With enough verified recordings from many speakers and dialects, Santali can get its own speech technology, built with consent and owned by the community.")}
       />
 
       <div className="mt-10 grid gap-4 sm:grid-cols-3">
@@ -403,33 +389,30 @@ export default function VoicePage() {
         {PROMISES.map((p) => (
           <li key={p} className="flex gap-2">
             <span className="text-accent">✓</span>
-            <span>{p}</span>
+            <span>{tr(p)}</span>
           </li>
         ))}
       </ul>
 
       <div className="mt-12">
         {loading ? (
-          <p className="text-muted">Loading…</p>
+          <p className="text-muted">{tr("Loading…")}</p>
         ) : user ? (
           <Studio />
         ) : (
           <Alert tone="info">
             <Link href="/login?next=/voice" className="font-semibold text-accent">
-              Sign in
-            </Link>{" "}
+              {tr("Sign in")}</Link>{" "}
             or{" "}
             <Link href="/register" className="font-semibold text-accent">
-              create a free account
-            </Link>{" "}
-            to record.
-          </Alert>
+              {tr("create a free account")}</Link>{" "}
+            {tr("to record.")}</Alert>
         )}
       </div>
 
       <div className="mt-16">
-        <h2 className="text-2xl font-bold">Listen</h2>
-        <p className="mt-1 text-sm text-muted">Verified recordings from speakers who chose public listening.</p>
+        <h2 className="text-2xl font-bold">{tr("Listen")}</h2>
+        <p className="mt-1 text-sm text-muted">{tr("Verified recordings from speakers who chose public listening.")}</p>
         <div className="mt-6">
           <Library />
         </div>
