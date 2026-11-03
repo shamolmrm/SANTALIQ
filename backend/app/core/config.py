@@ -22,6 +22,10 @@ class Settings(BaseSettings):
     translate_cache_ttl_seconds: int = 7 * 24 * 3600
     auth_rate_limit_per_minute: int = 10
 
+    # Google Cloud Translation (optional second engine). Off until the key is set.
+    google_translate_api_key: str = ""
+    google_santali_code: str = "sat"
+
     # Sessions
     session_cookie_name: str = "santaliq_session"
     session_ttl_days: int = 30

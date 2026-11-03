@@ -21,6 +21,21 @@ Browser ──POST /api/v1/translate──▶ santaliq-api ──▶ santaliq-tr
 | License | **CC-BY-NC-4.0 — non-commercial use only.** Any paid/commercial translation feature needs a different model or licence. |
 | Resources | container limited to 2 GB RAM / 2 CPUs; one request at a time (lock), beam size 4 |
 
+## Engines
+| Engine | Where it runs | Status |
+| --- | --- | --- |
+| Meta NLLB-200 (`nllb`, default) | SANTALIQ server, private | live |
+| Google Cloud Translation v2 (`google`) | Google — text is sent to Google | off until `GOOGLE_TRANSLATE_API_KEY` is set in the server `.env` |
+
+`GET /api/v1/translate/engines` lists them; `POST /api/v1/translate` takes `engine`. Google receives ISO codes
+from `languages.py`; Santali uses `GOOGLE_SANTALI_CODE` (default `sat`) — confirm against Google's
+supported-languages list when the key is added. Cache keys include the engine.
+
+## Listen & speak
+Browser Web Speech API: 🔊 text-to-speech for input and output, 🎤 speech input (Chrome/Edge/Safari).
+Uses the voices installed on the device; buttons explain when a voice is missing. No browser offers
+Santali voice or recognition yet — SANTALIQ Voice (Phase 4) will provide it.
+
 ## Limits & safety
 - 2000 characters per request; unknown language codes rejected (422).
 - API returns 503 when the model service is down or still loading.

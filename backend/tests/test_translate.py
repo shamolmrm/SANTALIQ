@@ -68,3 +68,49 @@ def test_rate_limit(client: TestClient, fake_model: list[str]) -> None:
         "/api/v1/translate", json={"text": "over", "source": "eng_Latn", "target": SANTALI}
     )
     assert r.status_code == 429
+
+
+@pytest.fixture
+def fake_google(monkeypatch: pytest.MonkeyPatch) -> list[dict]:
+    """Enable the Google engine with a stubbed HTTP call."""
+    from app.modules.translate import router as tr
+
+    sent: list[dict] = []
+
+    async def fake_post(self: httpx.AsyncClient, url: str, **kwargs: dict) -> httpx.Response:
+        sent.append({"url": url, **kwargs})
+        body = kwargs["json"]
+        return httpx.Response(
+            200, json={"data": {"translations": [{"translatedText": f"G({body['q']})"}]}}
+        )
+
+    monkeypatch.setattr(tr, "google_enabled", lambda: True)
+    monkeypatch.setattr(httpx.AsyncClient, "post", fake_post)
+    return sent
+
+
+def test_engines_listed(client: TestClient) -> None:
+    engines = {e["id"]: e["enabled"] for e in client.get("/api/v1/translate/engines").json()}
+    assert engines == {"nllb": True, "google": False}
+    langs = client.get("/api/v1/translate/languages").json()
+    assert {"code": "ben_Beng", "name": "Bengali", "native": "বাংলা", "iso": "bn"} in langs
+
+
+def test_google_disabled_by_default(client: TestClient) -> None:
+    r = client.post(
+        "/api/v1/translate",
+        json={"text": "hi", "source": "eng_Latn", "target": "ben_Beng", "engine": "google"},
+    )
+    assert r.status_code == 503
+
+
+def test_google_engine_maps_codes_and_caches_separately(
+    client: TestClient, fake_google: list[dict]
+) -> None:
+    body = {"text": "hello", "source": "eng_Latn", "target": SANTALI, "engine": "google"}
+    r = client.post("/api/v1/translate", json=body).json()
+    assert r["translation"] == "G(hello)" and r["engine"] == "google"
+    sent = fake_google[0]["json"]
+    assert (sent["source"], sent["target"], sent["format"]) == ("en", "sat", "text")
+    again = client.post("/api/v1/translate", json=body).json()
+    assert again["cached"] is True and len(fake_google) == 1  # second call served from cache

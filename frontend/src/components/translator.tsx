@@ -1,61 +1,133 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { convert, detectScript, SCRIPT_LABELS, SCRIPTS, type Script } from "@/lib/script/engine";
+import { createRecognizer, recognitionSupported, speak, stopSpeaking, useVoices, voiceFor } from "@/lib/speech";
 
 const API = process.env.NEXT_PUBLIC_API_BASE ?? "";
 const SANTALI = "sat_Beng";
 const MAX = 2000;
 
-type Language = { code: string; name: string; native: string };
+type Language = { code: string; name: string; native: string; iso: string };
+type Engine = { id: "nllb" | "google"; name: string; enabled: boolean; note: string };
 
 /** Render Santali text in all five scripts, whatever script it arrived in. */
 function allScripts(text: string): Array<{ script: Script; text: string }> {
   const src = detectScript(text);
-  return SCRIPTS.map((s) => ({ script: s, text: convert(text, src, s) }));
+  return SCRIPTS.map((s) => ({ script: s, text: convert(text, src, s, { capitalShortcuts: false }) }));
 }
+
+function IconButton({
+  label,
+  onClick,
+  disabled,
+  active,
+  children,
+}: {
+  label: string;
+  onClick: () => void;
+  disabled?: boolean;
+  active?: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      aria-label={label}
+      title={label}
+      className={`grid size-10 place-items-center rounded-full transition-colors disabled:cursor-not-allowed disabled:opacity-35 ${
+        active ? "bg-red-500/15 text-red-600 dark:text-red-400" : "text-muted hover:bg-bg-sunken hover:text-fg"
+      }`}
+    >
+      {children}
+    </button>
+  );
+}
+
+const MicIcon = () => (
+  <svg aria-hidden width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+    <rect x="9" y="3" width="6" height="11" rx="3" />
+    <path d="M5 11a7 7 0 0 0 14 0M12 18v3" />
+  </svg>
+);
+const SpeakerIcon = ({ on }: { on?: boolean }) => (
+  <svg aria-hidden width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M11 5 6 9H3v6h3l5 4z" />
+    {on ? <path d="M15 9l6 6M21 9l-6 6" /> : <path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13" />}
+  </svg>
+);
+const CopyIcon = () => (
+  <svg aria-hidden width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <rect x="9" y="9" width="11" height="11" rx="2" />
+    <path d="M5 15V5a2 2 0 0 1 2-2h10" />
+  </svg>
+);
 
 export function Translator() {
   const [languages, setLanguages] = useState<Language[]>([]);
+  const [engines, setEngines] = useState<Engine[]>([]);
+  const [engine, setEngine] = useState<Engine["id"]>("nllb");
   const [source, setSource] = useState("eng_Latn");
   const [target, setTarget] = useState(SANTALI);
   const [input, setInput] = useState("");
   const [output, setOutput] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [speaking, setSpeaking] = useState<string | null>(null);
+  const [listening, setListening] = useState(false);
+  const [micSupported, setMicSupported] = useState(false);
+  const [copied, setCopied] = useState<string | null>(null);
+  const recognizer = useRef<ReturnType<typeof createRecognizer>>(null);
+  const voices = useVoices();
 
   useEffect(() => {
+    setMicSupported(recognitionSupported());
     fetch(`${API}/api/v1/translate/languages`)
       .then((r) => (r.ok ? r.json() : Promise.reject()))
       .then(setLanguages)
       .catch(() => setError("Could not load languages. Please refresh."));
+    fetch(`${API}/api/v1/translate/engines`)
+      .then((r) => (r.ok ? r.json() : Promise.reject()))
+      .then(setEngines)
+      .catch(() => setEngines([]));
+    return () => {
+      stopSpeaking();
+      recognizer.current?.stop();
+    };
   }, []);
 
-  async function translate() {
-    const text = input.trim();
-    if (!text) return;
+  const iso = (code: string) => languages.find((l) => l.code === code)?.iso ?? "";
+  const nameOf = (code: string) => languages.find((l) => l.code === code)?.name ?? code;
+
+  async function translate(text = input) {
+    const t = text.trim();
+    if (!t) return;
     setLoading(true);
     setError(null);
-    // Santali input may be typed in any script; the model reads Ol Chiki.
-    const payload = source === SANTALI ? convert(text, detectScript(text), "olck") : text;
+    // Santali input may be typed in any script; the NLLB model reads Ol Chiki.
+    const payload = source === SANTALI && engine === "nllb" ? convert(t, detectScript(t), "olck", { capitalShortcuts: false }) : t;
     try {
       const r = await fetch(`${API}/api/v1/translate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: payload, source, target }),
+        body: JSON.stringify({ text: payload, source, target, engine }),
       });
-      if (!r.ok) throw new Error(r.status === 503 ? "busy" : r.status === 429 ? "limit" : "failed");
+      if (!r.ok) {
+        const detail = await r.json().then((b) => b.detail).catch(() => null);
+        throw new Error(
+          r.status === 429
+            ? "You have sent many translations in a short time. Please wait a minute and try again."
+            : typeof detail === "string"
+              ? detail
+              : "Translation failed. Please try again.",
+        );
+      }
       const data: { translation: string } = await r.json();
       setOutput(data.translation);
     } catch (e) {
-      const reason = e instanceof Error ? e.message : "failed";
-      setError(
-        reason === "busy"
-          ? "The translator is starting up or busy. Please try again in a moment."
-          : reason === "limit"
-            ? "You have sent many translations in a short time. Please wait a minute and try again."
-            : "Translation failed. Please try again.",
-      );
+      setError(e instanceof Error ? e.message : "Translation failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -67,6 +139,68 @@ export function Translator() {
     setInput(output);
     setOutput("");
   }
+
+  function toggleSpeak(id: string, text: string, langIso: string) {
+    if (speaking === id) {
+      stopSpeaking();
+      setSpeaking(null);
+      return;
+    }
+    const voice = voiceFor(voices, langIso);
+    if (!voice || !text.trim()) return;
+    setSpeaking(id);
+    speak(text, voice, () => setSpeaking((s) => (s === id ? null : s)));
+  }
+
+  function toggleMic() {
+    if (listening) {
+      recognizer.current?.stop();
+      return;
+    }
+    const r = createRecognizer(iso(source));
+    if (!r) return;
+    const base = input ? input.trimEnd() + " " : "";
+    r.onresult = (e) => {
+      let text = "";
+      for (let i = 0; i < e.results.length; i++) text += e.results[i][0].transcript;
+      setInput((base + text).slice(0, MAX));
+    };
+    r.onerror = (e) => {
+      if (e.error === "not-allowed") setError("Microphone permission was denied.");
+      else if (e.error === "language-not-supported") setError(`Speech input is not available for ${nameOf(source)} in this browser.`);
+    };
+    r.onend = () => setListening(false);
+    recognizer.current = r;
+    setListening(true);
+    setError(null);
+    r.start();
+  }
+
+  async function copy(id: string, text: string) {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(id);
+      setTimeout(() => setCopied(null), 1500);
+    } catch {
+      /* clipboard unavailable */
+    }
+  }
+
+  const santaliNote = "Santali voice is coming with SANTALIQ Voice — no browser has a Santali voice yet.";
+  const speakLabel = (code: string, text: string) => {
+    if (code === SANTALI) return santaliNote;
+    if (!text.trim()) return "Listen";
+    return voiceFor(voices, iso(code)) ? `Listen (${nameOf(code)})` : `No ${nameOf(code)} voice on this device`;
+  };
+  const canSpeak = (code: string, text: string) => code !== SANTALI && !!text.trim() && !!voiceFor(voices, iso(code));
+  const micLabel =
+    source === SANTALI
+      ? "Santali speech input is coming with SANTALIQ Voice."
+      : !micSupported
+        ? "Speech input is not supported in this browser (try Chrome or Edge)."
+        : listening
+          ? "Stop listening"
+          : `Speak in ${nameOf(source)}`;
 
   const select = (value: string, onChange: (v: string) => void, label: string) => (
     <select
@@ -87,48 +221,82 @@ export function Translator() {
     </select>
   );
 
+  const activeEngine = engines.find((e) => e.id === engine);
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
+      {/* Engine switch */}
+      {engines.length > 0 && (
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xs font-medium tracking-wide text-muted uppercase">Engine</span>
+          {engines.map((e) => (
+            <button
+              key={e.id}
+              type="button"
+              disabled={!e.enabled}
+              onClick={() => {
+                setEngine(e.id);
+                setOutput("");
+              }}
+              title={e.enabled ? e.note : `${e.name} — coming soon`}
+              className={`rounded-full border px-4 py-1.5 text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-45 ${
+                engine === e.id ? "border-fg bg-fg text-bg" : "border-line text-muted hover:text-fg"
+              }`}
+            >
+              {e.name}
+              {!e.enabled && <span className="ml-1 text-xs">(soon)</span>}
+            </button>
+          ))}
+          {activeEngine && <span className="text-xs text-muted">{activeEngine.note}</span>}
+        </div>
+      )}
+
       {/* Language bar */}
       <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center">
         {select(source, setSource, "Translate from")}
-        <button
-          type="button"
-          onClick={swap}
-          aria-label="Swap languages"
-          className="self-center rounded-full border border-line px-3 py-2 text-sm transition-colors hover:border-fg/40"
-        >
+        <button type="button" onClick={swap} aria-label="Swap languages" className="self-center rounded-full border border-line px-3 py-2 text-sm transition-colors hover:border-fg/40">
           ⇄
         </button>
         {select(target, setTarget, "Translate to")}
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-5 lg:grid-cols-2">
         {/* Input */}
-        <div className="rounded-[var(--radius-card)] border border-line bg-bg-elevated p-5 sm:p-6">
-          <textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value.slice(0, MAX))}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) translate();
-            }}
-            rows={8}
-            placeholder={
-              source === SANTALI
-                ? "Write Santali in any script — Ol Chiki, Roman, Bengali, Odia or Devanagari…"
-                : "Type text to translate…"
-            }
-            className="w-full resize-y rounded-xl border border-line bg-bg p-4 text-xl leading-relaxed outline-none focus:border-accent"
-          />
-          <div className="mt-3 flex items-center justify-between gap-3">
-            <span className="text-xs text-muted">
-              {input.length}/{MAX} · Ctrl + Enter
+        <div className="flex flex-col rounded-[var(--radius-card)] border border-line bg-bg-elevated">
+          <div className="relative flex-1">
+            <textarea
+              value={input}
+              onChange={(e) => setInput(e.target.value.slice(0, MAX))}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) translate();
+              }}
+              rows={7}
+              placeholder={source === SANTALI ? "Write Santali in any script — Ol Chiki, Roman, Bengali, Odia or Devanagari…" : "Type, paste or speak…"}
+              aria-label="Text to translate"
+              className="h-full w-full resize-none rounded-t-[var(--radius-card)] bg-transparent p-5 pr-12 text-xl leading-relaxed outline-none"
+            />
+            {input && (
+              <button type="button" onClick={() => { setInput(""); setOutput(""); }} aria-label="Clear" className="absolute top-4 right-4 text-xl text-muted hover:text-fg">
+                ✕
+              </button>
+            )}
+          </div>
+          <div className="flex items-center gap-1 border-t border-line px-3 py-2">
+            <IconButton label={micLabel} onClick={toggleMic} disabled={source === SANTALI || !micSupported} active={listening}>
+              <MicIcon />
+            </IconButton>
+            <IconButton label={speakLabel(source, input)} onClick={() => toggleSpeak("in", input, iso(source))} disabled={!canSpeak(source, input)}>
+              <SpeakerIcon on={speaking === "in"} />
+            </IconButton>
+            {listening && <span className="ml-1 animate-pulse text-sm text-red-600 dark:text-red-400">Listening…</span>}
+            <span className="ml-auto text-xs text-muted">
+              {input.length}/{MAX}
             </span>
             <button
               type="button"
-              onClick={translate}
+              onClick={() => translate()}
               disabled={loading || !input.trim() || languages.length === 0}
-              className="rounded-full bg-fg px-6 py-2.5 font-semibold text-bg transition-opacity hover:opacity-85 disabled:opacity-40"
+              className="ml-3 rounded-full bg-fg px-6 py-2 font-semibold text-bg transition-opacity hover:opacity-85 disabled:opacity-40"
             >
               {loading ? "Translating…" : "Translate"}
             </button>
@@ -136,24 +304,40 @@ export function Translator() {
         </div>
 
         {/* Output */}
-        <div className="rounded-[var(--radius-card)] border border-line bg-bg-elevated p-5 sm:p-6" aria-live="polite">
-          {error && <p className="rounded-xl bg-accent-soft p-4 text-sm text-accent">{error}</p>}
-          {!error && !output && (
-            <p className="text-muted">{loading ? "Translating…" : "Your translation will appear here."}</p>
-          )}
-          {!error && output && target !== SANTALI && (
-            <p className="text-2xl leading-relaxed whitespace-pre-wrap">{output}</p>
-          )}
-          {!error && output && target === SANTALI && (
-            <div className="divide-y divide-line">
-              {allScripts(output).map(({ script, text }) => (
-                <div key={script} className="py-3 first:pt-0 last:pb-0">
-                  <span className="text-xs font-medium uppercase tracking-[0.15em] text-muted">
-                    {SCRIPT_LABELS[script].name} · {SCRIPT_LABELS[script].native}
-                  </span>
-                  <p className="mt-1 text-2xl leading-relaxed whitespace-pre-wrap">{text}</p>
-                </div>
-              ))}
+        <div className="flex flex-col rounded-[var(--radius-card)] border border-line bg-bg-sunken" aria-live="polite">
+          <div className="flex-1 p-5">
+            {error && <p className="rounded-xl bg-red-500/10 p-4 text-sm text-red-700 dark:text-red-300">{error}</p>}
+            {!error && !output && <p className="text-xl text-muted">{loading ? "Translating…" : "Translation"}</p>}
+            {!error && output && target !== SANTALI && <p className="text-xl leading-relaxed whitespace-pre-wrap">{output}</p>}
+            {!error && output && target === SANTALI && (
+              <div className="divide-y divide-line">
+                {allScripts(output).map(({ script, text }) => (
+                  <div key={script} className="flex items-start gap-2 py-3 first:pt-0 last:pb-0">
+                    <div className="flex-1">
+                      <span className="text-xs font-medium tracking-[0.15em] text-muted uppercase">
+                        {SCRIPT_LABELS[script].name} · {SCRIPT_LABELS[script].native}
+                      </span>
+                      <p className="mt-1 text-xl leading-relaxed whitespace-pre-wrap">{text}</p>
+                    </div>
+                    <IconButton label={copied === script ? "Copied" : "Copy"} onClick={() => copy(script, text)}>
+                      {copied === script ? "✓" : <CopyIcon />}
+                    </IconButton>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          {output && !error && (
+            <div className="flex items-center gap-1 border-t border-line px-3 py-2">
+              <IconButton label={speakLabel(target, output)} onClick={() => toggleSpeak("out", output, iso(target))} disabled={!canSpeak(target, output)}>
+                <SpeakerIcon on={speaking === "out"} />
+              </IconButton>
+              {target !== SANTALI && (
+                <IconButton label={copied === "out" ? "Copied" : "Copy"} onClick={() => copy("out", output)}>
+                  {copied === "out" ? "✓" : <CopyIcon />}
+                </IconButton>
+              )}
+              {target === SANTALI && <span className="text-xs text-muted">{santaliNote}</span>}
             </div>
           )}
         </div>

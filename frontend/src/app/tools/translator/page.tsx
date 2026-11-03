@@ -30,8 +30,10 @@ export default function TranslatorPage() {
       <div className="mt-12 rounded-[var(--radius-card)] border border-line p-6 text-sm leading-relaxed text-muted">
         <p className="font-semibold text-fg">About this translator</p>
         <p className="mt-2">
-          Powered by the open NLLB-200 model (Meta AI, CC-BY-NC 4.0) running on SANTALIQ&apos;s own
-          server — your text is not sent to third parties. Machine translation for Santali is still
+          Two engines: the open NLLB-200 model (Meta AI, CC-BY-NC 4.0) running on SANTALIQ&apos;s own
+          server — your text stays private — and, when enabled, Google Translate (your text is sent to
+          Google). Listen and speak use your browser&apos;s built-in voices; Santali voice arrives with
+          SANTALIQ Voice. Machine translation for Santali is still
           young: results can be wrong, especially for long or idiomatic sentences. Please check
           important text with a fluent speaker. SANTALIQ will improve quality with verified
           community data.
