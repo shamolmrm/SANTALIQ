@@ -12,6 +12,7 @@ const STATIC = [
   "/write",
   "/learn",
   "/heritage",
+  "/voice",
   "/ai",
   "/dataset",
 ];

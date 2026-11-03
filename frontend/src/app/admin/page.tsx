@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { EntryCard } from "@/components/entry-card";
 import { HeritageQueue } from "@/components/heritage-queue";
+import { VoiceQueue } from "@/components/voice-queue";
 import { ReportsQueue } from "@/components/reports-queue";
 import { RequireSession } from "@/components/require-session";
 import { Alert, Button, Card, Input, PageHeader, Select } from "@/components/ui";
@@ -193,6 +194,7 @@ function Admin({ me }: { me: User }) {
       </div>
       <ReviewQueue me={me} onChange={loadStats} />
       <HeritageQueue me={me} />
+      <VoiceQueue me={me} />
       <ReportsQueue />
       {hasRole(me, "admin") && <Users me={me} />}
     </div>

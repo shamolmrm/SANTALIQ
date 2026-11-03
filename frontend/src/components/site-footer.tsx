@@ -10,6 +10,7 @@ const groups = [
       { href: "/tools", label: "All tools" },
       { href: "/learn", label: "Learn Ol Chiki" },
       { href: "/heritage", label: "Heritage archive" },
+      { href: "/voice", label: "Lend your voice" },
       { href: "/dataset", label: "Open dataset" },
     ],
   },

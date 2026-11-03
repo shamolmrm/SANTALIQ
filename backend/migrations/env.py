@@ -5,6 +5,7 @@ import app.modules.ai.models  # noqa: F401
 import app.modules.heritage.models  # noqa: F401
 import app.modules.language.models  # noqa: F401  (register models)
 import app.modules.users.models  # noqa: F401
+import app.modules.voice.models  # noqa: F401
 import app.modules.write.models  # noqa: F401
 from app.core.config import get_settings
 from app.core.db import Base

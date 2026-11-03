@@ -11,6 +11,8 @@ from app.modules.translate.router import router as translate_router
 from app.modules.users.account_router import router as account_router
 from app.modules.users.profile_router import router as profile_router
 from app.modules.users.router import router as auth_router
+from app.modules.voice.router import admin_router as voice_admin_router
+from app.modules.voice.router import router as voice_router
 from app.modules.write.moderation import router as write_moderation_router
 from app.modules.write.router import router as write_router
 
@@ -28,3 +30,5 @@ api_router.include_router(admin_router)
 api_router.include_router(write_moderation_router)
 api_router.include_router(heritage_router)
 api_router.include_router(heritage_admin_router)
+api_router.include_router(voice_router)
+api_router.include_router(voice_admin_router)

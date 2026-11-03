@@ -56,6 +56,10 @@ services:
       # Optional — Google Translate engine stays off until the key is set in .env
       GOOGLE_TRANSLATE_API_KEY: ${GOOGLE_TRANSLATE_API_KEY:-}
       GOOGLE_SANTALI_CODE: ${GOOGLE_SANTALI_CODE:-sat}
+      # SANTALIQ Voice recordings (host dir created + chowned to uid 1001 by deploy.sh)
+      VOICE_DIR: /data/voice
+    volumes:
+      - ../../../data/voice:/data/voice
     depends_on:
       postgres:
         condition: service_healthy

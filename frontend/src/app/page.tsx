@@ -36,7 +36,7 @@ const roadmap = [
   { phase: "01", title: "Language tools — translator, converter, keyboard, dictionary", status: "Live" },
   { phase: "02", title: "Verified language data & SANTALIQ Write", status: "Live" },
   { phase: "03", title: "Grounded Santali AI", status: "Beta" },
-  { phase: "04", title: "Santali voice", status: "Next" },
+  { phase: "04", title: "Santali voice — collecting consented recordings", status: "Beta" },
   { phase: "05", title: "Learning & heritage", status: "Beta" },
   { phase: "06", title: "Community, mobile & global", status: "Planned" },
 ];

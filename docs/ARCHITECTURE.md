@@ -46,6 +46,7 @@ Nginx Proxy Manager (shared VPS, ports 80/443, Let's Encrypt)
 | PATCH | `/api/v1/people/me` | signed in; edit own display name + bio |
 | GET | `/api/v1/write/sitemap` | published slugs for `/sitemap.xml` |
 | GET/POST/DELETE | `/api/v1/heritage/...`, `/api/v1/admin/heritage` | Heritage archive ([module doc](modules/HERITAGE.md)) |
+| GET/PUT/POST/DELETE | `/api/v1/voice/...`, `/api/v1/admin/voice` | Voice collection ([module doc](modules/VOICE.md)) |
 | POST | `/api/v1/dictionary/entries` | signed in; creates `pending` entry (source + consent required) |
 | GET | `/api/v1/dictionary/entries/mine` | own submissions with status |
 | GET | `/api/v1/admin/stats` · `/admin/review` | reviewer+ |

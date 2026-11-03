@@ -13,6 +13,7 @@ SANTALIQ is a digital home for the Santali language, people and culture — scri
 > - [Dictionary](https://santaliq.supersoftltd.com/tools/dictionary): community contributions with reviewer verification
 > - [Write](https://santaliq.supersoftltd.com/write): articles, poetry and stories in any script, with author profiles and SEO
 > - [Heritage](https://santaliq.supersoftltd.com/heritage): consented, sourced and reviewed archive of stories, songs, festivals and history
+> - [Voice](https://santaliq.supersoftltd.com/voice): consented Santali voice collection with review (for future TTS / ASR)
 > - [Learn](https://santaliq.supersoftltd.com/learn): Ol Chiki alphabet and quizzes
 > - [Open Dataset](https://santaliq.supersoftltd.com/dataset): verified lexicon as JSON/CSV
 > - [AI](https://santaliq.supersoftltd.com/ai): grounded search (chat is built, and stays off until an API key is set)

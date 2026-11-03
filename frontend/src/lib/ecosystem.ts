@@ -11,7 +11,7 @@ export const divisions: Array<{
   { name: "AI", summary: "Grounded assistant with sources, writing help", status: "live", href: "/ai" },
   { name: "Write", summary: "Articles, poetry, stories and journals in Santali", status: "live", href: "/write" },
   { name: "Learn", summary: "Ol Chiki alphabet and quizzes; courses next", status: "live", href: "/learn" },
-  { name: "Voice", summary: "Text-to-speech, speech recognition, pronunciation", status: "planned" },
+  { name: "Voice", summary: "Consented voice collection now; TTS and speech recognition next", status: "building", href: "/voice" },
   { name: "Heritage", summary: "Folk stories, songs, festivals and history archive", status: "live", href: "/heritage" },
   { name: "Social", summary: "Profiles, feed, groups and polls", status: "planned" },
   { name: "Connect", summary: "Messages, discussions and notifications", status: "planned" },

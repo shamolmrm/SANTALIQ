@@ -46,6 +46,10 @@ ssh "$SERVER" "
   rm -rf $REMOTE_DIR/app.prev
   [ -d $REMOTE_DIR/app ] && mv $REMOTE_DIR/app $REMOTE_DIR/app.prev
   mv $REMOTE_DIR/app.new $REMOTE_DIR/app
+  # persistent voice recordings, owned by the API container user (uid 1001)
+  mkdir -p $REMOTE_DIR/data/voice
+  chown 1001:1001 $REMOTE_DIR/data/voice
+  chmod 750 $REMOTE_DIR/data/voice
   $COMPOSE build
   $COMPOSE up -d --remove-orphans
   docker image prune -f >/dev/null
@@ -54,6 +58,20 @@ ssh "$SERVER" "
   install -m 755 $REMOTE_DIR/app/infrastructure/production/backup.sh /usr/local/bin/santaliq-backup
   echo '15 3 * * * root /usr/local/bin/santaliq-backup >> /var/log/santaliq-backup.log 2>&1' > /etc/cron.d/santaliq-backup
   chmod 644 /etc/cron.d/santaliq-backup
+
+  # keep the Nginx site config in sync with the repo (only reload if it changed and is valid)
+  SITE=/home/ubuntu/docker/proxy/data/nginx/custom/sites/santaliq.conf
+  NEW=$REMOTE_DIR/app/infrastructure/production/nginx/santaliq.conf
+  if [ -f \$SITE ] && ! cmp -s \$NEW \$SITE; then
+    cp \$SITE /root/santaliq.conf.bak
+    cp \$NEW \$SITE
+    if docker exec npm nginx -t >/dev/null 2>&1; then
+      docker exec npm nginx -s reload && echo '    nginx site config updated'
+    else
+      cp /root/santaliq.conf.bak \$SITE
+      echo '    nginx config test failed; kept the previous config' >&2
+    fi
+  fi
 "
 
 # 4. Smoke test from inside the proxy network

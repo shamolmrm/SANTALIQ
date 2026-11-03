@@ -48,6 +48,11 @@ class Settings(BaseSettings):
     ai_requests_per_minute: int = 10
     ai_requests_per_day: int = 50
 
+    # SANTALIQ Voice: consented recordings stored on disk (a Docker bind mount in production)
+    voice_dir: str = "./data/voice"
+    voice_max_bytes: int = 2 * 1024 * 1024  # ~30 s of Opus is ~150 KB; generous for WAV/MP4
+    voice_clips_per_hour: int = 60
+
     @property
     def email_enabled(self) -> bool:
         return bool(self.smtp_host and self.mail_from)

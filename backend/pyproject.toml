@@ -14,6 +14,7 @@ dependencies = [
     "redis>=5.2",
     "argon2-cffi>=23.1",
     "anthropic>=1.0",
+    "python-multipart>=0.0.18",  # audio uploads (SANTALIQ Voice)
 ]
 
 [project.optional-dependencies]

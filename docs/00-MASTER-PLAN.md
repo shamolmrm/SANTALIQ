@@ -74,6 +74,13 @@ Later (only once there are real users): marketplace, careers, video hosting, liv
 | Open Dataset v1 (`/dataset`, JSON + CSV of verified entries) + contributor credits | **live** — licence label pending owner decision (`DATASET_LICENSE`) |
 | Writing help in editor, pgvector retrieval | todo |
 
+## Phase 4 progress
+| Task | Status |
+| --- | --- |
+| Consented voice collection: consent (public / research choices), browser recorder, dictionary prompts, reviewer verification, withdrawal, public listening library | **beta live** ([module doc](modules/VOICE.md)) |
+| Research export of voice data | todo (owner licence decision) |
+| Santali TTS / ASR | todo (needs enough verified hours) |
+
 ## Phase 5 progress
 | Task | Status |
 | --- | --- |

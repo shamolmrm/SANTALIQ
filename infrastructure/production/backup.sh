@@ -22,6 +22,18 @@ chmod 600 "$file"
 find "$DEST" -name 'santaliq-*.sql.gz' -mtime +"$KEEP_DAYS" -delete
 echo "$(date -Is) backup ok: $file ($(du -h "$file" | cut -f1))"
 
+# ── voice recordings: local mirror (withdrawn clips are removed here too) ──
+VOICE_SRC=/home/ubuntu/docker/websites/santaliq/data/voice
+if [ -d "$VOICE_SRC" ]; then
+  mkdir -p "$DEST/voice"
+  if command -v rsync >/dev/null; then
+    rsync -a --delete "$VOICE_SRC/" "$DEST/voice/"
+  else
+    rm -rf "$DEST/voice.tmp" && cp -a "$VOICE_SRC" "$DEST/voice.tmp" && rm -rf "$DEST/voice" && mv "$DEST/voice.tmp" "$DEST/voice"
+  fi
+  echo "$(date -Is) voice mirror ok ($(find "$DEST/voice" -type f | wc -l) files)"
+fi
+
 # ── optional encrypted off-server copy ──
 BACKUP_REMOTE="$(grep -E '^BACKUP_REMOTE=' "$ENV_FILE" 2>/dev/null | cut -d= -f2- || true)"
 BACKUP_PASSPHRASE="$(grep -E '^BACKUP_PASSPHRASE=' "$ENV_FILE" 2>/dev/null | cut -d= -f2- || true)"

@@ -35,3 +35,6 @@ Thumbs.db
 
 # Python packaging
 *.egg-info/
+
+# SANTALIQ Voice recordings (local dev)
+backend/data/
