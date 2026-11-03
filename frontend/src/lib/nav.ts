@@ -1,9 +1,11 @@
-export const mainNav = [
-  { href: "/tools/translator", label: "Translator" },
-  { href: "/tools/dictionary", label: "Dictionary" },
-  { href: "/write", label: "Write" },
-  { href: "/learn", label: "Learn" },
-  { href: "/heritage", label: "Heritage" },
-  { href: "/ai", label: "AI" },
-  { href: "/tools", label: "Tools" },
-] as const;
+import type { MessageKey } from "@/lib/i18n";
+
+export const mainNav: ReadonlyArray<{ href: string; k: MessageKey }> = [
+  { href: "/tools/translator", k: "nav.translator" },
+  { href: "/tools/dictionary", k: "nav.dictionary" },
+  { href: "/write", k: "nav.write" },
+  { href: "/learn", k: "nav.learn" },
+  { href: "/heritage", k: "nav.heritage" },
+  { href: "/ai", k: "nav.ai" },
+  { href: "/tools", k: "nav.tools" },
+];

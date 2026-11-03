@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { convert, SCRIPT_LABELS, SCRIPTS, type Script } from "@/lib/script/engine";
 import { keyboardLayout } from "@/lib/script/keyboard";
+import { fill, useT } from "@/lib/i18n";
 
 const STORAGE_KEY = "santaliq.keyboard";
 
@@ -61,6 +62,8 @@ export function Keyboard() {
     });
   }
 
+  const tAll = useT();
+  const t = tAll.keyboard;
   const preview = phonetic ? convert(phonetic, "latn", script) : "";
 
   async function copy() {
@@ -76,7 +79,7 @@ export function Keyboard() {
   return (
     <div className="space-y-6">
       {/* Script switch */}
-      <div role="tablist" aria-label="Keyboard script" className="flex flex-wrap gap-2">
+      <div role="tablist" aria-label={t.script} className="flex flex-wrap gap-2">
         {SCRIPTS.map((s) => (
           <button
             key={s}
@@ -100,18 +103,18 @@ export function Keyboard() {
           onChange={(e) => setText(e.target.value)}
           rows={6}
           spellCheck={false}
-          placeholder="Your Santali text appears here…"
-          aria-label="Text"
+          placeholder={t.placeholder}
+          aria-label={t.text}
           className="w-full resize-y rounded-xl border border-line bg-bg p-4 text-2xl leading-relaxed outline-none focus:border-accent"
         />
         <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-          <span className="text-xs text-muted">{Array.from(text).length} characters · saved in this browser</span>
+          <span className="text-xs text-muted">{fill(t.chars, { n: String(Array.from(text).length) })}</span>
           <div className="flex gap-2">
             <button onClick={() => setText("")} disabled={!text} className="rounded-full border border-line px-4 py-1.5 text-sm disabled:opacity-40">
-              Clear
+              {tAll.common.clear}
             </button>
             <button onClick={copy} disabled={!text} className="rounded-full bg-fg px-4 py-1.5 text-sm font-semibold text-bg disabled:opacity-40">
-              {copied ? "Copied ✓" : "Copy"}
+              {copied ? tAll.common.copied : tAll.common.copy}
             </button>
           </div>
         </div>
@@ -121,10 +124,10 @@ export function Keyboard() {
       {script !== "latn" && (
         <div className="rounded-[var(--radius-card)] border border-line bg-bg-elevated p-4 sm:p-5">
           <label htmlFor="phonetic" className="text-sm font-semibold">
-            Type with Roman letters
+            {t.roman}
           </label>
           <p className="mt-1 text-xs text-muted">
-            e.g. <kbd>santaRi</kbd> → {convert("santaRi", "latn", script)}. Shortcuts: T D N R O = ṭ ḍ ṇ ṛ ō · ng · ny · kh · ~ for nasal. Press Enter to insert.
+            {t.example} <kbd>santaRi</kbd> → {convert("santaRi", "latn", script)}. {t.romanHelp}
           </p>
           <div className="mt-3 flex flex-col gap-3 sm:flex-row">
             <input
@@ -150,7 +153,7 @@ export function Keyboard() {
               disabled={!preview}
               className="rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-40"
             >
-              Insert {preview && <span className="ml-1 text-base">{preview}</span>}
+              {t.insert} {preview && <span className="ml-1 text-base">{preview}</span>}
             </button>
           </div>
         </div>
@@ -178,9 +181,9 @@ export function Keyboard() {
         ))}
         <div className="flex gap-2">
           <button onClick={() => insert(" ")} className="flex-1 rounded-lg border border-line bg-bg-elevated py-2 text-sm text-muted">
-            space
+            {t.space}
           </button>
-          <button onClick={backspace} className="rounded-lg border border-line bg-bg-elevated px-5 py-2 text-sm" aria-label="Backspace">
+          <button onClick={backspace} className="rounded-lg border border-line bg-bg-elevated px-5 py-2 text-sm" aria-label={t.backspace}>
             ⌫
           </button>
         </div>

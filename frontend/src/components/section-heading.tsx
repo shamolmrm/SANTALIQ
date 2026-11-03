@@ -1,11 +1,13 @@
+import type { ReactNode } from "react";
+
 export function SectionHeading({
   eyebrow,
   title,
   lead,
 }: {
-  eyebrow: string;
-  title: string;
-  lead?: string;
+  eyebrow: ReactNode;
+  title: ReactNode;
+  lead?: ReactNode;
 }) {
   return (
     <div className="max-w-2xl">

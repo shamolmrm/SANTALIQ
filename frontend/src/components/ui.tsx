@@ -77,7 +77,7 @@ export function Card({ children, className = "" }: { children: ReactNode; classN
   );
 }
 
-export function PageHeader({ eyebrow, title, lead }: { eyebrow?: string; title: string; lead?: ReactNode }) {
+export function PageHeader({ eyebrow, title, lead }: { eyebrow?: ReactNode; title: ReactNode; lead?: ReactNode }) {
   return (
     <div className="max-w-3xl">
       {eyebrow && <p className="text-sm font-semibold tracking-wide text-accent">{eyebrow}</p>}

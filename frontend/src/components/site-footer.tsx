@@ -1,41 +1,44 @@
-import Link from "next/link";
-import { Logo } from "@/components/logo";
+"use client";
 
-const groups = [
-  {
-    title: "Tools",
-    links: [
-      { href: "/tools/translator", label: "Translator" },
-      { href: "/tools/script-converter", label: "Script Converter" },
-      { href: "/tools", label: "All tools" },
-      { href: "/learn", label: "Learn Ol Chiki" },
-      { href: "/heritage", label: "Heritage archive" },
-      { href: "/voice", label: "Lend your voice" },
-      { href: "/dataset", label: "Open dataset" },
-    ],
-  },
-  {
-    title: "SANTALIQ",
-    links: [
-      { href: "/about", label: "About" },
-      { href: "/#ecosystem", label: "Ecosystem" },
-      { href: "/#roadmap", label: "Roadmap" },
-      { href: "/contact", label: "Contact" },
-      { href: "/privacy", label: "Privacy" },
-      { href: "/terms", label: "Terms" },
-    ],
-  },
-];
+import Link from "next/link";
+import { LanguageSwitch } from "@/components/language-switch";
+import { Logo } from "@/components/logo";
+import { useT } from "@/lib/i18n";
 
 export function SiteFooter() {
+  const t = useT().footer;
+  const groups = [
+    {
+      title: t.tools,
+      links: [
+        { href: "/tools/translator", label: t.translator },
+        { href: "/tools/script-converter", label: t.converter },
+        { href: "/tools", label: t.allTools },
+        { href: "/learn", label: t.learn },
+        { href: "/heritage", label: t.heritage },
+        { href: "/voice", label: t.voice },
+        { href: "/dataset", label: t.dataset },
+      ],
+    },
+    {
+      title: t.santaliq,
+      links: [
+        { href: "/about", label: t.about },
+        { href: "/#ecosystem", label: t.ecosystem },
+        { href: "/#roadmap", label: t.roadmap },
+        { href: "/contact", label: t.contact },
+        { href: "/privacy", label: t.privacy },
+        { href: "/terms", label: t.terms },
+      ],
+    },
+  ];
   return (
     <footer className="border-t border-line bg-bg-sunken">
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-[1.5fr_1fr_1fr]">
-        <div className="space-y-3">
+        <div className="space-y-4">
           <Logo />
-          <p className="max-w-xs text-sm leading-relaxed text-muted">
-            Santali Language. AI Innovation. A digital home for the Santali language, people and culture.
-          </p>
+          <p className="max-w-xs text-sm leading-relaxed text-muted">{t.tagline}</p>
+          <LanguageSwitch />
         </div>
         {groups.map((g) => (
           <nav key={g.title} aria-label={g.title}>
@@ -53,9 +56,7 @@ export function SiteFooter() {
         ))}
       </div>
       <div className="border-t border-line">
-        <p className="mx-auto max-w-6xl px-4 py-5 text-xs text-muted sm:px-6">
-          © SANTALIQ · Santali first · Multi-script · Community owned
-        </p>
+        <p className="mx-auto max-w-6xl px-4 py-5 text-xs text-muted sm:px-6">{t.bottom}</p>
       </div>
     </footer>
   );

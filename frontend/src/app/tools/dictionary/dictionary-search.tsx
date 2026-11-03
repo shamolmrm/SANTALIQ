@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { EntryCard } from "@/components/entry-card";
 import { Alert, Input } from "@/components/ui";
 import { api, type Entry } from "@/lib/api";
+import { fill, useT } from "@/lib/i18n";
 import { convert, detectScript } from "@/lib/script/engine";
 
 type Result = { query: string; total: number; results: Entry[] };
@@ -13,6 +14,7 @@ export function DictionarySearch() {
   const [q, setQ] = useState("");
   const [data, setData] = useState<Result | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const t = useT().dictionary;
 
   useEffect(() => {
     const term = q.trim();
@@ -42,18 +44,18 @@ export function DictionarySearch() {
       <Input
         value={q}
         onChange={(e) => setQ(e.target.value)}
-        placeholder="Search in Ol Chiki, Roman, Bengali, Odia or Devanagari…"
+        placeholder={t.placeholder}
         className="py-4 text-xl"
-        aria-label="Search the dictionary"
+        aria-label={t.search}
         autoFocus
       />
       <div className="mt-8 grid gap-4" aria-live="polite">
         {error && <Alert>{error}</Alert>}
         {shown && shown.total === 0 && (
           <Alert tone="info">
-            No verified entries match “{shown.query}” yet. The dictionary is built word by word by the community —{" "}
+            {fill(t.noMatch, { q: shown.query })}{" "}
             <Link href="/contribute" className="font-semibold text-accent">
-              contribute this word →
+              {t.contribute}
             </Link>
           </Alert>
         )}

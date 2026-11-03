@@ -57,6 +57,7 @@ Later (only once there are real users): marketplace, careers, video hosting, liv
 | Accounts: register/login, roles, admin, password change; email verify/reset (off until SMTP) | **live** |
 | Admin dashboard: overview, review tabs, content, users, activity log, system status | **live** ([module doc](modules/ADMIN.md)) |
 | Privacy Policy, Terms of Use (drafts, pending legal review), contact form + admin inbox, self-service account deletion | **live** |
+| Bengali interface v1 (header, home, about, tools, auth, translator, converter, keyboard, dictionary) | **live** ([module doc](modules/I18N.md)); remaining pages next |
 
 ## Phase 2 progress
 | Task | Status |

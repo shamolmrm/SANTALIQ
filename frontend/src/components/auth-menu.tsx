@@ -2,14 +2,16 @@
 
 import Link from "next/link";
 import { useSession } from "@/lib/api";
+import { useT } from "@/lib/i18n";
 
 export function AuthMenu() {
   const { user, loading } = useSession();
+  const t = useT();
   if (loading) return <span className="hidden w-20 sm:block" aria-hidden />;
   if (!user)
     return (
       <Link href="/login" className="rounded-full bg-fg px-4 py-2 text-sm font-semibold text-bg transition-opacity hover:opacity-90">
-        Sign in
+        {t.common.signIn}
       </Link>
     );
   return (

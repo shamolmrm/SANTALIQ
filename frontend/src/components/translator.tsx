@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { convert, detectScript, SCRIPT_LABELS, SCRIPTS, type Script } from "@/lib/script/engine";
+import { fill, useT } from "@/lib/i18n";
 import { createRecognizer, recognitionSupported, speak, stopSpeaking, useVoices, voiceFor } from "@/lib/speech";
 
 const API = process.env.NEXT_PUBLIC_API_BASE ?? "";
@@ -81,13 +82,17 @@ export function Translator() {
   const [copied, setCopied] = useState<string | null>(null);
   const recognizer = useRef<ReturnType<typeof createRecognizer>>(null);
   const voices = useVoices();
+  const tAll = useT();
+  const t = tAll.translator;
+  const c = tAll.common;
+  const [langError, setLangError] = useState(false);
 
   useEffect(() => {
     setMicSupported(recognitionSupported());
     fetch(`${API}/api/v1/translate/languages`)
       .then((r) => (r.ok ? r.json() : Promise.reject()))
       .then(setLanguages)
-      .catch(() => setError("Could not load languages. Please refresh."));
+      .catch(() => setLangError(true));
     fetch(`${API}/api/v1/translate/engines`)
       .then((r) => (r.ok ? r.json() : Promise.reject()))
       .then(setEngines)
@@ -118,16 +123,16 @@ export function Translator() {
         const detail = await r.json().then((b) => b.detail).catch(() => null);
         throw new Error(
           r.status === 429
-            ? "You have sent many translations in a short time. Please wait a minute and try again."
+            ? tAll.translator.errRate
             : typeof detail === "string"
               ? detail
-              : "Translation failed. Please try again.",
+              : tAll.translator.errFailed,
         );
       }
       const data: { translation: string } = await r.json();
       setOutput(data.translation);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Translation failed. Please try again.");
+      setError(e instanceof Error ? e.message : tAll.translator.errFailed);
     } finally {
       setLoading(false);
     }
@@ -166,8 +171,8 @@ export function Translator() {
       setInput((base + text).slice(0, MAX));
     };
     r.onerror = (e) => {
-      if (e.error === "not-allowed") setError("Microphone permission was denied.");
-      else if (e.error === "language-not-supported") setError(`Speech input is not available for ${nameOf(source)} in this browser.`);
+      if (e.error === "not-allowed") setError(t.errMicDenied);
+      else if (e.error === "language-not-supported") setError(fill(t.errMicLang, { lang: nameOf(source) }));
     };
     r.onend = () => setListening(false);
     recognizer.current = r;
@@ -186,21 +191,21 @@ export function Translator() {
     }
   }
 
-  const santaliNote = "Santali voice is coming with SANTALIQ Voice — no browser has a Santali voice yet.";
+  const santaliNote = t.santaliVoice;
   const speakLabel = (code: string, text: string) => {
     if (code === SANTALI) return santaliNote;
-    if (!text.trim()) return "Listen";
-    return voiceFor(voices, iso(code)) ? `Listen (${nameOf(code)})` : `No ${nameOf(code)} voice on this device`;
+    if (!text.trim()) return t.listen;
+    return voiceFor(voices, iso(code)) ? fill(t.listenIn, { lang: nameOf(code) }) : fill(t.noVoice, { lang: nameOf(code) });
   };
   const canSpeak = (code: string, text: string) => code !== SANTALI && !!text.trim() && !!voiceFor(voices, iso(code));
   const micLabel =
     source === SANTALI
-      ? "Santali speech input is coming with SANTALIQ Voice."
+      ? t.santaliMic
       : !micSupported
-        ? "Speech input is not supported in this browser (try Chrome or Edge)."
+        ? t.micUnsupported
         : listening
-          ? "Stop listening"
-          : `Speak in ${nameOf(source)}`;
+          ? t.stopListening
+          : fill(t.speakIn, { lang: nameOf(source) });
 
   const select = (value: string, onChange: (v: string) => void, label: string) => (
     <select
@@ -223,12 +228,14 @@ export function Translator() {
 
   const activeEngine = engines.find((e) => e.id === engine);
 
+  const err = error ?? (langError ? t.errLanguages : null);
+
   return (
     <div className="space-y-5">
       {/* Engine switch */}
       {engines.length > 0 && (
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs font-medium tracking-wide text-muted uppercase">Engine</span>
+          <span className="text-xs font-medium tracking-wide text-muted uppercase">{t.engine}</span>
           {engines.map((e) => (
             <button
               key={e.id}
@@ -238,13 +245,13 @@ export function Translator() {
                 setEngine(e.id);
                 setOutput("");
               }}
-              title={e.enabled ? e.note : `${e.name} — coming soon`}
+              title={e.enabled ? e.note : `${e.name} — ${t.comingSoon}`}
               className={`rounded-full border px-4 py-1.5 text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-45 ${
                 engine === e.id ? "border-fg bg-fg text-bg" : "border-line text-muted hover:text-fg"
               }`}
             >
               {e.name}
-              {!e.enabled && <span className="ml-1 text-xs">(soon)</span>}
+              {!e.enabled && <span className="ml-1 text-xs">{t.soon}</span>}
             </button>
           ))}
           {activeEngine && <span className="text-xs text-muted">{activeEngine.note}</span>}
@@ -253,11 +260,11 @@ export function Translator() {
 
       {/* Language bar */}
       <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center">
-        {select(source, setSource, "Translate from")}
-        <button type="button" onClick={swap} aria-label="Swap languages" className="self-center rounded-full border border-line px-3 py-2 text-sm transition-colors hover:border-fg/40">
+        {select(source, setSource, t.from)}
+        <button type="button" onClick={swap} aria-label={t.swap} className="self-center rounded-full border border-line px-3 py-2 text-sm transition-colors hover:border-fg/40">
           ⇄
         </button>
-        {select(target, setTarget, "Translate to")}
+        {select(target, setTarget, t.to)}
       </div>
 
       <div className="grid gap-5 lg:grid-cols-2">
@@ -271,12 +278,12 @@ export function Translator() {
                 if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) translate();
               }}
               rows={7}
-              placeholder={source === SANTALI ? "Write Santali in any script — Ol Chiki, Roman, Bengali, Odia or Devanagari…" : "Type, paste or speak…"}
-              aria-label="Text to translate"
+              placeholder={source === SANTALI ? t.placeholderSantali : t.placeholder}
+              aria-label={t.input}
               className="h-full w-full resize-none rounded-t-[var(--radius-card)] bg-transparent p-5 pr-12 text-xl leading-relaxed outline-none"
             />
             {input && (
-              <button type="button" onClick={() => { setInput(""); setOutput(""); }} aria-label="Clear" className="absolute top-4 right-4 text-xl text-muted hover:text-fg">
+              <button type="button" onClick={() => { setInput(""); setOutput(""); }} aria-label={c.clear} className="absolute top-4 right-4 text-xl text-muted hover:text-fg">
                 ✕
               </button>
             )}
@@ -288,7 +295,7 @@ export function Translator() {
             <IconButton label={speakLabel(source, input)} onClick={() => toggleSpeak("in", input, iso(source))} disabled={!canSpeak(source, input)}>
               <SpeakerIcon on={speaking === "in"} />
             </IconButton>
-            {listening && <span className="ml-1 animate-pulse text-sm text-red-600 dark:text-red-400">Listening…</span>}
+            {listening && <span className="ml-1 animate-pulse text-sm text-red-600 dark:text-red-400">{t.listening}</span>}
             <span className="ml-auto text-xs text-muted">
               {input.length}/{MAX}
             </span>
@@ -298,7 +305,7 @@ export function Translator() {
               disabled={loading || !input.trim() || languages.length === 0}
               className="ml-3 rounded-full bg-fg px-6 py-2 font-semibold text-bg transition-opacity hover:opacity-85 disabled:opacity-40"
             >
-              {loading ? "Translating…" : "Translate"}
+              {loading ? t.translating : t.translate}
             </button>
           </div>
         </div>
@@ -306,10 +313,10 @@ export function Translator() {
         {/* Output */}
         <div className="flex flex-col rounded-[var(--radius-card)] border border-line bg-bg-sunken" aria-live="polite">
           <div className="flex-1 p-5">
-            {error && <p className="rounded-xl bg-red-500/10 p-4 text-sm text-red-700 dark:text-red-300">{error}</p>}
-            {!error && !output && <p className="text-xl text-muted">{loading ? "Translating…" : "Translation"}</p>}
-            {!error && output && target !== SANTALI && <p className="text-xl leading-relaxed whitespace-pre-wrap">{output}</p>}
-            {!error && output && target === SANTALI && (
+            {err && <p className="rounded-xl bg-red-500/10 p-4 text-sm text-red-700 dark:text-red-300">{err}</p>}
+            {!err && !output && <p className="text-xl text-muted">{loading ? t.translating : t.translation}</p>}
+            {!err && output && target !== SANTALI && <p className="text-xl leading-relaxed whitespace-pre-wrap">{output}</p>}
+            {!err && output && target === SANTALI && (
               <div className="divide-y divide-line">
                 {allScripts(output).map(({ script, text }) => (
                   <div key={script} className="flex items-start gap-2 py-3 first:pt-0 last:pb-0">
@@ -319,7 +326,7 @@ export function Translator() {
                       </span>
                       <p className="mt-1 text-xl leading-relaxed whitespace-pre-wrap">{text}</p>
                     </div>
-                    <IconButton label={copied === script ? "Copied" : "Copy"} onClick={() => copy(script, text)}>
+                    <IconButton label={copied === script ? c.copied : c.copy} onClick={() => copy(script, text)}>
                       {copied === script ? "✓" : <CopyIcon />}
                     </IconButton>
                   </div>
@@ -327,13 +334,13 @@ export function Translator() {
               </div>
             )}
           </div>
-          {output && !error && (
+          {output && !err && (
             <div className="flex items-center gap-1 border-t border-line px-3 py-2">
               <IconButton label={speakLabel(target, output)} onClick={() => toggleSpeak("out", output, iso(target))} disabled={!canSpeak(target, output)}>
                 <SpeakerIcon on={speaking === "out"} />
               </IconButton>
               {target !== SANTALI && (
-                <IconButton label={copied === "out" ? "Copied" : "Copy"} onClick={() => copy("out", output)}>
+                <IconButton label={copied === "out" ? c.copied : c.copy} onClick={() => copy("out", output)}>
                   {copied === "out" ? "✓" : <CopyIcon />}
                 </IconButton>
               )}

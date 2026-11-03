@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useFeatures } from "@/components/account-security";
 import { Alert, Button, Field, Input } from "@/components/ui";
 import { api, notifyAuthChanged, type User } from "@/lib/api";
+import { useT } from "@/lib/i18n";
 
 export function AuthForm({ mode }: { mode: "login" | "register" }) {
   const router = useRouter();
@@ -13,6 +14,7 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const { email } = useFeatures();
+  const t = useT().auth;
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -28,7 +30,7 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
       const next = params.get("next");
       router.push(next && next.startsWith("/") && !next.startsWith("//") ? next : "/account");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong.");
+      setError(err instanceof Error ? err.message : t.error);
       setBusy(false);
     }
   }
@@ -39,14 +41,14 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
     <form onSubmit={onSubmit} className="space-y-5">
       {error && <Alert>{error}</Alert>}
       {isRegister && (
-        <Field label="Your name" hint="Shown as the contributor on entries you add.">
+        <Field label={t.name} hint={t.nameHint}>
           <Input name="display_name" required maxLength={80} autoComplete="name" />
         </Field>
       )}
-      <Field label="Email">
+      <Field label={t.email}>
         <Input name="email" type="email" required maxLength={254} autoComplete="email" />
       </Field>
-      <Field label="Password" hint={isRegister ? "At least 10 characters." : undefined}>
+      <Field label={t.password} hint={isRegister ? t.passwordHint : undefined}>
         <Input
           name="password"
           type="password"
@@ -59,30 +61,30 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
       {!isRegister && email && (
         <p className="-mt-2 text-right text-sm">
           <Link href="/forgot-password" className="text-muted hover:text-fg">
-            Forgot password?
+            {t.forgot}
           </Link>
         </p>
       )}
       {isRegister && (
         <p className="text-xs text-muted">
-          By creating an account you agree to the{" "}
+          {t.agree1}{" "}
           <Link href="/terms" className="underline hover:text-fg">
-            Terms of Use
+            {t.terms}
           </Link>{" "}
-          and{" "}
+          {t.and}{" "}
           <Link href="/privacy" className="underline hover:text-fg">
-            Privacy Policy
+            {t.privacy}
           </Link>
           .
         </p>
       )}
       <Button type="submit" disabled={busy} className="w-full py-3">
-        {busy ? "Please wait…" : isRegister ? "Create account" : "Sign in"}
+        {busy ? t.wait : isRegister ? t.create : t.signIn}
       </Button>
       <p className="text-center text-sm text-muted">
-        {isRegister ? "Already have an account? " : "New to SANTALIQ? "}
+        {isRegister ? t.haveAccount : t.newHere}
         <Link href={isRegister ? "/login" : "/register"} className="font-semibold text-accent hover:underline">
-          {isRegister ? "Sign in" : "Create an account"}
+          {isRegister ? t.signIn : t.createLink}
         </Link>
       </p>
     </form>

@@ -3,11 +3,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { LanguageSwitch } from "@/components/language-switch";
+import { T, useT } from "@/lib/i18n";
 import { mainNav } from "@/lib/nav";
 
 export function MobileNav() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const t = useT();
 
   // Close when the route changes.
   // eslint-disable-next-line react-hooks/set-state-in-effect -- reset on navigation
@@ -25,13 +28,13 @@ export function MobileNav() {
   }, [open]);
 
   return (
-    <div className="md:hidden">
+    <div className="lg:hidden">
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
         aria-controls="mobile-menu"
-        aria-label={open ? "Close menu" : "Open menu"}
+        aria-label={open ? t.common.menuClose : t.common.menuOpen}
         className="grid size-9 place-items-center rounded-full border border-line"
       >
         <span aria-hidden className="text-lg leading-none">
@@ -52,11 +55,14 @@ export function MobileNav() {
                   onClick={() => setOpen(false)}
                   className="block rounded-xl px-4 py-3 text-lg font-medium hover:bg-bg-elevated"
                 >
-                  {item.label}
+                  <T k={item.k} />
                 </Link>
               </li>
             ))}
           </ul>
+          <div className="mt-6 px-4">
+            <LanguageSwitch />
+          </div>
         </nav>
       )}
     </div>
