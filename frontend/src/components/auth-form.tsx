@@ -63,6 +63,19 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
           </Link>
         </p>
       )}
+      {isRegister && (
+        <p className="text-xs text-muted">
+          By creating an account you agree to the{" "}
+          <Link href="/terms" className="underline hover:text-fg">
+            Terms of Use
+          </Link>{" "}
+          and{" "}
+          <Link href="/privacy" className="underline hover:text-fg">
+            Privacy Policy
+          </Link>
+          .
+        </p>
+      )}
       <Button type="submit" disabled={busy} className="w-full py-3">
         {busy ? "Please wait…" : isRegister ? "Create account" : "Sign in"}
       </Button>

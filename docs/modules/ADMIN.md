@@ -9,6 +9,7 @@
 | Review `/admin/review?tab=` | reviewer+ | Dictionary, Heritage and Voice queues, each tab with a pending count. Nobody can review their own contribution (admins excepted). |
 | Content `/admin/content` | reviewer+ | Reported writing, plus every published or removed piece with search and remove/restore. Drafts are never listed. |
 | Users `/admin/users` | admin | Search, change roles (member, reviewer, admin), disable or enable accounts. An admin cannot change their own role. |
+| Messages `/admin/messages` | admin | Contact-form inbox: new or done, reply by email, data requests flagged (30 days) |
 | Activity log `/admin/activity` | admin | The audit log with filters by area. IP addresses are not shown. |
 | System `/admin/system` | admin | Status of the database, Redis and translator; feature switches (AI chat, Google, email); last backup; disk and voice storage; table sizes; dataset licence. |
 

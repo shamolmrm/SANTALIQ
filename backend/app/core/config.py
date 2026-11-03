@@ -56,6 +56,9 @@ class Settings(BaseSettings):
     voice_max_bytes: int = 2 * 1024 * 1024  # ~30 s of Opus is ~150 KB; generous for WAV/MP4
     voice_clips_per_hour: int = 60
 
+    # Contact form: optional address notified of new messages (needs email enabled)
+    contact_notify_email: str = ""
+
     @property
     def email_enabled(self) -> bool:
         return bool(self.smtp_host and self.mail_from)

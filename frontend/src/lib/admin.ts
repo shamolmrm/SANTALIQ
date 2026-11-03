@@ -15,6 +15,7 @@ export type Overview = {
   ai_requests_7d: number;
   ai_tokens_7d: number;
   to_review: number;
+  new_messages: number;
 };
 
 export type Activity = {

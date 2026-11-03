@@ -16,6 +16,7 @@ from app.core.config import get_settings
 from app.core.db import get_db, ping_database, utcnow
 from app.modules.admin.models import SystemStatus
 from app.modules.ai.models import AIUsage
+from app.modules.contact.models import ContactMessage, ContactStatus
 from app.modules.heritage.models import HeritageItem
 from app.modules.language.models import Lexeme, VerificationStatus
 from app.modules.users.models import AuditEvent, Role, User
@@ -50,6 +51,7 @@ class OverviewOut(BaseModel):
     ai_requests_7d: int
     ai_tokens_7d: int
     to_review: int
+    new_messages: int = 0
 
 
 class ActivityOut(BaseModel):
@@ -135,6 +137,10 @@ def overview(_: User = Depends(reviewer_required), db: Session = Depends(get_db)
         ai_requests_7d=ai_requests,
         ai_tokens_7d=ai_tokens,
         to_review=dictionary.pending + heritage.pending + voice.pending + (reports or 0),
+        new_messages=db.scalar(
+            select(func.count(ContactMessage.id)).where(ContactMessage.status == ContactStatus.new)
+        )
+        or 0,
     )
 
 

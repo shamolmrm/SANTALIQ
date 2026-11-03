@@ -24,6 +24,7 @@ const NAV: Array<{ href: string; label: string; icon: string; admin?: boolean; b
     badge: (o) => o.dictionary.pending + o.heritage.pending + o.voice.pending,
   },
   { href: "/admin/content", label: "Content", icon: "▤", badge: (o) => o.open_reports },
+  { href: "/admin/messages", label: "Messages", icon: "✉", admin: true, badge: (o) => o.new_messages },
   { href: "/admin/users", label: "Users", icon: "◉", admin: true },
   { href: "/admin/activity", label: "Activity log", icon: "≡", admin: true },
   { href: "/admin/system", label: "System", icon: "⚙", admin: true },

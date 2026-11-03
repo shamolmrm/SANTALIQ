@@ -20,6 +20,9 @@ const groups = [
       { href: "/about", label: "About" },
       { href: "/#ecosystem", label: "Ecosystem" },
       { href: "/#roadmap", label: "Roadmap" },
+      { href: "/contact", label: "Contact" },
+      { href: "/privacy", label: "Privacy" },
+      { href: "/terms", label: "Terms" },
     ],
   },
 ];

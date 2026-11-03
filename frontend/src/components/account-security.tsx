@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Alert, Button, Card, Field, Input, Textarea } from "@/components/ui";
 import { api, notifyAuthChanged, type User } from "@/lib/api";
@@ -131,6 +132,65 @@ export function ProfileEditor({ user }: { user: User }) {
           {busy ? "Saving…" : "Save profile"}
         </Button>
       </form>
+    </Card>
+  );
+}
+
+export function DeleteAccount() {
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function submit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const f = new FormData(e.currentTarget);
+    if (f.get("confirm") !== "DELETE") {
+      setError("Type DELETE in capital letters to confirm.");
+      return;
+    }
+    setBusy(true);
+    setError(null);
+    try {
+      await api("/auth/account", { method: "DELETE", body: JSON.stringify({ password: f.get("password"), confirm: "DELETE" }) });
+      notifyAuthChanged();
+      router.push("/");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not delete the account.");
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Card className="border-red-500/30">
+      <h2 className="text-lg font-bold">Delete account</h2>
+      <p className="mt-1 text-sm text-muted">
+        Permanently deletes your account, writing, heritage submissions, voice recordings and consent. Verified dictionary entries stay in
+        the open dictionary without your name. This cannot be undone.
+      </p>
+      {!open ? (
+        <Button variant="danger" className="mt-4" onClick={() => setOpen(true)}>
+          Delete my account…
+        </Button>
+      ) : (
+        <form onSubmit={submit} className="mt-4 space-y-4">
+          {error && <Alert>{error}</Alert>}
+          <Field label="Your password">
+            <Input name="password" type="password" required autoComplete="current-password" />
+          </Field>
+          <Field label="Type DELETE to confirm">
+            <Input name="confirm" required autoComplete="off" />
+          </Field>
+          <div className="flex gap-2">
+            <Button type="submit" variant="danger" disabled={busy}>
+              {busy ? "Deleting…" : "Delete permanently"}
+            </Button>
+            <Button variant="secondary" onClick={() => setOpen(false)}>
+              Cancel
+            </Button>
+          </div>
+        </form>
+      )}
     </Card>
   );
 }

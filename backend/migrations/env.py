@@ -3,6 +3,7 @@ from sqlalchemy import engine_from_config, pool
 
 import app.modules.admin.models  # noqa: F401
 import app.modules.ai.models  # noqa: F401
+import app.modules.contact.models  # noqa: F401
 import app.modules.heritage.models  # noqa: F401
 import app.modules.language.models  # noqa: F401  (register models)
 import app.modules.users.models  # noqa: F401

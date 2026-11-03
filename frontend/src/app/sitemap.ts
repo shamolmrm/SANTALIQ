@@ -15,6 +15,9 @@ const STATIC = [
   "/voice",
   "/ai",
   "/dataset",
+  "/contact",
+  "/privacy",
+  "/terms",
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
