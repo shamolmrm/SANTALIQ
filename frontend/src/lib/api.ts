@@ -3,7 +3,15 @@
 import { useCallback, useEffect, useState } from "react";
 
 export type Role = "member" | "reviewer" | "admin";
-export type User = { id: string; email: string; display_name: string; role: Role; is_active: boolean; created_at?: string };
+export type User = {
+  id: string;
+  email: string;
+  display_name: string;
+  role: Role;
+  is_active: boolean;
+  email_verified?: boolean;
+  created_at?: string;
+};
 export type Status = "draft" | "pending" | "verified" | "rejected";
 export type Entry = {
   id: string;

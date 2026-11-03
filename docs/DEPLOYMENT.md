@@ -30,7 +30,13 @@ Data volume: `santaliq_pgdata` (survives redeploys; never run `down -v`).
 ## Backups
 - `/usr/local/bin/santaliq-backup` via `/etc/cron.d/santaliq-backup` at 03:15 daily → `/home/ubuntu/backups/santaliq/*.sql.gz` (mode 600), 14-day retention. Log: `/var/log/santaliq-backup.log`.
 - Restore: `gunzip -c FILE | docker exec -i santaliq-postgres psql -U santaliq -d santaliq`
-- TODO: copy backups off-server (object storage) once available.
+- Off-server copy (optional): set `BACKUP_REMOTE` (rclone target, e.g. S3-compatible bucket) and `BACKUP_PASSPHRASE`
+  in the server `.env`; each dump is AES-256 encrypted and uploaded after the local backup. Skipped until set.
+
+## Email (optional)
+Set in the server `.env`, then redeploy: `SMTP_HOST`, `SMTP_PORT` (587), `SMTP_USER`, `SMTP_PASSWORD`, `MAIL_FROM`.
+Enables email verification and "forgot password". Until set, `/api/v1/auth/features` reports `email: false`
+and the UI hides those options. Password change works without email.
 
 ## Domain & SSL
 Nginx site: `infrastructure/production/nginx/santaliq.conf` → NPM custom sites. Certificate from host certbot (webroot), auto-renewed; hook reloads the proxy.

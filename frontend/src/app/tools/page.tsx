@@ -24,8 +24,9 @@ const tools: Array<{ title: string; body: string; status: DivisionStatus; href?:
   },
   {
     title: "Multi-script Keyboard",
-    body: "Type Santali directly in any of the five scripts on any device.",
-    status: "building",
+    body: "Type Santali in any of the five scripts — on-screen keys or Roman phonetic typing, on any device.",
+    status: "live",
+    href: "/tools/keyboard",
   },
   {
     title: "Community Dictionary",

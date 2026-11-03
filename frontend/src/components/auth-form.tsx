@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
+import { useFeatures } from "@/components/account-security";
 import { Alert, Button, Field, Input } from "@/components/ui";
 import { api, notifyAuthChanged, type User } from "@/lib/api";
 
@@ -11,6 +12,7 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
   const params = useSearchParams();
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const { email } = useFeatures();
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -54,6 +56,13 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
           autoComplete={isRegister ? "new-password" : "current-password"}
         />
       </Field>
+      {!isRegister && email && (
+        <p className="-mt-2 text-right text-sm">
+          <Link href="/forgot-password" className="text-muted hover:text-fg">
+            Forgot password?
+          </Link>
+        </p>
+      )}
       <Button type="submit" disabled={busy} className="w-full py-3">
         {busy ? "Please wait…" : isRegister ? "Create account" : "Sign in"}
       </Button>

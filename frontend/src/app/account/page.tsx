@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { ChangePassword, EmailVerification } from "@/components/account-security";
 import { EntryCard } from "@/components/entry-card";
 import { RequireSession } from "@/components/require-session";
 import { Alert, Button, Card, PageHeader } from "@/components/ui";
@@ -67,7 +68,9 @@ function Account({ user }: { user: User }) {
           </Button>
         </div>
       </Card>
-      <div>
+      <div className="space-y-10">
+        <EmailVerification user={user} />
+        <div>
         <h2 className="text-2xl font-bold">My contributions</h2>
         <p className="mt-1 text-sm text-muted">
           New entries are <strong>pending</strong> until a reviewer checks them. Only verified entries appear in the public dictionary.
@@ -75,6 +78,8 @@ function Account({ user }: { user: User }) {
         <div className="mt-6">
           <MyEntries />
         </div>
+        </div>
+        <ChangePassword />
       </div>
     </div>
   );

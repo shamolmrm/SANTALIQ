@@ -26,6 +26,18 @@ class Settings(BaseSettings):
     session_cookie_name: str = "santaliq_session"
     session_ttl_days: int = 30
 
+    # Outgoing email (verification, password reset). Disabled until SMTP_HOST and MAIL_FROM are set.
+    public_url: str = "https://santaliq.supersoftltd.com"
+    smtp_host: str = ""
+    smtp_port: int = 587
+    smtp_user: str = ""
+    smtp_password: str = ""
+    mail_from: str = ""
+
+    @property
+    def email_enabled(self) -> bool:
+        return bool(self.smtp_host and self.mail_from)
+
     @property
     def cookie_secure(self) -> bool:
         return self.environment == "production"

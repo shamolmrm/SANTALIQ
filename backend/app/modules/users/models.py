@@ -29,6 +29,29 @@ class User(TimestampMixin, Base):
     )
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     last_login_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    email_verified_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class TokenPurpose(enum.StrEnum):
+    verify_email = "verify_email"
+    reset_password = "reset_password"
+
+
+class UserToken(Base):
+    """Single-use emailed token. `id` is the SHA-256 of the token (token never stored)."""
+
+    __tablename__ = "user_tokens"
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), index=True
+    )
+    purpose: Mapped[TokenPurpose] = mapped_column(
+        Enum(TokenPurpose, name="token_purpose", native_enum=False, length=20)
+    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    used_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
 
 class AuthSession(Base):

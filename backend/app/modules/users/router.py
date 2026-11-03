@@ -1,3 +1,4 @@
+import logging
 import uuid
 from datetime import datetime
 
@@ -6,6 +7,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.core import mailer
 from app.core.cache import KeyValueStore, get_redis, hit_rate_limit
 from app.core.config import get_settings
 from app.core.db import get_db, utcnow
@@ -21,6 +23,7 @@ from app.modules.users.security import (
     verify_password,
 )
 
+log = logging.getLogger(__name__)
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 EMAIL_PATTERN = r"^[^@\s]+@[^@\s]+\.[^@\s]+$"
@@ -43,6 +46,7 @@ class UserOut(BaseModel):
     display_name: str
     role: Role
     is_active: bool
+    email_verified: bool = False
     created_at: datetime | None = None
 
 
@@ -53,6 +57,7 @@ def to_out(user: User) -> UserOut:
         display_name=user.display_name,
         role=user.role,
         is_active=user.is_active,
+        email_verified=user.email_verified_at is not None,
         created_at=user.created_at,
     )
 
@@ -87,6 +92,13 @@ async def register(
     start_session(db, user, request, response)
     audit(db, "user.register", actor=user, target_type="user", target_id=user.id, request=request)
     db.commit()
+    if mailer.email_enabled():
+        from app.modules.users.account_router import send_verification
+
+        try:
+            send_verification(db, user)
+        except Exception as exc:  # registration must not fail because of email
+            log.error("verification email failed: %s", exc)
     return to_out(user)
 
 
