@@ -38,8 +38,8 @@ Later (only once there are real users): marketplace, careers, video hosting, liv
 ## Phase 0 — first week
 | Day | Task | Status |
 | --- | --- | --- |
-| 1 | Git repo, folder structure, `.gitignore`, README, CLAUDE.md, this plan | done (GitHub remotes pending — owner must create repos) |
-| 1b | Coming-soon page on VPS (`santaliq-web` container) | done (DNS + proxy pending) |
+| 1 | Git repo, folder structure, `.gitignore`, README, CLAUDE.md, this plan, GitHub (shamolbro + shamolmrm, private) | done |
+| 1b | Production deploy to VPS: `santaliq-web` + `santaliq-api` containers | done (domain/SSL waits for DNS A record) |
 | 2 | Requirements + architecture docs | todo |
 | 3 | Initial database design | todo |
 | 4 | Docker Compose: PostgreSQL + Redis | compose file written; Docker Desktop not installed yet |
@@ -51,6 +51,9 @@ Later (only once there are real users): marketplace, careers, video hosting, liv
 - Frontend: `cd frontend` → `pnpm dev` (http://localhost:3000) · `pnpm lint` · `pnpm typecheck` · `pnpm build`
 - Backend: `cd backend` → `.venv\Scripts\activate` → `uvicorn app.main:app --reload` (http://localhost:8000/docs) · `pytest` · `ruff check .`
 - Services: `docker compose up -d` (needs Docker Desktop)
+- Push to both GitHub accounts: `.\scripts\push-all.ps1`
+- Deploy committed HEAD to VPS (Git Bash): `bash scripts/deploy.sh`
+- One-time domain + SSL on VPS (after DNS): `bash /home/ubuntu/docker/websites/santaliq/app/infrastructure/production/enable-domain.sh`
 
 ## Open decisions
 - [ ] Domain / subdomain and where its DNS is managed
