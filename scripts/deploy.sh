@@ -53,6 +53,8 @@ ssh "$SERVER" "
   $COMPOSE build
   $COMPOSE up -d --remove-orphans
   docker image prune -f >/dev/null
+  # keep Docker build cache bounded (recent 4 GB stays, so builds remain fast)
+  docker builder prune -f --keep-storage 4gb >/dev/null 2>&1 || true
 
   # nightly DB backup at 03:15 server time
   install -m 755 $REMOTE_DIR/app/infrastructure/production/backup.sh /usr/local/bin/santaliq-backup
