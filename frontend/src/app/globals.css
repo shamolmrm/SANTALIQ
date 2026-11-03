@@ -1,0 +1,77 @@
+@import "tailwindcss";
+
+/* ───────── SANTALIQ design tokens ───────── */
+:root {
+  --bg: #faf7f1;
+  --bg-elevated: #ffffff;
+  --fg: #16130f;
+  --muted: #6b645a;
+  --line: rgba(22, 19, 15, 0.1);
+  --accent: #c8741f; /* red-earth amber */
+  --accent-2: #2f8f62; /* sal-leaf green */
+  --accent-soft: rgba(200, 116, 31, 0.1);
+  --radius: 20px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0b0f0d;
+    --bg-elevated: #121815;
+    --fg: #f3efe6;
+    --muted: #a39d90;
+    --line: rgba(243, 239, 230, 0.1);
+    --accent: #e8a33d;
+    --accent-2: #3fae7a;
+    --accent-soft: rgba(232, 163, 61, 0.12);
+  }
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-elevated: var(--bg-elevated);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
+  --color-accent-soft: var(--accent-soft);
+  --radius-card: var(--radius);
+  --font-sans: var(--font-inter), var(--font-olchiki), var(--font-bengali), var(--font-devanagari),
+    var(--font-oriya), system-ui, sans-serif;
+  --font-display: var(--font-fraunces), Georgia, serif;
+  --font-olchiki: var(--font-olchiki);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+}
+
+::selection {
+  background: var(--accent);
+  color: #fff;
+}
+
+.text-gradient {
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

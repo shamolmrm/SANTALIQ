@@ -38,13 +38,19 @@ Later (only once there are real users): marketplace, careers, video hosting, liv
 ## Phase 0 — first week
 | Day | Task | Status |
 | --- | --- | --- |
-| 1 | Git repo, folder structure, `.gitignore`, README, CLAUDE.md, this plan, GitHub remotes | done |
+| 1 | Git repo, folder structure, `.gitignore`, README, CLAUDE.md, this plan | done (GitHub remotes pending — owner must create repos) |
+| 1b | Coming-soon page on VPS (`santaliq-web` container) | done (DNS + proxy pending) |
 | 2 | Requirements + architecture docs | todo |
 | 3 | Initial database design | todo |
-| 4 | Docker Compose: PostgreSQL + Redis | todo |
-| 5 | Next.js setup + design system | todo |
-| 6 | FastAPI setup, health check, frontend ↔ backend | todo |
+| 4 | Docker Compose: PostgreSQL + Redis | compose file written; Docker Desktop not installed yet |
+| 5 | Next.js 16 setup + design system + homepage | done (lint, typecheck, build pass) |
+| 6 | FastAPI setup, `/api/v1/health`, test | done (pytest, ruff pass); frontend ↔ backend wiring todo |
 | 7 | Push, weekly review | todo |
+
+### Local commands
+- Frontend: `cd frontend` → `pnpm dev` (http://localhost:3000) · `pnpm lint` · `pnpm typecheck` · `pnpm build`
+- Backend: `cd backend` → `.venv\Scripts\activate` → `uvicorn app.main:app --reload` (http://localhost:8000/docs) · `pytest` · `ruff check .`
+- Services: `docker compose up -d` (needs Docker Desktop)
 
 ## Open decisions
 - [ ] Domain / subdomain and where its DNS is managed
