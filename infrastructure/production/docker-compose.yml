@@ -19,6 +19,9 @@ services:
     restart: unless-stopped
     logging: *default-logging
     mem_limit: 512m
+    environment:
+      # server-side rendering reads public data straight from the API container
+      INTERNAL_API_URL: http://santaliq-api:8000
     depends_on:
       - api
     networks:

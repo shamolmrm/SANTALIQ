@@ -61,7 +61,8 @@ Later (only once there are real users): marketplace, careers, video hosting, liv
 | --- | --- |
 | Language data system (contribute → review → verified) | **live** |
 | SANTALIQ Write v1 — drafts, publish, reader script switch, reports & moderation | **live** ([module doc](modules/WRITE.md)) |
-| Contributor profiles / leaderboard | todo |
+| Contributor profiles (`/people/{id}`, bio editing) + leaderboard (`/dataset` credits) | **live** |
+| SEO for Write: server-rendered pieces, Open Graph, JSON-LD, `sitemap.xml` | **live** |
 | Pronunciation audio (consented) | todo — needs object storage |
 
 ## Phase 3 progress

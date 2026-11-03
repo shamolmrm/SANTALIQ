@@ -30,6 +30,7 @@ class User(TimestampMixin, Base):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     last_login_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     email_verified_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    bio: Mapped[str | None] = mapped_column(String(500), comment="public profile text")
 
 
 class TokenPurpose(enum.StrEnum):

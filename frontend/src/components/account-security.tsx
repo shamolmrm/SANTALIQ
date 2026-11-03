@@ -1,8 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Alert, Button, Card, Field, Input } from "@/components/ui";
-import { api, type User } from "@/lib/api";
+import { Alert, Button, Card, Field, Input, Textarea } from "@/components/ui";
+import { api, notifyAuthChanged, type User } from "@/lib/api";
 
 export function useFeatures() {
   const [email, setEmail] = useState(false);
@@ -81,6 +82,53 @@ export function ChangePassword() {
         </Field>
         <Button type="submit" disabled={busy}>
           {busy ? "Saving…" : "Change password"}
+        </Button>
+      </form>
+    </Card>
+  );
+}
+
+export function ProfileEditor({ user }: { user: User }) {
+  const [msg, setMsg] = useState<{ tone: "success" | "error"; text: string } | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  async function submit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const form = new FormData(e.currentTarget);
+    setBusy(true);
+    try {
+      await api("/people/me", {
+        method: "PATCH",
+        body: JSON.stringify({ display_name: form.get("display_name"), bio: form.get("bio") }),
+      });
+      notifyAuthChanged();
+      setMsg({ tone: "success", text: "Profile saved." });
+    } catch (err) {
+      setMsg({ tone: "error", text: err instanceof Error ? err.message : "Could not save profile." });
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Card>
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <h2 className="text-lg font-bold">Public profile</h2>
+        <Link href={`/people/${user.id}`} className="text-sm font-semibold text-accent">
+          View my profile →
+        </Link>
+      </div>
+      <p className="mt-1 text-sm text-muted">Shown with your writing and contributions. Your email is never shown.</p>
+      <form onSubmit={submit} className="mt-4 space-y-4">
+        {msg && <Alert tone={msg.tone}>{msg.text}</Alert>}
+        <Field label="Display name">
+          <Input name="display_name" defaultValue={user.display_name} required maxLength={80} />
+        </Field>
+        <Field label="About you" hint="Up to 500 characters, in any script.">
+          <Textarea name="bio" defaultValue={user.bio ?? ""} rows={4} maxLength={500} />
+        </Field>
+        <Button type="submit" disabled={busy}>
+          {busy ? "Saving…" : "Save profile"}
         </Button>
       </form>
     </Card>

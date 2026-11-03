@@ -11,6 +11,7 @@ export type User = {
   is_active: boolean;
   email_verified?: boolean;
   created_at?: string;
+  bio?: string | null;
 };
 export type Status = "draft" | "pending" | "verified" | "rejected";
 export type Entry = {

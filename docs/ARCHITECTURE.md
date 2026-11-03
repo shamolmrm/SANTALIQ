@@ -42,6 +42,9 @@ Nginx Proxy Manager (shared VPS, ports 80/443, Let's Encrypt)
 | GET | `/api/v1/dictionary/search?q=` | verified entries, prefix match in any script |
 | POST | `/api/v1/auth/register` · `/login` · `/logout` | session cookie; rate-limited 10/min/IP |
 | GET | `/api/v1/auth/me` | current user |
+| GET | `/api/v1/people/{id}` | public profile: name, bio, join date, published pieces, verified words (never email/role) |
+| PATCH | `/api/v1/people/me` | signed in; edit own display name + bio |
+| GET | `/api/v1/write/sitemap` | published slugs for `/sitemap.xml` |
 | POST | `/api/v1/dictionary/entries` | signed in; creates `pending` entry (source + consent required) |
 | GET | `/api/v1/dictionary/entries/mine` | own submissions with status |
 | GET | `/api/v1/admin/stats` · `/admin/review` | reviewer+ |

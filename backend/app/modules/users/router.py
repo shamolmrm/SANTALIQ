@@ -48,6 +48,7 @@ class UserOut(BaseModel):
     is_active: bool
     email_verified: bool = False
     created_at: datetime | None = None
+    bio: str | None = None
 
 
 def to_out(user: User) -> UserOut:
@@ -59,6 +60,7 @@ def to_out(user: User) -> UserOut:
         is_active=user.is_active,
         email_verified=user.email_verified_at is not None,
         created_at=user.created_at,
+        bio=user.bio,
     )
 
 

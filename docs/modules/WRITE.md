@@ -31,7 +31,14 @@
 | GET | `/api/v1/admin/reports` | reviewer+ |
 | POST | `/api/v1/admin/posts/{id}/moderate` `{action: remove|restore|dismiss}` | reviewer+ |
 
+## SEO & profiles (live)
+- Published pieces are rendered on the server (`frontend/src/lib/server-api.ts`, cached ≤ 60 s) with
+  title/description, canonical URL, Open Graph article tags and schema.org `Article` JSON-LD; the
+  browser then refreshes with the session cookie (drafts, moderator notes).
+- `/people/{id}` — public author profile (name, bio, counts, published pieces); edit on `/account`.
+- `/sitemap.xml` (static pages + published pieces + their authors, refreshed hourly); `robots.txt`
+  keeps account/admin/editor pages out of search.
+
 ## Next
-- Server-side rendering of published pieces for search engines and link previews.
-- Author profile pages, follow, comments (Phase 6 social).
+- Follow, comments (Phase 6 social).
 - Cover images (needs object storage).

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { ScriptSwitch } from "@/components/script-switch";
 import { Alert, Button, Textarea } from "@/components/ui";
@@ -47,14 +47,15 @@ function ReportBox({ postId }: { postId: string }) {
   );
 }
 
-export function ReadPost() {
-  const { slug } = useParams<{ slug: string }>();
+export function ReadPost({ slug, initial }: { slug: string; initial: Post | null }) {
   const router = useRouter();
   const { user } = useSession();
-  const [post, setPost] = useState<Post | null>(null);
+  const [post, setPost] = useState<Post | null>(initial);
   const [error, setError] = useState<string | null>(null);
   const [script, setScript] = useState<Script | null>(null);
 
+  // Always refresh in the browser: the server copy may be up to a minute old, and
+  // drafts / moderator views need the session cookie.
   useEffect(() => {
     api<Post>(`/write/posts/${encodeURIComponent(slug)}`)
       .then(setPost)
@@ -106,8 +107,18 @@ export function ReadPost() {
       <p className="mt-8 text-xs font-semibold tracking-wide text-accent uppercase">{KIND_LABEL[post.kind]}</p>
       <h1 className="mt-3 font-display text-4xl leading-tight font-bold tracking-tight sm:text-5xl">{view.title}</h1>
       <p className="mt-4 text-muted">
-        {post.author.display_name}
-        {post.published_at && <> · {formatDate(post.published_at)}</>}
+        <Link href={`/people/${post.author.id}`} className="font-medium text-fg hover:text-accent">
+          {post.author.display_name}
+        </Link>
+        {post.published_at && (
+          <>
+            {" · "}
+            {/* locale formatting differs between server and browser */}
+            <time dateTime={post.published_at} suppressHydrationWarning>
+              {formatDate(post.published_at)}
+            </time>
+          </>
+        )}
       </p>
 
       <div className="mt-8 border-y border-line py-4">

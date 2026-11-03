@@ -1,2 +1,9 @@
 User-agent: *
 Allow: /
+Disallow: /account
+Disallow: /admin
+Disallow: /write/edit/
+Disallow: /write/mine
+Disallow: /write/new
+
+Sitemap: https://santaliq.supersoftltd.com/sitemap.xml

@@ -70,6 +70,12 @@ class PostPatch(BaseModel):
     publish: bool | None = None
 
 
+class SitemapItem(BaseModel):
+    slug: str
+    author_id: uuid.UUID
+    updated_at: datetime | None
+
+
 class ReportIn(BaseModel):
     reason: str = Field(min_length=3, max_length=500)
 
@@ -145,6 +151,18 @@ def list_posts(
     total = db.scalar(select(func.count()).select_from(base.subquery())) or 0
     rows = db.scalars(base.order_by(Post.published_at.desc()).limit(limit).offset(offset)).all()
     return PostListOut(total=total, items=[card(p) for p in rows])
+
+
+@router.get("/sitemap", response_model=list[SitemapItem])
+def sitemap(db: Session = Depends(get_db)) -> list[SitemapItem]:
+    """Published pieces for search-engine sitemaps (newest first, capped)."""
+    rows = db.execute(
+        select(Post.slug, Post.author_id, Post.updated_at)
+        .where(Post.status == PostStatus.published)
+        .order_by(Post.published_at.desc())
+        .limit(5000)
+    ).all()
+    return [SitemapItem(slug=s, author_id=a, updated_at=u) for s, a, u in rows]
 
 
 @router.get("/posts/{slug}", response_model=PostOut)

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { ChangePassword, EmailVerification } from "@/components/account-security";
+import { ChangePassword, EmailVerification, ProfileEditor } from "@/components/account-security";
 import { EntryCard } from "@/components/entry-card";
 import { RequireSession } from "@/components/require-session";
 import { Alert, Button, Card, PageHeader } from "@/components/ui";
@@ -82,6 +82,7 @@ function Account({ user }: { user: User }) {
           <MyEntries />
         </div>
         </div>
+        <ProfileEditor user={user} />
         <ChangePassword />
       </div>
     </div>
