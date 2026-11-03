@@ -6,6 +6,8 @@ from app.modules.language.router import router as dictionary_router
 from app.modules.translate.router import router as translate_router
 from app.modules.users.account_router import router as account_router
 from app.modules.users.router import router as auth_router
+from app.modules.write.moderation import router as write_moderation_router
+from app.modules.write.router import router as write_router
 
 api_router = APIRouter()
 api_router.include_router(health.router)
@@ -13,4 +15,6 @@ api_router.include_router(auth_router)
 api_router.include_router(account_router)
 api_router.include_router(translate_router)
 api_router.include_router(dictionary_router)
+api_router.include_router(write_router)
 api_router.include_router(admin_router)
+api_router.include_router(write_moderation_router)

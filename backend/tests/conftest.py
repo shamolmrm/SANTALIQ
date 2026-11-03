@@ -10,6 +10,7 @@ from sqlalchemy.pool import StaticPool
 
 import app.modules.language.models  # noqa: F401
 import app.modules.users.models  # noqa: F401
+import app.modules.write.models  # noqa: F401
 from app.core.cache import get_redis
 from app.core.db import Base, get_db
 from app.main import app

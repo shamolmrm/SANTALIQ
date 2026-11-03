@@ -58,6 +58,9 @@ function Account({ user }: { user: User }) {
           <Link href="/contribute" className="rounded-full bg-fg px-5 py-2.5 text-center text-sm font-semibold text-bg">
             Contribute a word
           </Link>
+          <Link href="/write/mine" className="rounded-full border border-line px-5 py-2.5 text-center text-sm font-semibold">
+            My writing
+          </Link>
           {hasRole(user, "reviewer") && (
             <Link href="/admin" className="rounded-full border border-line px-5 py-2.5 text-center text-sm font-semibold">
               Admin & review

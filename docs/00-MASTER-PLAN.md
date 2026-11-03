@@ -52,8 +52,17 @@ Later (only once there are real users): marketplace, careers, video hosting, liv
 | --- | --- |
 | Script Converter — 5 scripts (Ol Chiki, Roman, Bengali, Odia, Devanagari), browser-side engine, tests | **beta live** — rules await native-speaker review ([module doc](modules/SCRIPT-CONVERTER.md)) |
 | Translator — Santali ↔ 50+ languages, self-hosted NLLB-200 (CC-BY-NC) | **beta live** ([module doc](modules/TRANSLATOR.md)) |
-| Ol Chiki / multi-script keyboard | todo |
-| Dictionary v1 (multi-script search) | todo |
+| Multi-script keyboard | **live** (`/tools/keyboard`) |
+| Dictionary v1: contributions, review, multi-script search | **live** (empty until community adds entries) |
+| Accounts: register/login, roles, admin, password change; email verify/reset (off until SMTP) | **live** |
+
+## Phase 2 progress
+| Task | Status |
+| --- | --- |
+| Language data system (contribute → review → verified) | **live** |
+| SANTALIQ Write v1 — drafts, publish, reader script switch, reports & moderation | **live** ([module doc](modules/WRITE.md)) |
+| Contributor profiles / leaderboard | todo |
+| Pronunciation audio (consented) | todo — needs object storage |
 
 ### Local commands
 - Frontend: `cd frontend` → `pnpm dev` (http://localhost:3000) · `pnpm lint` · `pnpm typecheck` · `pnpm build`

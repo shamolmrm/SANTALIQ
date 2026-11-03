@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { AuthMenu } from "@/components/auth-menu";
 import { Logo } from "@/components/logo";
 import { MobileNav } from "@/components/mobile-nav";
@@ -20,7 +21,9 @@ export function SiteHeader() {
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <AuthMenu />
-          <MobileNav />
+          <Suspense fallback={null}>
+            <MobileNav />
+          </Suspense>
         </div>
       </div>
     </header>

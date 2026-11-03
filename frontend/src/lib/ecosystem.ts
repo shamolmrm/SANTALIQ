@@ -7,9 +7,9 @@ export const divisions: Array<{
   status: DivisionStatus;
   href?: string;
 }> = [
-  { name: "Language", summary: "Translator, script converter, dictionary, corpus", status: "live", href: "/tools" },
+  { name: "Language", summary: "Translator, dictionary, keyboard, script converter", status: "live", href: "/tools" },
   { name: "AI", summary: "Grounded chat, writing help, research assistant", status: "building" },
-  { name: "Write", summary: "Articles, poetry, stories and journals in Santali", status: "planned" },
+  { name: "Write", summary: "Articles, poetry, stories and journals in Santali", status: "live", href: "/write" },
   { name: "Learn", summary: "Ol Chiki, grammar, courses and quizzes", status: "planned" },
   { name: "Voice", summary: "Text-to-speech, speech recognition, pronunciation", status: "planned" },
   { name: "Heritage", summary: "Folk stories, songs, festivals and history archive", status: "planned" },

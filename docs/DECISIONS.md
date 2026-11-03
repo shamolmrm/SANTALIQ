@@ -11,4 +11,6 @@
 | 007 | 2026-11-03 | Translator = self-hosted NLLB-200 distilled 600M on CTranslate2 int8 | Free, private, supports Santali; ~1 GB RAM. **CC-BY-NC — non-commercial only** |
 | 009 | 2026-11-03 | Own auth (Argon2 + DB sessions + cookie), no third-party identity provider yet | One SANTALIQ account; no external dependency; simple to audit |
 | 010 | 2026-11-03 | Dictionary grows only via signed-in contributions + independent review; nothing seeded | Never invent Santali data; every entry has source, consent and reviewer |
+| 011 | 2026-11-03 | Write uses a small Markdown subset rendered to React elements; no HTML/rich-text editor | Zero XSS surface, works for poetry, light on slow networks |
+| 012 | 2026-11-03 | Writing stores the author's original script; other scripts are converted client-side at read time | Original is never altered; conversion improves as rules are reviewed |
 | 008 | 2026-11-03 | Brand palette navy `#071B2B` / emerald `#13865B` / gold `#E9B83E` / soft white `#F7F9FC`, Inter typography | Owner's design direction |

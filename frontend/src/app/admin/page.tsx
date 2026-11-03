@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { EntryCard } from "@/components/entry-card";
+import { ReportsQueue } from "@/components/reports-queue";
 import { RequireSession } from "@/components/require-session";
 import { Alert, Button, Card, Input, PageHeader, Select } from "@/components/ui";
 import { api, hasRole, type Entry, type Role, type Status, type User } from "@/lib/api";
@@ -190,6 +191,7 @@ function Admin({ me }: { me: User }) {
         <StatTile label="Registered users" value={stats?.users} />
       </div>
       <ReviewQueue me={me} onChange={loadStats} />
+      <ReportsQueue />
       {hasRole(me, "admin") && <Users me={me} />}
     </div>
   );

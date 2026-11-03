@@ -1,0 +1,142 @@
+"use client";
+
+import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
+import { ScriptSwitch } from "@/components/script-switch";
+import { Alert, Button, Textarea } from "@/components/ui";
+import { api, hasRole, useSession } from "@/lib/api";
+import { Markdown } from "@/lib/markdown";
+import { convert, type Script } from "@/lib/script/engine";
+import { formatDate, KIND_LABEL, type Post } from "@/lib/write";
+
+function ReportBox({ postId }: { postId: string }) {
+  const [open, setOpen] = useState(false);
+  const [reason, setReason] = useState("");
+  const [msg, setMsg] = useState<{ tone: "success" | "error"; text: string } | null>(null);
+  async function send() {
+    try {
+      const r = await api<{ status: string }>(`/write/posts/${postId}/report`, {
+        method: "POST",
+        body: JSON.stringify({ reason }),
+      });
+      setMsg({ tone: "success", text: r.status });
+    } catch (e) {
+      setMsg({ tone: "error", text: e instanceof Error ? e.message : "Could not send report." });
+    }
+  }
+  if (msg) return <Alert tone={msg.tone}>{msg.text}</Alert>;
+  if (!open)
+    return (
+      <button onClick={() => setOpen(true)} className="text-sm text-muted hover:text-fg">
+        Report this piece
+      </button>
+    );
+  return (
+    <div className="space-y-3">
+      <Textarea value={reason} onChange={(e) => setReason(e.target.value)} rows={3} maxLength={500} placeholder="What is wrong with this piece?" />
+      <div className="flex gap-2">
+        <Button onClick={send} disabled={reason.trim().length < 3}>
+          Send report
+        </Button>
+        <Button variant="secondary" onClick={() => setOpen(false)}>
+          Cancel
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+export function ReadPost() {
+  const { slug } = useParams<{ slug: string }>();
+  const router = useRouter();
+  const { user } = useSession();
+  const [post, setPost] = useState<Post | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [script, setScript] = useState<Script | null>(null);
+
+  useEffect(() => {
+    api<Post>(`/write/posts/${encodeURIComponent(slug)}`)
+      .then(setPost)
+      .catch((e) => setError(e.status === 404 ? "This piece does not exist or is not published." : e.message));
+  }, [slug]);
+
+  const shown = script ?? post?.script ?? "olck";
+  const view = useMemo(() => {
+    if (!post) return null;
+    const c = (t: string) => convert(t, post.script, shown, { capitalShortcuts: false });
+    return { title: c(post.title), body: c(post.body) };
+  }, [post, shown]);
+
+  if (error)
+    return (
+      <section className="mx-auto max-w-3xl px-4 py-16">
+        <Alert>{error}</Alert>
+        <Link href="/write" className="mt-6 inline-block font-semibold text-accent">
+          ← Back to SANTALIQ Write
+        </Link>
+      </section>
+    );
+  if (!post || !view) return <section className="mx-auto max-w-3xl px-4 py-16 text-muted">Loading…</section>;
+
+  const isAuthor = user?.id === post.author.id;
+  const converted = shown !== post.script;
+
+  async function moderate(action: "remove" | "restore") {
+    const note = action === "remove" ? window.prompt("Reason shown to the author (optional)") ?? undefined : undefined;
+    await api(`/admin/posts/${post!.id}/moderate`, { method: "POST", body: JSON.stringify({ action, note }) });
+    router.refresh();
+    setPost({ ...post!, status: action === "remove" ? "removed" : "published" });
+  }
+
+  return (
+    <article className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
+      <Link href="/write" className="text-sm text-muted hover:text-fg">
+        ← SANTALIQ Write
+      </Link>
+
+      {post.status !== "published" && (
+        <div className="mt-6">
+          <Alert tone={post.status === "removed" ? "error" : "info"}>
+            {post.status === "draft" ? "Draft — only you can see this." : `Removed by moderators.${post.moderation_note ? ` Note: ${post.moderation_note}` : ""}`}
+          </Alert>
+        </div>
+      )}
+
+      <p className="mt-8 text-xs font-semibold tracking-wide text-accent uppercase">{KIND_LABEL[post.kind]}</p>
+      <h1 className="mt-3 font-display text-4xl leading-tight font-bold tracking-tight sm:text-5xl">{view.title}</h1>
+      <p className="mt-4 text-muted">
+        {post.author.display_name}
+        {post.published_at && <> · {formatDate(post.published_at)}</>}
+      </p>
+
+      <div className="mt-8 border-y border-line py-4">
+        <ScriptSwitch value={shown} original={post.script} onChange={setScript} />
+        {converted && (
+          <p className="mt-2 text-xs text-muted">Converted automatically with draft rules — the ● script is the author&apos;s original.</p>
+        )}
+      </div>
+
+      <div className={`mt-6 text-lg leading-relaxed sm:text-xl ${post.kind === "poetry" ? "font-medium" : ""}`}>
+        <Markdown source={view.body} />
+      </div>
+
+      <footer className="mt-16 flex flex-wrap items-center justify-between gap-4 border-t border-line pt-6">
+        {isAuthor ? (
+          <Link href={`/write/edit/${post.id}`} className="rounded-full border border-line px-5 py-2.5 text-sm font-semibold">
+            Edit
+          </Link>
+        ) : user && post.status === "published" ? (
+          <ReportBox postId={post.id} />
+        ) : (
+          <span />
+        )}
+        {hasRole(user, "reviewer") && !isAuthor && (
+          <Button variant={post.status === "removed" ? "secondary" : "danger"} onClick={() => moderate(post.status === "removed" ? "restore" : "remove")}>
+            {post.status === "removed" ? "Restore" : "Remove (moderator)"}
+          </Button>
+        )}
+      </footer>
+    </article>
+  );
+}
