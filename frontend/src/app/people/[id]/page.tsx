@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
+import { FollowButton } from "@/components/follow-button";
 import { Alert, Card } from "@/components/ui";
 import { getAuthorPosts, getProfile, SITE_URL } from "@/lib/server-api";
 import { KIND_LABEL } from "@/lib/write";
@@ -61,6 +62,7 @@ async function ProfileView({ params }: Props) {
             <dd className="text-2xl font-bold tabular-nums">{p.verified_entries}</dd>
           </div>
         </dl>
+        <FollowButton userId={p.id} />
       </Card>
 
       <div>

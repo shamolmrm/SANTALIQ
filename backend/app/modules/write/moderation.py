@@ -10,6 +10,7 @@ from sqlalchemy import func, select, update
 from sqlalchemy.orm import Session
 
 from app.core.db import get_db, utcnow
+from app.modules.notify.service import notify
 from app.modules.users.models import Role, User
 from app.modules.users.security import audit, require_role
 from app.modules.write.models import Post, PostReport, PostStatus
@@ -74,6 +75,15 @@ def moderate(
     if body.action == "remove":
         post.status = PostStatus.removed
         post.moderation_note = body.note
+        notify(
+            db,
+            post.author_id,
+            "post_removed",
+            actor_id=moderator.id,
+            title=post.title,
+            slug=post.slug,
+            note=body.note,
+        )
     elif body.action == "restore":
         post.status = PostStatus.published
         post.published_at = post.published_at or utcnow()

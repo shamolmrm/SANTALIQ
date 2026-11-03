@@ -4,6 +4,7 @@ import { AuthMenu } from "@/components/auth-menu";
 import { LanguageSwitch } from "@/components/language-switch";
 import { Logo } from "@/components/logo";
 import { MobileNav } from "@/components/mobile-nav";
+import { NotificationBell } from "@/components/notification-bell";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { T } from "@/lib/i18n";
 import { mainNav } from "@/lib/nav";
@@ -25,6 +26,7 @@ export function SiteHeader() {
             <LanguageSwitch />
           </div>
           <ThemeToggle />
+          <NotificationBell />
           <AuthMenu />
           <Suspense fallback={null}>
             <MobileNav />

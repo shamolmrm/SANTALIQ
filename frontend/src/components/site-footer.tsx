@@ -18,6 +18,9 @@ export function SiteFooter() {
         { href: "/heritage", label: t.heritage },
         { href: "/voice", label: t.voice },
         { href: "/dataset", label: t.dataset },
+        { href: "/news", label: t.news },
+        { href: "/careers", label: t.careers },
+        { href: "/developers", label: t.developers },
       ],
     },
     {

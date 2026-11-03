@@ -15,7 +15,10 @@ SANTALIQ is a digital home for the Santali language, people and culture — scri
 > - [Heritage](https://santaliq.supersoftltd.com/heritage): consented, sourced and reviewed archive of stories, songs, festivals and history
 > - [Voice](https://santaliq.supersoftltd.com/voice): consented Santali voice collection with review (for future TTS / ASR)
 > - [Learn](https://santaliq.supersoftltd.com/learn): Ol Chiki alphabet and quizzes
-> - [Open Dataset](https://santaliq.supersoftltd.com/dataset): verified lexicon as JSON/CSV
+> - [Open Dataset](https://santaliq.supersoftltd.com/dataset): verified lexicon as JSON/CSV (CC BY 4.0)
+> - [News](https://santaliq.supersoftltd.com/news), [Careers](https://santaliq.supersoftltd.com/careers), follows, comments, feed and notifications
+> - [Developer API](https://santaliq.supersoftltd.com/developers) ([OpenAPI docs](https://santaliq.supersoftltd.com/api/v1/docs))
+> - Bengali interface (EN / বাংলা), installable PWA with offline tools, admin dashboard, error monitoring
 > - [AI](https://santaliq.supersoftltd.com/ai): grounded search (chat is built, and stays off until an API key is set)
 
 ---

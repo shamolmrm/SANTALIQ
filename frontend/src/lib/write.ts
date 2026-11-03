@@ -1,6 +1,6 @@
 import type { Script } from "@/lib/script/engine";
 
-export type PostKind = "article" | "poetry" | "story" | "essay" | "journal";
+export type PostKind = "article" | "poetry" | "story" | "essay" | "journal" | "news";
 export type PostStatus = "draft" | "published" | "removed";
 
 export type PostCard = {
@@ -32,6 +32,7 @@ export const KIND_LABEL: Record<PostKind, string> = {
   story: "Story",
   essay: "Essay",
   journal: "Journal",
+  news: "News",
 };
 
 export function formatDate(iso: string | null): string {

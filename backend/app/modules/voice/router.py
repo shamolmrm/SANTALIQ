@@ -13,6 +13,7 @@ from app.core.cache import KeyValueStore, get_redis, hit_rate_limit
 from app.core.config import get_settings
 from app.core.db import get_db, utcnow
 from app.modules.language.models import Lexeme, Spelling, VerificationStatus
+from app.modules.notify.service import notify
 from app.modules.users.models import ROLE_RANK, Role, User
 from app.modules.users.security import audit, current_user, current_user_optional, require_role
 from app.modules.voice.models import CONSENT_VERSION, VoiceClip, VoiceSpeaker
@@ -426,6 +427,15 @@ def review_clip(
     clip.reviewed_by = reviewer.id
     clip.reviewed_at = utcnow()
     clip.review_note = body.note
+    notify(
+        db,
+        clip.user_id,
+        "voice_reviewed",
+        actor_id=reviewer.id,
+        decision=body.decision,
+        title=clip.text,
+        note=body.note,
+    )
     audit(
         db,
         f"voice.{body.decision}",

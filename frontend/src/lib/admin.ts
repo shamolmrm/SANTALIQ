@@ -4,6 +4,7 @@ export type Overview = {
   dictionary: ReviewCounts;
   heritage: ReviewCounts;
   voice: ReviewCounts;
+  careers: ReviewCounts;
   voice_minutes: number;
   posts_published: number;
   posts_removed: number;

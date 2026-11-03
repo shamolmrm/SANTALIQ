@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 from app.core.db import get_db, utcnow
 from app.modules.language.models import Lexeme, VerificationStatus
 from app.modules.language.router import EntryReviewOut, entry_review_out
+from app.modules.notify.service import notify
 from app.modules.users.models import AuthSession, Role, User
 from app.modules.users.router import UserOut, to_out
 from app.modules.users.security import audit, require_role
@@ -88,6 +89,15 @@ def review(
     lex.reviewed_by = reviewer.id
     lex.reviewed_at = utcnow()
     lex.review_note = body.note
+    notify(
+        db,
+        lex.submitted_by,
+        "entry_reviewed",
+        actor_id=reviewer.id,
+        decision=body.decision,
+        title=lex.headword,
+        note=body.note,
+    )
     audit(
         db,
         f"entry.{body.decision}",

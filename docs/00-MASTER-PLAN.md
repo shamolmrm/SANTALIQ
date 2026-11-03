@@ -84,6 +84,13 @@ Later (only once there are real users): marketplace, careers, video hosting, liv
 | Research export of voice data | todo (owner licence decision) |
 | Santali TTS / ASR | todo (needs enough verified hours) |
 
+## Phase 6 progress
+| Task | Status |
+| --- | --- |
+| Connect: notifications · Social: follow, comments, feed · News (reviewers publish) · Career board (reviewed) · Developer docs + OpenAPI · PWA (installable, offline tools) | **live** ([module doc](modules/COMMUNITY.md)) |
+| Groups, messages, Android app, Media, Studio, Market | todo — Media/Studio/Market need budget or legal setup |
+| Error monitoring + security review | **live** ([monitoring](modules/MONITORING.md), [security](SECURITY.md)) |
+
 ## Phase 5 progress
 | Task | Status |
 | --- | --- |

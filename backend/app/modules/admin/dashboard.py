@@ -16,6 +16,7 @@ from app.core.config import get_settings
 from app.core.db import get_db, ping_database, utcnow
 from app.modules.admin.models import SystemStatus
 from app.modules.ai.models import AIUsage
+from app.modules.careers.models import JobPost
 from app.modules.contact.models import ContactMessage, ContactStatus
 from app.modules.heritage.models import HeritageItem
 from app.modules.language.models import Lexeme, VerificationStatus
@@ -41,6 +42,7 @@ class OverviewOut(BaseModel):
     dictionary: ReviewCounts
     heritage: ReviewCounts
     voice: ReviewCounts
+    careers: ReviewCounts = ReviewCounts()
     voice_minutes: float
     posts_published: int
     posts_removed: int
@@ -106,6 +108,7 @@ def overview(_: User = Depends(reviewer_required), db: Session = Depends(get_db)
     dictionary = _counts(db, Lexeme.status)
     heritage = _counts(db, HeritageItem.status)
     voice = _counts(db, VoiceClip.status)
+    careers = _counts(db, JobPost.status)
     voice_ms = db.scalar(
         select(func.coalesce(func.sum(VoiceClip.duration_ms), 0)).where(
             VoiceClip.status == VerificationStatus.verified
@@ -128,6 +131,7 @@ def overview(_: User = Depends(reviewer_required), db: Session = Depends(get_db)
         dictionary=dictionary,
         heritage=heritage,
         voice=voice,
+        careers=careers,
         voice_minutes=round((voice_ms or 0) / 60000, 1),
         posts_published=posts.get(PostStatus.published, 0),
         posts_removed=posts.get(PostStatus.removed, 0),
@@ -138,7 +142,11 @@ def overview(_: User = Depends(reviewer_required), db: Session = Depends(get_db)
         users_by_role={str(r): n for r, n in roles.items()},
         ai_requests_7d=ai_requests,
         ai_tokens_7d=ai_tokens,
-        to_review=dictionary.pending + heritage.pending + voice.pending + (reports or 0),
+        to_review=dictionary.pending
+        + heritage.pending
+        + voice.pending
+        + careers.pending
+        + (reports or 0),
         new_messages=db.scalar(
             select(func.count(ContactMessage.id)).where(ContactMessage.status == ContactStatus.new)
         )

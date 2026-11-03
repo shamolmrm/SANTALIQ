@@ -18,7 +18,14 @@ UNSAFE_METHODS = {"POST", "PUT", "PATCH", "DELETE"}
 
 def create_app() -> FastAPI:
     settings = get_settings()
-    app = FastAPI(title=settings.app_name, version="0.2.0")
+    app = FastAPI(
+        title=settings.app_name,
+        version="0.3.0",
+        description="Public API of SANTALIQ, the Santali language platform. See /developers.",
+        docs_url=f"{settings.api_v1_prefix}/docs",
+        openapi_url=f"{settings.api_v1_prefix}/openapi.json",
+        redoc_url=None,
+    )
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.cors_origins,

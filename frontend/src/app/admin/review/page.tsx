@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import { DictionaryQueue } from "@/components/admin/dictionary-queue";
 import { AdminTitle, useAdmin } from "@/components/admin/shell";
+import { CareersQueue } from "@/components/careers-queue";
 import { HeritageQueue } from "@/components/heritage-queue";
 import { VoiceQueue } from "@/components/voice-queue";
 
@@ -11,6 +12,7 @@ const TABS = [
   { id: "dictionary", label: "Dictionary" },
   { id: "heritage", label: "Heritage" },
   { id: "voice", label: "Voice" },
+  { id: "careers", label: "Careers" },
 ] as const;
 type Tab = (typeof TABS)[number]["id"];
 
@@ -44,6 +46,7 @@ function Review() {
       {tab === "dictionary" && <DictionaryQueue me={me} onChange={refresh} />}
       {tab === "heritage" && <HeritageQueue me={me} onChange={refresh} />}
       {tab === "voice" && <VoiceQueue me={me} onChange={refresh} />}
+      {tab === "careers" && <CareersQueue me={me} onChange={refresh} />}
     </div>
   );
 }

@@ -27,6 +27,7 @@ class PostKind(enum.StrEnum):
     story = "story"
     essay = "essay"
     journal = "journal"
+    news = "news"  # reviewers and admins only
 
 
 class PostStatus(enum.StrEnum):

@@ -12,6 +12,7 @@ from app.core.cache import KeyValueStore, get_redis, hit_rate_limit
 from app.core.db import get_db, utcnow
 from app.modules.heritage.models import HeritageItem, HeritageKind
 from app.modules.language.models import VerificationStatus
+from app.modules.notify.service import notify
 from app.modules.users.models import ROLE_RANK, Role, User
 from app.modules.users.security import audit, current_user, current_user_optional, require_role
 from app.modules.write.router import make_excerpt, make_slug
@@ -279,6 +280,16 @@ def review_item(
     item.reviewed_by = reviewer.id
     item.reviewed_at = utcnow()
     item.review_note = body.note
+    notify(
+        db,
+        item.submitted_by,
+        "heritage_reviewed",
+        actor_id=reviewer.id,
+        decision=body.decision,
+        title=item.title,
+        slug=item.slug,
+        note=body.note,
+    )
     audit(
         db,
         f"heritage.{body.decision}",

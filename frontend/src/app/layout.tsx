@@ -10,6 +10,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { themeInitScript } from "@/components/theme-toggle";
 import { ErrorReporter } from "@/components/error-reporter";
+import { ServiceWorkerRegister } from "@/components/sw-register";
 import { I18nRoot } from "@/lib/i18n";
 import { localeInitScript } from "@/lib/i18n/init";
 import "./globals.css";
@@ -22,6 +23,8 @@ const oriya = Noto_Sans_Oriya({ variable: "--font-oriya", subsets: ["oriya"] });
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://santaliq.supersoftltd.com"),
+  icons: { apple: "/apple-touch-icon.png" },
+  appleWebApp: { capable: true, title: "SANTALIQ", statusBarStyle: "black-translucent" },
   title: {
     default: "SANTALIQ — Santali Language. AI Innovation.",
     template: "%s · SANTALIQ",
@@ -60,6 +63,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           Skip to content
         </a>
         <ErrorReporter />
+        <ServiceWorkerRegister />
         <SiteHeader />
         <main id="main" className="flex-1">
           <I18nRoot>{children}</I18nRoot>

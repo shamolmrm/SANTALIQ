@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
+import { Comments } from "@/components/comments";
 import { ScriptSwitch } from "@/components/script-switch";
 import { Alert, Button, Textarea } from "@/components/ui";
 import { api, hasRole, useSession } from "@/lib/api";
@@ -143,6 +144,7 @@ export function ReadPost({ slug, initial }: { slug: string; initial: Post | null
           </Button>
         )}
       </footer>
+      {post.status === "published" && <Comments postId={post.id} />}
     </article>
   );
 }

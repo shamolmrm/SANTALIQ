@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { Alert, Button, Card, Field, Input, Select } from "@/components/ui";
-import { api } from "@/lib/api";
+import { api, hasRole, useSession } from "@/lib/api";
 import { Markdown } from "@/lib/markdown";
 import { convert, detectScript, SCRIPT_LABELS, SCRIPTS, type Script } from "@/lib/script/engine";
 import { KIND_LABEL, KINDS, type Post, type PostKind } from "@/lib/write";
@@ -12,6 +12,7 @@ import { KIND_LABEL, KINDS, type Post, type PostKind } from "@/lib/write";
 import { tr } from "@/lib/i18n";
 export function PostEditor({ initial }: { initial?: Post }) {
   const router = useRouter();
+  const { user } = useSession();
   const [title, setTitle] = useState(initial?.title ?? "");
   const [kind, setKind] = useState<PostKind>(initial?.kind ?? "article");
   const [body, setBody] = useState(initial?.body ?? "");
@@ -152,6 +153,7 @@ export function PostEditor({ initial }: { initial?: Post }) {
                   {tr(KIND_LABEL[k.value])}
                 </option>
               ))}
+              {hasRole(user, "reviewer") && <option value="news">{tr("News")}</option>}
             </Select>
           </Field>
           <Field label={tr("Written in")} hint={tr("Readers can switch to any script; your original is kept.")}>

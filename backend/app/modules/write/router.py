@@ -123,6 +123,12 @@ def is_moderator(user: User | None) -> bool:
     return user is not None and ROLE_RANK[user.role] >= ROLE_RANK[Role.reviewer]
 
 
+def _check_news(kind: PostKind, user: User) -> None:
+    """News is published only by trusted members (reviewers and admins) to avoid false news."""
+    if kind == PostKind.news and ROLE_RANK[user.role] < ROLE_RANK[Role.reviewer]:
+        raise HTTPException(status_code=403, detail="Only reviewers can publish news.")
+
+
 def own_post(db: Session, post_id: uuid.UUID, user: User) -> Post:
     post = db.get(Post, post_id)
     if post is None:
@@ -205,6 +211,7 @@ async def create_post(
         raise HTTPException(
             status_code=429, detail="You are writing very fast! Please try again later."
         )
+    _check_news(body.kind, user)
     post = Post(
         author_id=user.id,
         author=user,
@@ -250,6 +257,7 @@ def update_post(
     if body.title is not None:
         post.title = body.title.strip()
     if body.kind is not None:
+        _check_news(body.kind, user)
         post.kind = body.kind
     if body.script is not None:
         post.script = body.script
