@@ -14,7 +14,7 @@ export default function TranslatorPage() {
         <p className="inline-flex items-center gap-2 rounded-full bg-accent-soft px-3 py-1 text-xs font-medium text-accent">
           Beta · machine translation
         </p>
-        <h1 className="mt-5 font-[family-name:var(--font-fraunces)] text-4xl leading-tight font-semibold tracking-tight sm:text-6xl">
+        <h1 className="mt-5 font-display text-4xl leading-tight font-bold tracking-tight sm:text-6xl">
           Santali Translator
         </h1>
         <p className="mt-4 text-lg leading-relaxed text-muted">
