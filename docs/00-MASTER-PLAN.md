@@ -70,7 +70,17 @@ Later (only once there are real users): marketplace, careers, video hosting, liv
 | Grounded retrieval over verified dictionary + Write | **live** (`/api/v1/ai/search`) |
 | SANTALIQ AI chat with citations (Claude) | **built** — enabled once `ANTHROPIC_API_KEY` is set ([module doc](modules/AI.md)) |
 | AI usage log + admin usage endpoint | **live** |
-| Writing help in editor, Open Dataset v1, pgvector retrieval | todo |
+| Open Dataset v1 (`/dataset`, JSON + CSV of verified entries) + contributor credits | **live** — licence label pending owner decision (`DATASET_LICENSE`) |
+| Writing help in editor, pgvector retrieval | todo |
+
+## Phase 5 progress
+| Task | Status |
+| --- | --- |
+| Learn Ol Chiki v1 — alphabet explorer, digits, marks, quizzes | **live** ([module doc](modules/LEARN.md)) |
+| Vocabulary lessons, progress tracking, heritage archive | todo (needs verified content) |
+
+## Paused (no budget yet)
+- SANTALIQ AI chat (`ANTHROPIC_API_KEY`), Google Translate engine (`GOOGLE_TRANSLATE_API_KEY`) — code ready, switched off.
 
 ### Local commands
 - Frontend: `cd frontend` → `pnpm dev` (http://localhost:3000) · `pnpm lint` · `pnpm typecheck` · `pnpm build`

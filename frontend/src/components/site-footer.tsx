@@ -8,6 +8,8 @@ const groups = [
       { href: "/tools/translator", label: "Translator" },
       { href: "/tools/script-converter", label: "Script Converter" },
       { href: "/tools", label: "All tools" },
+      { href: "/learn", label: "Learn Ol Chiki" },
+      { href: "/dataset", label: "Open dataset" },
     ],
   },
   {

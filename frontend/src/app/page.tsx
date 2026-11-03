@@ -37,7 +37,7 @@ const roadmap = [
   { phase: "02", title: "Verified language data & SANTALIQ Write", status: "Live" },
   { phase: "03", title: "Grounded Santali AI", status: "Beta" },
   { phase: "04", title: "Santali voice", status: "Next" },
-  { phase: "05", title: "Learning & heritage", status: "Planned" },
+  { phase: "05", title: "Learning & heritage", status: "Beta" },
   { phase: "06", title: "Community, mobile & global", status: "Planned" },
 ];
 
