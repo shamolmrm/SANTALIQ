@@ -1,0 +1,65 @@
+"""Languages offered by the SANTALIQ translator (NLLB-200 / FLORES-200 codes).
+
+Santali uses NLLB's `sat_Beng` code. NLLB's Santali training data is in Ol Chiki,
+so output arrives in Ol Chiki; the web app converts it to every other script.
+"""
+
+SANTALI = "sat_Beng"
+
+# (code, English name, native name). Order = display order after Santali.
+LANGUAGES: list[tuple[str, str, str]] = [
+    (SANTALI, "Santali", "ᱥᱟᱱᱛᱟᱲᱤ"),
+    ("eng_Latn", "English", "English"),
+    ("ben_Beng", "Bengali", "বাংলা"),
+    ("hin_Deva", "Hindi", "हिन्दी"),
+    ("ory_Orya", "Odia", "ଓଡ଼ିଆ"),
+    ("asm_Beng", "Assamese", "অসমীয়া"),
+    ("npi_Deva", "Nepali", "नेपाली"),
+    ("mai_Deva", "Maithili", "मैथिली"),
+    ("bho_Deva", "Bhojpuri", "भोजपुरी"),
+    ("mar_Deva", "Marathi", "मराठी"),
+    ("guj_Gujr", "Gujarati", "ગુજરાતી"),
+    ("pan_Guru", "Punjabi", "ਪੰਜਾਬੀ"),
+    ("urd_Arab", "Urdu", "اردو"),
+    ("tam_Taml", "Tamil", "தமிழ்"),
+    ("tel_Telu", "Telugu", "తెలుగు"),
+    ("kan_Knda", "Kannada", "ಕನ್ನಡ"),
+    ("mal_Mlym", "Malayalam", "മലയാളം"),
+    ("sin_Sinh", "Sinhala", "සිංහල"),
+    ("deu_Latn", "German", "Deutsch"),
+    ("fra_Latn", "French", "Français"),
+    ("spa_Latn", "Spanish", "Español"),
+    ("por_Latn", "Portuguese", "Português"),
+    ("ita_Latn", "Italian", "Italiano"),
+    ("nld_Latn", "Dutch", "Nederlands"),
+    ("swe_Latn", "Swedish", "Svenska"),
+    ("nob_Latn", "Norwegian", "Norsk bokmål"),
+    ("dan_Latn", "Danish", "Dansk"),
+    ("fin_Latn", "Finnish", "Suomi"),
+    ("pol_Latn", "Polish", "Polski"),
+    ("ces_Latn", "Czech", "Čeština"),
+    ("ron_Latn", "Romanian", "Română"),
+    ("hun_Latn", "Hungarian", "Magyar"),
+    ("ell_Grek", "Greek", "Ελληνικά"),
+    ("rus_Cyrl", "Russian", "Русский"),
+    ("ukr_Cyrl", "Ukrainian", "Українська"),
+    ("tur_Latn", "Turkish", "Türkçe"),
+    ("arb_Arab", "Arabic", "العربية"),
+    ("pes_Arab", "Persian", "فارسی"),
+    ("heb_Hebr", "Hebrew", "עברית"),
+    ("zho_Hans", "Chinese (Simplified)", "简体中文"),
+    ("zho_Hant", "Chinese (Traditional)", "繁體中文"),
+    ("jpn_Jpan", "Japanese", "日本語"),
+    ("kor_Hang", "Korean", "한국어"),
+    ("vie_Latn", "Vietnamese", "Tiếng Việt"),
+    ("tha_Thai", "Thai", "ไทย"),
+    ("ind_Latn", "Indonesian", "Bahasa Indonesia"),
+    ("zsm_Latn", "Malay", "Bahasa Melayu"),
+    ("tgl_Latn", "Filipino", "Tagalog"),
+    ("mya_Mymr", "Burmese", "မြန်မာ"),
+    ("khm_Khmr", "Khmer", "ខ្មែរ"),
+    ("swh_Latn", "Swahili", "Kiswahili"),
+    ("amh_Ethi", "Amharic", "አማርኛ"),
+]
+
+CODES = {code for code, _, _ in LANGUAGES}

@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     api_v1_prefix: str = "/api/v1"
     cors_origins: list[str] = ["http://localhost:3000"]
     database_url: str = "postgresql+psycopg://santaliq:santaliq@localhost:5432/santaliq"
+    translate_url: str = "http://localhost:8100"
 
 
 @lru_cache

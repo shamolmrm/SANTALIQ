@@ -9,6 +9,12 @@ const tools: Array<{ title: string; body: string; phase: string; href?: string }
     href: "/tools/script-converter",
   },
   {
+    title: "Translator",
+    body: "Translate between Santali and 50+ languages — English, German, Bengali, Hindi, Odia and more.",
+    phase: "Beta · live now",
+    href: "/tools/translator",
+  },
+  {
     title: "Smart Keyboard",
     body: "Type in Roman letters and get Ol Chiki as you write. Web first, Android next.",
     phase: "Phase 1",
@@ -32,6 +38,11 @@ const tools: Array<{ title: string; body: string; phase: string; href?: string }
     title: "Santali Voice",
     body: "Text-to-speech and speech recognition, built from voices shared with consent.",
     phase: "Phase 4",
+  },
+  {
+    title: "Learn Ol Chiki",
+    body: "Courses, quizzes and a kids' corner for learning to read and write Santali.",
+    phase: "Phase 5",
   },
 ];
 
@@ -119,7 +130,7 @@ export default function Home() {
             eyebrow="What we are building"
             title="Tools that make Santali a first-class digital language."
           />
-          <div className="mt-14 grid gap-px overflow-hidden rounded-[var(--radius-card)] border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-14 grid gap-px overflow-hidden rounded-[var(--radius-card)] border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
             {tools.map((tool) => (
               <article key={tool.title} className="group bg-bg-elevated p-7 transition-colors hover:bg-bg">
                 <span className="text-xs font-medium tracking-wide text-accent">{tool.phase}</span>

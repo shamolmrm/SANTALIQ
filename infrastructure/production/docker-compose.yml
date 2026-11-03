@@ -32,8 +32,24 @@ services:
     environment:
       ENVIRONMENT: production
       CORS_ORIGINS: '["https://santaliq.supersoftltd.com"]'
+      TRANSLATE_URL: http://santaliq-translate:8100
     networks:
       - proxy
+      - internal
+
+  # NLLB-200 (CC-BY-NC-4.0). Internal only: reachable from the API, not from the proxy.
+  translate:
+    build:
+      context: ../../services/translate
+    image: santaliq-translate:latest
+    container_name: santaliq-translate
+    restart: unless-stopped
+    logging: *default-logging
+    environment:
+      THREADS: "2"
+    mem_limit: 2g
+    cpus: 2
+    networks:
       - internal
 
 networks:
