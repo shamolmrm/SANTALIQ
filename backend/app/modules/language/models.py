@@ -1,7 +1,7 @@
 """Language data domain: Santali words with per-script spellings, meanings and provenance.
 
-Nothing here is seeded. Entries are created by verified contributors (future auth module)
-and only `verified` entries are served publicly.
+Nothing here is seeded. Signed-in users submit entries (status `pending`); a reviewer other
+than the submitter verifies or rejects them. Only `verified` entries are served publicly.
 """
 
 import enum
@@ -18,11 +18,10 @@ from sqlalchemy import (
     Text,
     UniqueConstraint,
     Uuid,
-    func,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.core.db import Base
+from app.core.db import Base, TimestampMixin
 
 SCRIPTS = ("olck", "latn", "beng", "orya", "deva")
 
@@ -32,13 +31,6 @@ class VerificationStatus(enum.StrEnum):
     pending = "pending"  # awaiting native-speaker review
     verified = "verified"  # approved; public and usable for AI
     rejected = "rejected"
-
-
-class TimestampMixin:
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
-    updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
-    )
 
 
 class Lexeme(TimestampMixin, Base):
@@ -58,6 +50,15 @@ class Lexeme(TimestampMixin, Base):
     source: Mapped[str | None] = mapped_column(Text, comment="Citation: book, speaker, corpus")
     contributor: Mapped[str | None] = mapped_column(String(120))
     consent_note: Mapped[str | None] = mapped_column(Text)
+
+    submitted_by: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("users.id", ondelete="SET NULL"), index=True
+    )
+    reviewed_by: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("users.id", ondelete="SET NULL")
+    )
+    reviewed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    review_note: Mapped[str | None] = mapped_column(Text)
 
     spellings: Mapped[list["Spelling"]] = relationship(
         back_populates="lexeme", cascade="all, delete-orphan", lazy="selectin"

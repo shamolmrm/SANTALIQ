@@ -1,13 +1,16 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 from app.api.v1 import api_router
 from app.core.config import get_settings
 
+UNSAFE_METHODS = {"POST", "PUT", "PATCH", "DELETE"}
+
 
 def create_app() -> FastAPI:
     settings = get_settings()
-    app = FastAPI(title=settings.app_name, version="0.1.0")
+    app = FastAPI(title=settings.app_name, version="0.2.0")
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.cors_origins,
@@ -15,6 +18,16 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+
+    @app.middleware("http")
+    async def origin_guard(request: Request, call_next):  # type: ignore[no-untyped-def]
+        """CSRF defence: reject state-changing requests sent from other websites."""
+        if request.method in UNSAFE_METHODS:
+            origin = request.headers.get("origin")
+            if origin and origin not in settings.cors_origins:
+                return JSONResponse({"detail": "Origin not allowed."}, status_code=403)
+        return await call_next(request)
+
     app.include_router(api_router, prefix=settings.api_v1_prefix)
     return app
 

@@ -12,6 +12,7 @@ dependencies = [
     "psycopg[binary]>=3.2",
     "httpx>=0.28",
     "redis>=5.2",
+    "argon2-cffi>=23.1",
 ]
 
 [project.optional-dependencies]

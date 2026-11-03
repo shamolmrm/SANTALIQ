@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AuthMenu } from "@/components/auth-menu";
 import { Logo } from "@/components/logo";
 import { MobileNav } from "@/components/mobile-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -18,6 +19,7 @@ export function SiteHeader() {
         </nav>
         <div className="flex items-center gap-2">
           <ThemeToggle />
+          <AuthMenu />
           <MobileNav />
         </div>
       </div>

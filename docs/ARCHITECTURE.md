@@ -40,6 +40,19 @@ Nginx Proxy Manager (shared VPS, ports 80/443, Let's Encrypt)
 | GET | `/api/v1/translate/languages` | 50+ languages |
 | POST | `/api/v1/translate` | rate-limited, cached |
 | GET | `/api/v1/dictionary/search?q=` | verified entries, prefix match in any script |
+| POST | `/api/v1/auth/register` · `/login` · `/logout` | session cookie; rate-limited 10/min/IP |
+| GET | `/api/v1/auth/me` | current user |
+| POST | `/api/v1/dictionary/entries` | signed in; creates `pending` entry (source + consent required) |
+| GET | `/api/v1/dictionary/entries/mine` | own submissions with status |
+| GET | `/api/v1/admin/stats` · `/admin/review` | reviewer+ |
+| POST | `/api/v1/admin/review/{id}` | reviewer+; verify/reject; not own entry (unless admin) |
+| GET/PATCH | `/api/v1/admin/users[/{id}]` | admin; role and active status; cannot change self |
+
+## Users & roles
+`member` (contribute) → `reviewer` (verify others' entries) → `admin` (manage users).
+Sessions: random token in an HttpOnly, Secure, SameSite=Lax cookie; only its SHA-256 is stored (`sessions`).
+Passwords: Argon2id. Every sensitive action is written to `audit_events`.
+Operator CLI: `docker exec santaliq-api python -m app.cli set-role <email> admin|reviewer|member` · `list-users`.
 
 ## API conventions
 - Prefix `/api/v1`; JSON; Pydantic validation (422 on invalid input).

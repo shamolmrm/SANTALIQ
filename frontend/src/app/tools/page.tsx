@@ -28,9 +28,10 @@ const tools: Array<{ title: string; body: string; status: DivisionStatus; href?:
     status: "building",
   },
   {
-    title: "Living Dictionary",
-    body: "Meanings, native-speaker audio, dialect notes and verification badges — searchable in every script.",
-    status: "planned",
+    title: "Community Dictionary",
+    body: "Verified entries contributed by Santali speakers — searchable in every script. Add words you know.",
+    status: "live",
+    href: "/tools/dictionary",
   },
   {
     title: "Grounded AI Assistant",

@@ -1,14 +1,31 @@
 from collections.abc import Iterator
+from datetime import UTC, datetime
 from functools import lru_cache
 
-from sqlalchemy import Engine, create_engine, text
-from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
+from sqlalchemy import DateTime, Engine, create_engine, func, text
+from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column, sessionmaker
 
 from app.core.config import get_settings
 
 
 class Base(DeclarativeBase):
     """Declarative base for all ORM models."""
+
+
+class TimestampMixin:
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
+
+
+def utcnow() -> datetime:
+    return datetime.now(UTC)
+
+
+def as_utc(dt: datetime) -> datetime:
+    """SQLite returns naive datetimes; treat them as UTC."""
+    return dt if dt.tzinfo else dt.replace(tzinfo=UTC)
 
 
 @lru_cache

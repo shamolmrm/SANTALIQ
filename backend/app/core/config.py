@@ -20,6 +20,15 @@ class Settings(BaseSettings):
     # Abuse protection / performance
     translate_rate_limit_per_minute: int = 20
     translate_cache_ttl_seconds: int = 7 * 24 * 3600
+    auth_rate_limit_per_minute: int = 10
+
+    # Sessions
+    session_cookie_name: str = "santaliq_session"
+    session_ttl_days: int = 30
+
+    @property
+    def cookie_secure(self) -> bool:
+        return self.environment == "production"
 
 
 @lru_cache

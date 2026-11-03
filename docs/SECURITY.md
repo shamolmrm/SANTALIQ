@@ -13,8 +13,15 @@
 - Nightly database backups (14 days), mode 600.
 - Backend lint + tests run in Docker before every deploy.
 
-## To do before accounts/user content
+- Accounts: Argon2id password hashes; server-side sessions (token hashed at rest, HttpOnly/Secure/SameSite=Lax cookie, 30 days);
+  generic login errors (no account enumeration) with equal timing; login/register rate limit 10/min/IP.
+- CSRF: SameSite=Lax cookies plus an Origin check that rejects state-changing requests from other sites.
+- RBAC (member / reviewer / admin) enforced server-side; reviewers cannot verify their own entries;
+  admins cannot change their own role; disabling a user deletes their sessions.
+- Audit log (`audit_events`) for register, login, submissions, reviews and user changes.
+
+## To do
 - Off-server backup copies.
-- Authentication (secure sessions, password hashing, email verification), RBAC, audit logs.
-- CSRF protection for cookie sessions; content moderation and abuse reporting.
+- Email verification and password reset (needs an email sender).
+- Content moderation/abuse reporting before any social features.
 - Database backups and restore drills.
