@@ -34,6 +34,15 @@ if [ -d "$VOICE_SRC" ]; then
   echo "$(date -Is) voice mirror ok ($(find "$DEST/voice" -type f | wc -l) files)"
 fi
 
+# ── report to the admin dashboard (System page) ──
+voice_files="$(find "$DEST/voice" -type f 2>/dev/null | wc -l)"
+docker exec santaliq-postgres psql -U santaliq -d santaliq -q -c \
+  "INSERT INTO system_status (key, value, updated_at) VALUES ('last_backup',
+     json_build_object('file', '$(basename "$file")', 'size', '$(du -h "$file" | cut -f1)', 'voice_files', $voice_files),
+     now())
+   ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = now();" \
+  || echo "$(date -Is) could not record backup status (dashboard)"
+
 # ── optional encrypted off-server copy ──
 BACKUP_REMOTE="$(grep -E '^BACKUP_REMOTE=' "$ENV_FILE" 2>/dev/null | cut -d= -f2- || true)"
 BACKUP_PASSPHRASE="$(grep -E '^BACKUP_PASSPHRASE=' "$ENV_FILE" 2>/dev/null | cut -d= -f2- || true)"

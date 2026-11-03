@@ -6,7 +6,7 @@ import { api, type Status, type User } from "@/lib/api";
 import { seconds, type VoiceClip } from "@/lib/voice";
 
 /** Reviewer queue for SANTALIQ Voice recordings. */
-export function VoiceQueue({ me }: { me: User }) {
+export function VoiceQueue({ me, onChange }: { me: User; onChange?: () => void }) {
   const [status, setStatus] = useState<Status>("pending");
   const [clips, setClips] = useState<VoiceClip[] | null>(null);
   const [notes, setNotes] = useState<Record<string, string>>({});
@@ -24,6 +24,7 @@ export function VoiceQueue({ me }: { me: User }) {
     try {
       await api(`/admin/voice/${id}`, { method: "POST", body: JSON.stringify({ decision, note: notes[id]?.trim() || null }) });
       load();
+      onChange?.();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed");
     }

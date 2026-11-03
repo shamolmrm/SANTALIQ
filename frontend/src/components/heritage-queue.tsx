@@ -7,7 +7,7 @@ import { api, type Status, type User } from "@/lib/api";
 import { HERITAGE_LABEL, type HeritageItem } from "@/lib/heritage";
 
 /** Reviewer queue for SANTALIQ Heritage submissions. */
-export function HeritageQueue({ me }: { me: User }) {
+export function HeritageQueue({ me, onChange }: { me: User; onChange?: () => void }) {
   const [status, setStatus] = useState<Status>("pending");
   const [items, setItems] = useState<HeritageItem[] | null>(null);
   const [notes, setNotes] = useState<Record<string, string>>({});
@@ -26,6 +26,7 @@ export function HeritageQueue({ me }: { me: User }) {
     try {
       await api(`/admin/heritage/${id}`, { method: "POST", body: JSON.stringify({ decision, note: notes[id]?.trim() || null }) });
       load();
+      onChange?.();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed");
     }

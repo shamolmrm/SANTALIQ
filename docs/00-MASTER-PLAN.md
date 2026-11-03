@@ -55,6 +55,7 @@ Later (only once there are real users): marketplace, careers, video hosting, liv
 | Multi-script keyboard | **live** (`/tools/keyboard`) |
 | Dictionary v1: contributions, review, multi-script search | **live** (empty until community adds entries) |
 | Accounts: register/login, roles, admin, password change; email verify/reset (off until SMTP) | **live** |
+| Admin dashboard: overview, review tabs, content, users, activity log, system status | **live** ([module doc](modules/ADMIN.md)) |
 
 ## Phase 2 progress
 | Task | Status |
