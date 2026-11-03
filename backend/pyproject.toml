@@ -11,6 +11,7 @@ dependencies = [
     "alembic>=1.14",
     "psycopg[binary]>=3.2",
     "httpx>=0.28",
+    "redis>=5.2",
 ]
 
 [project.optional-dependencies]
@@ -26,6 +27,9 @@ target-version = "py312"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP"]
+
+[tool.ruff.lint.flake8-bugbear]
+extend-immutable-calls = ["fastapi.Depends", "fastapi.Query"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

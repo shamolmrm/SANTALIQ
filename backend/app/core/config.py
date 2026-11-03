@@ -12,8 +12,14 @@ class Settings(BaseSettings):
     environment: str = "development"
     api_v1_prefix: str = "/api/v1"
     cors_origins: list[str] = ["http://localhost:3000"]
+
     database_url: str = "postgresql+psycopg://santaliq:santaliq@localhost:5432/santaliq"
+    redis_url: str = "redis://localhost:6379/0"
     translate_url: str = "http://localhost:8100"
+
+    # Abuse protection / performance
+    translate_rate_limit_per_minute: int = 20
+    translate_cache_ttl_seconds: int = 7 * 24 * 3600
 
 
 @lru_cache

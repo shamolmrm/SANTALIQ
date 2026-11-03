@@ -1,6 +1,6 @@
 # SANTALIQ production stack (Contabo VPS, behind Nginx Proxy Manager).
-# Deployed by scripts/deploy.sh — do not run by hand unless you know why.
-# Server layout: /home/ubuntu/docker/websites/santaliq/app  (this repo, from git archive)
+# Deployed by scripts/deploy.sh with:  docker compose --env-file ../../../.env -f this-file ...
+# Secrets live in /home/ubuntu/docker/websites/santaliq/.env (created by deploy.sh, never in Git).
 name: santaliq
 
 x-logging: &default-logging
@@ -10,6 +10,7 @@ x-logging: &default-logging
     max-file: "3"
 
 services:
+  # ── Public-facing (joined to the shared proxy network) ──
   web:
     build:
       context: ../../frontend
@@ -17,6 +18,7 @@ services:
     container_name: santaliq-web
     restart: unless-stopped
     logging: *default-logging
+    mem_limit: 512m
     depends_on:
       - api
     networks:
@@ -25,19 +27,29 @@ services:
   api:
     build:
       context: ../../backend
+      target: runtime
     image: santaliq-api:latest
     container_name: santaliq-api
     restart: unless-stopped
     logging: *default-logging
+    mem_limit: 512m
     environment:
       ENVIRONMENT: production
       CORS_ORIGINS: '["https://santaliq.supersoftltd.com"]'
+      DATABASE_URL: postgresql+psycopg://santaliq:${POSTGRES_PASSWORD:?set in .env}@santaliq-postgres:5432/santaliq
+      REDIS_URL: redis://:${REDIS_PASSWORD:?set in .env}@santaliq-redis:6379/0
       TRANSLATE_URL: http://santaliq-translate:8100
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     networks:
       - proxy
       - internal
 
-  # NLLB-200 (CC-BY-NC-4.0). Internal only: reachable from the API, not from the proxy.
+  # ── Internal only (santaliq_internal network) ──
+  # NLLB-200 (CC-BY-NC-4.0)
   translate:
     build:
       context: ../../services/translate
@@ -51,6 +63,59 @@ services:
     cpus: 2
     networks:
       - internal
+
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: santaliq-postgres
+    restart: unless-stopped
+    logging: *default-logging
+    mem_limit: 1g
+    shm_size: 128m
+    environment:
+      POSTGRES_USER: santaliq
+      POSTGRES_DB: santaliq
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set in .env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U santaliq -d santaliq"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+    networks:
+      - internal
+
+  redis:
+    image: redis:7-alpine
+    container_name: santaliq-redis
+    restart: unless-stopped
+    logging: *default-logging
+    mem_limit: 256m
+    command:
+      - redis-server
+      - --requirepass
+      - ${REDIS_PASSWORD:?set in .env}
+      - --maxmemory
+      - 200mb
+      - --maxmemory-policy
+      - allkeys-lru
+      - --save
+      - ""
+      - --appendonly
+      - "no"
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a \"$$REDIS_PASSWORD\" --no-auth-warning ping | grep PONG"]
+      interval: 10s
+      timeout: 3s
+      retries: 6
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?set in .env}
+    networks:
+      - internal
+
+volumes:
+  pgdata:
+    name: santaliq_pgdata
 
 networks:
   proxy:
