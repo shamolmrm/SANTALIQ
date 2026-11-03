@@ -41,19 +41,22 @@ export function SiteFooter() {
   ];
   return (
     <footer className="border-t border-line bg-bg-sunken">
-      <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-[1.5fr_1fr_1fr]">
+      <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-[1.2fr_2fr_1fr]">
         <div className="space-y-4">
           <Logo />
           <p className="max-w-xs text-sm leading-relaxed text-muted">{t.tagline}</p>
-          <LanguageSwitch />
+          <div className="w-fit">
+            <LanguageSwitch />
+          </div>
         </div>
-        {groups.map((g) => (
+        {groups.map((g, i) => (
           <nav key={g.title} aria-label={g.title}>
             <p className="text-sm font-semibold">{g.title}</p>
-            <ul className="mt-3 space-y-2 text-sm text-muted">
+            {/* the long tools list flows into two columns */}
+            <ul className={`mt-3 text-sm text-muted ${i === 0 ? "grid grid-cols-2 gap-x-8 gap-y-2" : "space-y-2"}`}>
               {g.links.map((l) => (
                 <li key={l.href}>
-                  <Link href={l.href} className="hover:text-fg">
+                  <Link href={l.href} className="transition-colors hover:text-fg">
                     {l.label}
                   </Link>
                 </li>
@@ -63,7 +66,21 @@ export function SiteFooter() {
         ))}
       </div>
       <div className="border-t border-line">
-        <p className="mx-auto max-w-6xl px-4 py-5 text-xs text-muted sm:px-6">{t.bottom}</p>
+        <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-5 text-xs text-muted sm:flex-row sm:items-center sm:justify-between sm:px-6">
+          <p>{t.bottom}</p>
+          <p>
+            {t.designBy}{" "}
+            <a
+              href="https://www.supersoftltd.com/"
+              target="_blank"
+              rel="noopener"
+              className="inline-flex items-center gap-1 font-semibold text-fg transition-colors hover:text-accent"
+            >
+              Supersoft Ltd
+              <span aria-hidden>↗</span>
+            </a>
+          </p>
+        </div>
       </div>
     </footer>
   );

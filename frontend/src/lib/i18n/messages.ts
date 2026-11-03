@@ -54,6 +54,7 @@ const en = {
     privacy: "Privacy",
     terms: "Terms",
     bottom: "© SANTALIQ · Santali first · Multi-script · Community owned",
+    designBy: "Design & development by",
   },
   home: {
     badge: "Translator, dictionary, Write and AI are live",
@@ -301,6 +302,7 @@ const bn: Messages = {
     privacy: "গোপনীয়তা",
     terms: "শর্তাবলি",
     bottom: "© SANTALIQ · সাঁওতালি সবার আগে · সব লিপিতে · কমিউনিটির মালিকানায়",
+    designBy: "ডিজাইন ও ডেভেলপমেন্ট:",
   },
   home: {
     badge: "অনুবাদক, অভিধান, লেখা ও AI এখন চালু",
