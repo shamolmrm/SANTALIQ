@@ -1,0 +1,56 @@
+# SANTALIQ — Master Plan
+
+**Santali Language. AI Innovation.**
+
+## Vision
+A model for the digital revival of Indigenous languages — starting with Santali. SANTALIQ makes Santali a first-class digital language: verified language data, script-aware tools, grounded AI, voice, learning, heritage and community.
+
+## Principles
+1. **Santali first, multi-script** — Ol Chiki, Bengali, Devanagari, Odia, Roman.
+2. **Verified data is the core asset** — every word/sentence has a verification status; unverified contributions never feed AI directly.
+3. **Community data sovereignty** — consent, credit and permission for language, voice and cultural data.
+4. **Low-internet first** — fast, light pages; PWA and offline dictionary later.
+5. **Ship early** — a useful public beta by month 3.
+6. **Open** — open-source code and an openly licensed verified dataset (pending owner decision).
+
+## Signature features
+| Feature | Description |
+| --- | --- |
+| Universal Script Switch | View any content in any supported script with one click |
+| Santali Smart Keyboard | Type Roman → Ol Chiki (web first, Android later) |
+| Living Dictionary | Native-speaker audio, dialect info, verification badges, community contributions |
+| Grounded Santali AI | RAG answers with citations from verified SANTALIQ data |
+| Open Santali Dataset | Verified data released for researchers |
+
+## Roadmap
+| Phase | Months | Scope | Outcome |
+| --- | --- | --- | --- |
+| 0 — Setup | wk 1–2 | Repo, docs, brand, architecture, local dev environment | Ready to build |
+| 1 — Foundation + Script Engine | 1–3 | Next.js/FastAPI/Postgres base, homepage, static pages, script converter, web keyboard, dictionary v1, basic auth/profile | **Public beta** |
+| 2 — Language Data + Write | 4–6 | Contribution + admin review workflow, pronunciation audio, SANTALIQ Write (articles/poetry/stories with script switch), contributor profiles | Community content |
+| 3 — SANTALIQ AI | 7–9 | Translator (existing open models + verified data), RAG chat with citations, writing/grammar help, feedback loop, Open Dataset v1 | AI platform |
+| 4 — Voice | 10–12 | Consented voice collection campaign, TTS, then ASR, pronunciation trainer | Santali voice |
+| 5 — Learn + Heritage | 13–15 | Ol Chiki courses, quizzes, kids section; folk stories, songs, festivals, history archive (verified, consented) | Education & culture |
+| 6 — Community, Mobile, Global | 16–18+ | Groups, feed, events, Android app + keyboard, public API, support for other Indigenous languages | Ecosystem |
+
+Later (only once there are real users): marketplace, careers, video hosting, live streaming, creator monetization.
+
+## Phase 0 — first week
+| Day | Task | Status |
+| --- | --- | --- |
+| 1 | Git repo, folder structure, `.gitignore`, README, CLAUDE.md, this plan, GitHub remotes | done |
+| 2 | Requirements + architecture docs | todo |
+| 3 | Initial database design | todo |
+| 4 | Docker Compose: PostgreSQL + Redis | todo |
+| 5 | Next.js setup + design system | todo |
+| 6 | FastAPI setup, health check, frontend ↔ backend | todo |
+| 7 | Push, weekly review | todo |
+
+## Open decisions
+- [ ] Domain / subdomain and where its DNS is managed
+- [ ] Production VPS (Contabo) details
+- [ ] Solo or team; Santali language advisor
+- [ ] Monthly budget (VPS, domain, AI APIs)
+- [ ] Open-source license for code and dataset
+- [ ] Source of initial dictionary data (copyright-safe)
+- [ ] LLM provider for in-product AI (Phase 3)
