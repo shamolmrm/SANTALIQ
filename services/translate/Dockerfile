@@ -6,7 +6,7 @@
 FROM python:3.12-slim AS convert
 ENV PIP_NO_CACHE_DIR=1 PIP_DISABLE_PIP_VERSION_CHECK=1
 RUN pip install --index-url https://download.pytorch.org/whl/cpu torch==2.5.1 \
- && pip install "transformers==4.46.3" "ctranslate2==4.5.0" "sentencepiece==0.2.0" "huggingface_hub==0.26.5"
+ && pip install "transformers==4.46.3" "ctranslate2==4.6.0" "sentencepiece==0.2.0" "huggingface_hub==0.26.5"
 ARG MODEL=facebook/nllb-200-distilled-600M
 RUN ct2-transformers-converter --model "$MODEL" --output_dir /model --quantization int8 \
  && python -c "from huggingface_hub import hf_hub_download as d; import shutil; shutil.copy(d('$MODEL','sentencepiece.bpe.model'), '/model/sentencepiece.bpe.model')"
