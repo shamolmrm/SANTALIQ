@@ -30,7 +30,7 @@ def test_exports_only_verified(client: TestClient, db_session: Session) -> None:
     data = client.get("/api/v1/dataset/lexicon.json").json()
     assert data["count"] == 1 and data["entries"][0]["headword"] == "Alpha"
     assert data["entries"][0]["spellings"]["latn"] == ["Alpha"]
-    assert "Licence" in data["license"]
+    assert data["license"].startswith("CC BY 4.0")
 
     r = client.get("/api/v1/dataset/lexicon.csv")
     assert r.status_code == 200 and r.headers["content-type"].startswith("text/csv")

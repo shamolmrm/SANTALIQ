@@ -11,7 +11,7 @@ A model for the digital revival of Indigenous languages — starting with Santal
 3. **Community data sovereignty** — consent, credit and permission for language, voice and cultural data.
 4. **Low-internet first** — fast, light pages; PWA and offline dictionary later.
 5. **Ship early** — a useful public beta by month 3.
-6. **Open** — open-source code and an openly licensed verified dataset (pending owner decision).
+6. **Open** — verified dataset under CC BY 4.0; open-source code licence still to decide.
 
 ## Signature features
 | Feature | Description |
@@ -71,7 +71,7 @@ Later (only once there are real users): marketplace, careers, video hosting, liv
 | Grounded retrieval over verified dictionary + Write | **live** (`/api/v1/ai/search`) |
 | SANTALIQ AI chat with citations (Claude) | **built** — enabled once `ANTHROPIC_API_KEY` is set ([module doc](modules/AI.md)) |
 | AI usage log + admin usage endpoint | **live** |
-| Open Dataset v1 (`/dataset`, JSON + CSV of verified entries) + contributor credits | **live** — licence label pending owner decision (`DATASET_LICENSE`) |
+| Open Dataset v1 (`/dataset`, JSON + CSV of verified entries) + contributor credits | **live** — licensed **CC BY 4.0** (ADR 016) |
 | Writing help in editor, pgvector retrieval | todo |
 
 ## Phase 4 progress
@@ -104,6 +104,6 @@ Later (only once there are real users): marketplace, careers, video hosting, liv
 - [ ] Production VPS (Contabo) details
 - [ ] Solo or team; Santali language advisor
 - [ ] Monthly budget (VPS, domain, AI APIs)
-- [ ] Open-source license for code and dataset
+- [x] Dataset licence: CC BY 4.0 (ADR 016) · [ ] code licence
 - [ ] Source of initial dictionary data (copyright-safe)
 - [ ] LLM provider for in-product AI (Phase 3)

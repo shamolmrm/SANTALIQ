@@ -16,3 +16,6 @@
 | 013 | 2026-11-03 | SANTALIQ AI = retrieval over SANTALIQ's own verified data + Claude (`claude-opus-5-5`, effort low); lexical retrieval first, pgvector later | Grounded answers with citations; lexical matching works for Santali today; no Santali-capable embedding model yet |
 | 014 | 2026-11-03 | AI chat requires sign-in, 10/min + 50/day per user; only token counts logged, never message content | Cost control and privacy |
 | 008 | 2026-11-03 | Brand palette navy `#071B2B` / emerald `#13865B` / gold `#E9B83E` / soft white `#F7F9FC`, Inter typography | Owner's design direction |
+| 015 | 2026-11-03 | Heritage and Voice: consent + source required, reviewer verification by someone other than the contributor, withdrawal at any time; nothing seeded | Community data sovereignty; never invent cultural data |
+| 016 | 2026-11-03 | Open data licence **CC BY 4.0** for the verified lexicon (and, later, research-consented voice exports) | Owner decision: anyone may reuse with credit to SANTALIQ and contributors. The code licence is still undecided |
+| 017 | 2026-11-03 | Off-server backup = a daily pull of server backups onto the owner's PC (`scripts/pull-backup.ps1`) until object storage is affordable | Free; a second physical copy |

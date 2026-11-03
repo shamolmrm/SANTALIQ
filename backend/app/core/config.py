@@ -23,7 +23,10 @@ class Settings(BaseSettings):
     auth_rate_limit_per_minute: int = 10
 
     # Open dataset licence label (owner decision; shown in every export)
-    dataset_license: str = "Licence pending — contact SANTALIQ before reuse"
+    dataset_license: str = (
+        "CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/)"
+        " — credit SANTALIQ and contributors"
+    )
 
     # Google Cloud Translation (optional second engine). Off until the key is set.
     google_translate_api_key: str = ""

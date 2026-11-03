@@ -30,6 +30,9 @@ Data volume: `santaliq_pgdata` (survives redeploys; never run `down -v`).
 ## Backups
 - `/usr/local/bin/santaliq-backup` via `/etc/cron.d/santaliq-backup` at 03:15 daily → `/home/ubuntu/backups/santaliq/*.sql.gz` (mode 600), 14-day retention. Log: `/var/log/santaliq-backup.log`.
 - Restore: `gunzip -c FILE | docker exec -i santaliq-postgres psql -U santaliq -d santaliq`
+- Voice recordings (`santaliq/data/voice`) are mirrored to `/home/ubuntu/backups/santaliq/voice` by the same job. Deletions are mirrored too, so withdrawn voices are removed from backups.
+- **Copy on the owner's PC (ADR 017):** `.\scripts\pull-backup.ps1` downloads the newest dump to `D:\SANTALIQ-backups\db` (30 days kept) and a voice snapshot to `D:\SANTALIQ-backups\voice-latest.tar.gz`. It logs to `D:\SANTALIQ-backups\pull.log`. To run it daily, use Windows Task Scheduler:
+  `Register-ScheduledTask -TaskName "SANTALIQ backup pull" -Action (New-ScheduledTaskAction -Execute powershell.exe -Argument '-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File D:\devloper\SANTALIQ\scripts\pull-backup.ps1') -Trigger (New-ScheduledTaskTrigger -Daily -At 20:00) -Settings (New-ScheduledTaskSettingsSet -StartWhenAvailable)`
 - Off-server copy (optional): set `BACKUP_REMOTE` (rclone target, e.g. S3-compatible bucket) and `BACKUP_PASSPHRASE`
   in the server `.env`; each dump is AES-256 encrypted and uploaded after the local backup. Skipped until set.
 
