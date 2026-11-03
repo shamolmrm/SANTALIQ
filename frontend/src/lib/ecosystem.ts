@@ -8,7 +8,7 @@ export const divisions: Array<{
   href?: string;
 }> = [
   { name: "Language", summary: "Translator, dictionary, keyboard, script converter", status: "live", href: "/tools" },
-  { name: "AI", summary: "Grounded chat, writing help, research assistant", status: "building" },
+  { name: "AI", summary: "Grounded assistant with sources, writing help", status: "live", href: "/ai" },
   { name: "Write", summary: "Articles, poetry, stories and journals in Santali", status: "live", href: "/write" },
   { name: "Learn", summary: "Ol Chiki, grammar, courses and quizzes", status: "planned" },
   { name: "Voice", summary: "Text-to-speech, speech recognition, pronunciation", status: "planned" },

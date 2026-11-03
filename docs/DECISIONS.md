@@ -13,4 +13,6 @@
 | 010 | 2026-11-03 | Dictionary grows only via signed-in contributions + independent review; nothing seeded | Never invent Santali data; every entry has source, consent and reviewer |
 | 011 | 2026-11-03 | Write uses a small Markdown subset rendered to React elements; no HTML/rich-text editor | Zero XSS surface, works for poetry, light on slow networks |
 | 012 | 2026-11-03 | Writing stores the author's original script; other scripts are converted client-side at read time | Original is never altered; conversion improves as rules are reviewed |
+| 013 | 2026-11-03 | SANTALIQ AI = retrieval over SANTALIQ's own verified data + Claude (`claude-opus-5-5`, effort low); lexical retrieval first, pgvector later | Grounded answers with citations; lexical matching works for Santali today; no Santali-capable embedding model yet |
+| 014 | 2026-11-03 | AI chat requires sign-in, 10/min + 50/day per user; only token counts logged, never message content | Cost control and privacy |
 | 008 | 2026-11-03 | Brand palette navy `#071B2B` / emerald `#13865B` / gold `#E9B83E` / soft white `#F7F9FC`, Inter typography | Owner's design direction |

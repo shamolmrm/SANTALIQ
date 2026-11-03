@@ -64,6 +64,14 @@ Later (only once there are real users): marketplace, careers, video hosting, liv
 | Contributor profiles / leaderboard | todo |
 | Pronunciation audio (consented) | todo — needs object storage |
 
+## Phase 3 progress
+| Task | Status |
+| --- | --- |
+| Grounded retrieval over verified dictionary + Write | **live** (`/api/v1/ai/search`) |
+| SANTALIQ AI chat with citations (Claude) | **built** — enabled once `ANTHROPIC_API_KEY` is set ([module doc](modules/AI.md)) |
+| AI usage log + admin usage endpoint | **live** |
+| Writing help in editor, Open Dataset v1, pgvector retrieval | todo |
+
 ### Local commands
 - Frontend: `cd frontend` → `pnpm dev` (http://localhost:3000) · `pnpm lint` · `pnpm typecheck` · `pnpm build`
 - Backend: `cd backend` → `.venv\Scripts\activate` → `uvicorn app.main:app --reload` (http://localhost:8000/docs) · `pytest` · `ruff check .`

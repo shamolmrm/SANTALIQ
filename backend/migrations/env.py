@@ -1,6 +1,7 @@
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 
+import app.modules.ai.models  # noqa: F401
 import app.modules.language.models  # noqa: F401  (register models)
 import app.modules.users.models  # noqa: F401
 import app.modules.write.models  # noqa: F401

@@ -33,10 +33,10 @@ const principles = [
 ];
 
 const roadmap = [
-  { phase: "01", title: "Language tools — translator, script converter, dictionary", status: "Building now" },
-  { phase: "02", title: "Verified language data & SANTALIQ Write", status: "Next" },
-  { phase: "03", title: "Grounded Santali AI", status: "Planned" },
-  { phase: "04", title: "Santali voice", status: "Planned" },
+  { phase: "01", title: "Language tools — translator, converter, keyboard, dictionary", status: "Live" },
+  { phase: "02", title: "Verified language data & SANTALIQ Write", status: "Live" },
+  { phase: "03", title: "Grounded Santali AI", status: "Beta" },
+  { phase: "04", title: "Santali voice", status: "Next" },
   { phase: "05", title: "Learning & heritage", status: "Planned" },
   { phase: "06", title: "Community, mobile & global", status: "Planned" },
 ];
@@ -59,7 +59,7 @@ export default function Home() {
           <div>
             <p className="inline-flex items-center gap-2 rounded-full border border-line bg-bg-elevated/60 px-3 py-1 text-xs text-muted">
               <span className="size-1.5 rounded-full bg-accent" />
-              Translator and script converter are live
+              Translator, dictionary, Write and AI are live
             </p>
             <h1 className="mt-6 font-display text-[2.75rem] leading-[1.02] font-extrabold tracking-tight sm:text-7xl">
               Santali Language.
@@ -183,7 +183,7 @@ export default function Home() {
                 <span className="flex-1 font-medium sm:text-lg">{r.title}</span>
                 <span
                   className={`shrink-0 rounded-full px-3 py-1 text-xs ${
-                    r.status === "Building now" ? "bg-accent text-white" : "border border-line text-muted"
+                    r.status === "Live" || r.status === "Beta" ? "bg-accent text-white" : "border border-line text-muted"
                   }`}
                 >
                   {r.status}

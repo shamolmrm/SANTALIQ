@@ -34,6 +34,13 @@ class Settings(BaseSettings):
     smtp_password: str = ""
     mail_from: str = ""
 
+    # SANTALIQ AI (Claude). Chat is disabled until ANTHROPIC_API_KEY is set.
+    anthropic_api_key: str = ""
+    ai_model: str = "claude-opus-5-5"
+    ai_effort: str = "low"
+    ai_requests_per_minute: int = 10
+    ai_requests_per_day: int = 50
+
     @property
     def email_enabled(self) -> bool:
         return bool(self.smtp_host and self.mail_from)
