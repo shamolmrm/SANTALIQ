@@ -47,6 +47,13 @@ Later (only once there are real users): marketplace, careers, video hosting, liv
 | 6 | FastAPI setup, `/api/v1/health`, test | done (pytest, ruff pass); frontend ↔ backend wiring todo |
 | 7 | Push, weekly review | todo |
 
+## Phase 1 progress
+| Task | Status |
+| --- | --- |
+| Script Converter — 5 scripts (Ol Chiki, Roman, Bengali, Odia, Devanagari), browser-side engine, tests | **beta live** — rules await native-speaker review ([module doc](modules/SCRIPT-CONVERTER.md)) |
+| Ol Chiki / multi-script keyboard | todo |
+| Dictionary v1 (multi-script search) | todo |
+
 ### Local commands
 - Frontend: `cd frontend` → `pnpm dev` (http://localhost:3000) · `pnpm lint` · `pnpm typecheck` · `pnpm build`
 - Backend: `cd backend` → `.venv\Scripts\activate` → `uvicorn app.main:app --reload` (http://localhost:8000/docs) · `pytest` · `ruff check .`

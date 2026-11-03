@@ -2,10 +2,10 @@ import Link from "next/link";
 import { Logo } from "@/components/logo";
 
 const nav = [
-  { href: "#tools", label: "Tools" },
-  { href: "#scripts", label: "Scripts" },
-  { href: "#principles", label: "Principles" },
-  { href: "#roadmap", label: "Roadmap" },
+  { href: "/tools/script-converter", label: "Script Converter" },
+  { href: "/#tools", label: "Tools" },
+  { href: "/#principles", label: "Principles" },
+  { href: "/#roadmap", label: "Roadmap" },
 ];
 
 export function SiteHeader() {
@@ -21,7 +21,7 @@ export function SiteHeader() {
           ))}
         </nav>
         <Link
-          href="#join"
+          href="/#join"
           className="rounded-full bg-fg px-4 py-2 text-sm font-semibold text-bg transition-opacity hover:opacity-85"
         >
           Join early

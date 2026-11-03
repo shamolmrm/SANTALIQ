@@ -1,10 +1,12 @@
+import Link from "next/link";
 import { ScriptShowcase } from "@/components/script-showcase";
 
-const tools = [
+const tools: Array<{ title: string; body: string; phase: string; href?: string }> = [
   {
     title: "Script Converter",
-    body: "Move Santali text between Ol Chiki, Bengali, Devanagari, Odia and Roman — instantly and accurately.",
-    phase: "Phase 1",
+    body: "Move Santali text between Ol Chiki, Roman, Bengali, Odia and Devanagari — instantly, in your browser.",
+    phase: "Beta · live now",
+    href: "/tools/script-converter",
   },
   {
     title: "Smart Keyboard",
@@ -90,12 +92,12 @@ export default function Home() {
               knowledge and community, in every script Santali is written in.
             </p>
             <div className="mt-10 flex flex-wrap gap-3">
-              <a
-                href="#tools"
+              <Link
+                href="/tools/script-converter"
                 className="rounded-full bg-fg px-6 py-3 font-semibold text-bg transition-opacity hover:opacity-85"
               >
-                Explore the tools
-              </a>
+                Try the Script Converter
+              </Link>
               <a
                 href="#roadmap"
                 className="rounded-full border border-line px-6 py-3 font-semibold transition-colors hover:border-fg/40"
@@ -123,6 +125,14 @@ export default function Home() {
                 <span className="text-xs font-medium tracking-wide text-accent">{tool.phase}</span>
                 <h3 className="mt-3 text-xl font-semibold">{tool.title}</h3>
                 <p className="mt-2 leading-relaxed text-muted">{tool.body}</p>
+                {tool.href && (
+                  <Link
+                    href={tool.href}
+                    className="mt-5 inline-flex items-center gap-1 font-semibold text-accent hover:underline"
+                  >
+                    Try it <span aria-hidden>→</span>
+                  </Link>
+                )}
               </article>
             ))}
           </div>
