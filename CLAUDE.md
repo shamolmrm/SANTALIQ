@@ -19,5 +19,8 @@ Santali-first digital ecosystem. Master plan: `docs/00-MASTER-PLAN.md`. Read it 
 - Keep the architecture simple; ask before adding new services or infrastructure.
 
 ## Git
-- Two remotes: `origin` (github.com/shamolbro/SANTALIQ) and `mirror` (github.com/shamolmrm/SANTALIQ). Push to both.
+- Two remotes: `origin` (github.com/shamolbro/SANTALIQ) and `mirror` (github.com/shamolmrm/SANTALIQ).
+- After every completed change: commit, then push to both with `.\scripts\push-all.ps1` — immediately, without asking.
+- Deploy shipped features with `bash scripts/deploy.sh` (Git Bash). Live: https://santaliq.supersoftltd.com
+- Keep README (stack, links, status) and the GitHub repo description current.
 - Conventional commits (`feat:`, `fix:`, `docs:`, `chore:`).
